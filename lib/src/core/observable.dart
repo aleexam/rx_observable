@@ -41,7 +41,7 @@ class Observable<T> extends ObservableReadOnly<T> {
 /// Class for observable value (stream + current value). Based on [BehaviorSubject]
 class ObservableReadOnly<T> extends StreamViewImpl<T> implements IObservable<T> {
 
-  late final T _value;
+  late T _value;
 
   /// Constructs a [Observable], optionally pass initial value, handlers for
   /// [onListen], [onCancel], flag to handle events [sync] and
