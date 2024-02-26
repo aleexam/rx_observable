@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rx_observable/src/observable.dart';
+import 'package:rx_observable/src/core/observable.dart';
 
 /// Widget that listen to an [observable], build [builder] when its changed
 /// and provides [observable] value to builder.
@@ -10,7 +10,7 @@ class Observer<T> extends StatelessWidget {
     required this.builder,
   });
 
-  final Observable<T> observable;
+  final IObservable<T> observable;
   final Widget? Function(BuildContext, T value) builder;
 
   @override
@@ -33,8 +33,8 @@ class Observer2<T, T2> extends StatelessWidget {
     required this.builder,
   });
 
-  final Observable<T> observable;
-  final Observable<T2> observable2;
+  final IObservable<T> observable;
+  final IObservable<T2> observable2;
   final Widget? Function(BuildContext, T value, T2 value2) builder;
 
   @override
@@ -63,9 +63,9 @@ class Observer3<T, T2, T3> extends StatelessWidget {
     required this.builder,
   });
 
-  final Observable<T> observable;
-  final Observable<T2> observable2;
-  final Observable<T3> observable3;
+  final IObservable<T> observable;
+  final IObservable<T2> observable2;
+  final IObservable<T3> observable3;
   final Widget? Function(BuildContext, T value, T2 value2, T3 value3) builder;
 
   @override

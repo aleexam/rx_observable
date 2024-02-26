@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rx_observable/rx_observable.dart';
-import 'package:rx_observable/widget/listener.dart';
-import '../src/obs_core_extensions.dart';
+import '../core/obs_core_extensions.dart';
 
-/// Widget that acts like [Observer] and [ObservableListener]
-class ObservableConsumer<T> extends StatelessWidget {
-  const ObservableConsumer({
+/// Widget that listen to an [observable] and call [listener] function.
+class ObservableListener<T> extends StatelessWidget {
+  const ObservableListener({
     super.key,
     required this.observable,
     required this.listener,
@@ -20,7 +19,7 @@ class ObservableConsumer<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _ObservableConsumer(
+    return _ObservableListener(
         observable: observable,
         listener: listener,
         child: child ?? const SizedBox()
@@ -28,8 +27,8 @@ class ObservableConsumer<T> extends StatelessWidget {
   }
 }
 
-class _ObservableConsumer<T> extends StatefulWidget {
-  const _ObservableConsumer({
+class _ObservableListener<T> extends StatefulWidget {
+  const _ObservableListener({
     super.key,
     required this.observable,
     required this.listener,
@@ -41,10 +40,10 @@ class _ObservableConsumer<T> extends StatefulWidget {
   final void Function(T value, BuildContext context) listener;
 
   @override
-  State<_ObservableConsumer<T>> createState() => _ObservableConsumerState<T>();
+  State<_ObservableListener<T>> createState() => _ObservableListenerState<T>();
 }
 
-class _ObservableConsumerState<T> extends State<_ObservableConsumer<T>> {
+class _ObservableListenerState<T> extends State<_ObservableListener<T>> {
 
   final List<StreamSubscription> rxSubs = [];
 

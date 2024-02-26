@@ -1,7 +1,8 @@
 name: rx_observable
 description: "A new Flutter project."
 version: 0.0.1
-homepage:
+homepage: https://github.com/aleexam/rx_observable
+issue_tracker: https://github.com/aleexam/rx_observable/issues
 
 environment:
   sdk: '>=3.3.0 <4.0.0'

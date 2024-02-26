@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rx_observable/rx_observable.dart';
-import 'package:rx_observable/widget/observer.dart';
-
-typedef Obx<T> = Observer<T>;
+import 'package:rx_observable/src/widget/observer.dart';
 
 extension ObserverWidgetExt<T> on Observable<T> {
   Widget observer(Widget? Function(BuildContext context, T value) builder) {

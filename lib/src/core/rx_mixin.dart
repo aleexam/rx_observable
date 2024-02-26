@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:rx_observable/src/obs_core_extensions.dart';
+import 'package:rx_observable/src/core/obs_core_extensions.dart';
 
 /// Mixin for simplified subscription/sink handling for classes that include streams subscriptions/sinks
 mixin RxSubsMixin {
