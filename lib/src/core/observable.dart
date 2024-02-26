@@ -21,12 +21,17 @@ abstract interface class IObservable<T> implements ObservableStream<T> {
 }
 
 class Observable<T> extends ObservableReadOnly<T> {
-  Observable(super.initialValue);
+
+  /// If true, listeners will be notified if new value not equals to old value
+  /// Default true
+  final bool notifyOnlyIfChanged;
+
+  Observable(super.initialValue, {this.notifyOnlyIfChanged = true});
 
   /// Set and emit the new value.
   set value(T newValue) {
     if (!notifyOnlyIfChanged || newValue != value) {
-      value = newValue;
+      _value = newValue;
       onAdd(value);
     }
   }
@@ -38,10 +43,6 @@ class ObservableReadOnly<T> extends StreamViewImpl<T> implements IObservable<T> 
 
   late final T _value;
 
-  /// If true, listeners will be notified if new value not equals to old value
-  /// Default true
-  final bool notifyOnlyIfChanged;
-
   /// Constructs a [Observable], optionally pass initial value, handlers for
   /// [onListen], [onCancel], flag to handle events [sync] and
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
@@ -52,7 +53,6 @@ class ObservableReadOnly<T> extends StreamViewImpl<T> implements IObservable<T> 
     void Function()? onListen,
     void Function()? onCancel,
     bool sync = false,
-    this.notifyOnlyIfChanged = true
   }) : super(StreamController<T>.broadcast(
     onListen: onListen,
     onCancel: onCancel,
@@ -64,7 +64,12 @@ class ObservableReadOnly<T> extends StreamViewImpl<T> implements IObservable<T> 
 
   @override
   void onAdd(T event) {
+    _value = event;
+  }
 
+  /// Triggers stream to send new value
+  void refresh() {
+    onAdd(_value);
   }
 
   @override
