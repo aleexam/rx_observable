@@ -32,7 +32,7 @@ class Observable<T> extends ObservableReadOnly<T> {
   set value(T newValue) {
     if (!notifyOnlyIfChanged || newValue != value) {
       _value = newValue;
-      onAdd(value);
+      add(value);
     }
   }
 
@@ -69,7 +69,7 @@ class ObservableReadOnly<T> extends StreamViewImpl<T> implements IObservable<T> 
 
   /// Triggers stream to send new value
   void refresh() {
-    onAdd(_value);
+    add(_value);
   }
 
   @override
