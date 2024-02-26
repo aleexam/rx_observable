@@ -1,4 +1,4 @@
-name: result_or_example
+name: rx_observable_example
 description: "Demonstrates how to use the rx_observable package."
 publish_to: 'none'
 
