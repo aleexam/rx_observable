@@ -1,7 +1,7 @@
 
 import '../observable.dart';
 
-extension RxBoolExt on Observable<bool> {
+extension ObservableBoolExt on Observable<bool> {
   bool get isTrue => value;
 
   bool get isFalse => !isTrue;
@@ -19,7 +19,7 @@ extension RxBoolExt on Observable<bool> {
   }
 }
 
-extension RxnBoolExt on Observable<bool?> {
+extension ObservablenBoolExt on Observable<bool?> {
   bool? get isTrue => value;
 
   bool? get isFalse {

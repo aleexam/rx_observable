@@ -12,11 +12,15 @@ void main() async {
   }
 
   var computed = ObservableComputed(() {
-    print(z()+z2());
+    return z()+z2();
   }, [z, z2]);
+
+  z.value += 2;
 
   computed.listen((event) {
     print(event);
   });
+
+  await Future.delayed(const Duration(seconds: 5));
 
 }
