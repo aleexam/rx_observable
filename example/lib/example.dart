@@ -1,5 +1,6 @@
 library example;
 
+import 'package:flutter/foundation.dart';
 import 'package:rx_observable/rx_observable.dart';
 
 void main() {
@@ -7,5 +8,7 @@ void main() {
   z.value = 2;
   z.value += 1;
 
-  var sz = 2.obs();
+  if (kDebugMode) {
+    print(z);
+  }
 }
