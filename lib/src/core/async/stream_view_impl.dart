@@ -1,15 +1,25 @@
 import 'dart:async';
 
-/// The base for all Subjects. If you'd like to create a new Subject,
-/// extend from this class.
-///
+abstract class StreamWithCapturedError<T> implements Stream<T> {
+  /// Returns the last emitted error, or `null` if error events haven't yet been emitted.
+  Object? get errorOrNull;
+
+  /// Returns `true` when [error] is available,
+  /// meaning this Stream has emitted at least one error.
+  bool get hasError;
+
+  /// Returns [StackTrace] of the last emitted error.
+  ///
+  /// If error events haven't yet been emitted,
+  /// or the last emitted error didn't have a stack trace,
+  /// the returned value is `null`.
+  StackTrace? get stackTrace;
+}
+
 /// It handles all of the nitty-gritty details that conform to the
 /// StreamController spec and don't need to be repeated over and
 /// over.
 ///
-/// Please see `PublishSubject` for the simplest example of how to
-/// extend from this class, or `BehaviorSubject` for a slightly more
-/// complex example.
 abstract class StreamViewImpl<T> extends StreamView<T> implements StreamController<T> {
   final StreamController<T> _controller;
 
