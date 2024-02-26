@@ -9,7 +9,7 @@ class ObservableComputed<T> with RxSubsMixin implements StreamSink<T> {
 
   Stream<T> get stream => value.stream;
 
-  ObservableComputed(this._computer, List<Stream> streams) {
+  ObservableComputed(List<Stream> streams, this._computer) {
     value = Observable(_computer());
     for (var stream in streams) {
       regSub(stream.listen((_) {

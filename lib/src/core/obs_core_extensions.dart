@@ -57,3 +57,9 @@ extension CloseStreams on List<StreamSink> {
     }
   }
 }
+
+extension ComputedFunction<T> on T Function() {
+  ObservableComputed computed(List<Stream> streams) {
+    return ObservableComputed<T>(streams, this);
+  }
+}

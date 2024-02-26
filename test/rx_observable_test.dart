@@ -4,26 +4,31 @@ import 'package:rx_observable/rx_observable.dart';
 
 void main() {
   test('adds one to input values', () async {
-    var z = Observable(0);
-    var z2 = Observable(9);
-    z.value = 2;
-    z.value += 1;
+    var var1 = Observable(0);
+    var var2 = Observable(9);
+    var1.value = 2;
+    var1.value += 1;
 
     if (kDebugMode) {
-      print(z());
+      print(var1());
     }
 
-    var computed = ObservableComputed(() {
-      print(z()+z2());
-    }, [z, z2]);
+    var computed = ObservableComputed<int>([var1, var2], () => var1()+var2());
+    /*var computed = (() => var1() + var2() ).computed([var1, var2]);
+    var computed = () {
+      return var1() + var2();
+    }.computed([var1, var2]);*/
 
-    z.listen((event) {
+    var1.listen((event) {
       print(event);
     });
 
-    z.value += 1;
+    var1.value += 1;
 
     await Future.delayed(const Duration(seconds: 5));
+
+    var1.close();
+    var2.close();
 
   });
 }
