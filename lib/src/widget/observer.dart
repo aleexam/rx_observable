@@ -61,7 +61,7 @@ class Observer2<T, T2> extends StatelessWidget {
 
   final IObservable<T> observable;
   final IObservable<T2> observable2;
-  final Widget? Function(BuildContext, T value, T2 value2) builder;
+  final Widget? Function(BuildContext, T v1, T2 v2) builder;
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +114,7 @@ class Observer3<T, T2, T3> extends StatelessWidget {
   final IObservable<T> observable;
   final IObservable<T2> observable2;
   final IObservable<T3> observable3;
-  final Widget? Function(BuildContext, T value, T2 value2, T3 value3) builder;
+  final Widget? Function(BuildContext, T v1, T2 v2, T3 v3) builder;
 
   @override
   Widget build(BuildContext context) {

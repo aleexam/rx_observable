@@ -13,14 +13,13 @@ class ExampleScreen extends StatefulWidget {
 class ExampleScreenState extends State<ExampleScreen> {
 
   var text = "Hello".obs;
+  var text2 = "Mister".obs;
 
   @override
   void initState() {
 
     text.listen((v) {
-      if (kDebugMode) {
-        print("New value is $v");
-      }
+      if (kDebugMode) { print("New value is $v"); }
     });
 
     Future.delayed(const Duration(seconds: 3)).whenComplete(() {
@@ -33,6 +32,7 @@ class ExampleScreenState extends State<ExampleScreen> {
   @override
   void dispose() {
     text.close();
+    text2.close();
     super.dispose();
   }
 
@@ -52,7 +52,23 @@ class ExampleScreenState extends State<ExampleScreen> {
               builder: (context, v) {
                 return Text(v);
               }
-          )
+          ),
+          /// Listen 2 or 3 observables
+          Observer2.builder(
+              observable: text,
+              observable2: text2,
+              builder: (context, v1, v2) {
+                return Text("$v1 $v2");
+              }
+          ),
+          Observer3.builder(
+              observable: text,
+              observable2: text2,
+              observable3: text3,
+              builder: (context, v1, v2, v3) {
+                return Text("$v1 $v2 $v3");
+              }
+          ),
         ],
       ),
     );
