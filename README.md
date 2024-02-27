@@ -1,4 +1,3 @@
-<!--
 Simple reactive variables and widgets.
 Similar to Livedata/observable/mobx, but without code generation and without badcode.
 
