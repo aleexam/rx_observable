@@ -13,12 +13,14 @@ void main() {
   var test3 = Obs(25);
   var test4 = 25.obs;
   var test5 = ObservableInt(25);
+  var test6 = ObservableReadOnly(25); /// You can only read this value
 
   test1.close();
   test2.close();
   test3.close();
   test4.close();
   test5.close();
+  test6.close();
 
   runApp(const ExampleApp());
 }

@@ -80,6 +80,7 @@ More examples:
     var test3 = Obs(25);
     var test4 = 25.obs;
     var test5 = ObservableInt(25);
+    var test6 = ObservableReadOnly(25); /// You can only read this value
     
     test1.listen((v) {
       if (kDebugMode) { print(v); }
