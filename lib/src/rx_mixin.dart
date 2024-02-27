@@ -4,8 +4,11 @@ import 'package:rx_observable/rx_observable.dart';
 
 /// Mixin for simplified subscription/sink handling for classes that include streams subscriptions/sinks
 mixin RxSubsMixin {
+
   final List<StreamSubscription> rxSubs = [];
   final List<EventSink> rxSinks = [];
+
+  void registerFieldsForDispose();
 
   /// Reg [StreamSubscription] or [EventSink]
   reg(dynamic sinkOrSub) {
