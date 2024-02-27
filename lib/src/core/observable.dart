@@ -8,7 +8,7 @@ part 'obs_extensions/obs_num.dart';
 part 'observable_computed.dart';
 part 'async/stream_with_value.dart';
 
-abstract interface class IObservable<T>  {
+abstract interface class IObservable<T> {
   /// Returns underlying stream
   StreamWithValue<T> get stream;
 
