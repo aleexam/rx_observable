@@ -8,8 +8,6 @@ mixin RxSubsMixin {
   final List<StreamSubscription> rxSubs = [];
   final List<EventSink> rxSinks = [];
 
-  void registerFieldsForDispose();
-
   /// Reg [StreamSubscription] or [EventSink]
   reg(dynamic sinkOrSub) {
     if (sinkOrSub is EventSink) {
