@@ -2,8 +2,8 @@ import '../widgets.dart';
 import 'core/observable.dart';
 
 typedef Obs<T> = Observable<T>;
-typedef ObservableRead<T> = ObservableReadOnly<T>;
-typedef ObsRead<T> = ObservableReadOnly<T>;
+// typedef ObservableRead<T> = ObservableReadOnly<T>;
+// typedef ObsRead<T> = ObservableReadOnly<T>;
 
 typedef ObsComputed<T> = ObservableComputed<T>;
 
