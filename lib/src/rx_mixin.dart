@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:rx_observable/rx_observable.dart';
 
 abstract interface class IRegisterFieldsForDispose {
+  /// Do not forget to register all async fields that must be closed/cancelled
   void registerFieldsForDispose();
 }
 
