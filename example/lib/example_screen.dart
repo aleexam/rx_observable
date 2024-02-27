@@ -60,15 +60,7 @@ class ExampleScreenState extends State<ExampleScreen> {
               builder: (context, v1, v2) {
                 return Text("$v1 $v2");
               }
-          ),
-          Observer3.builder(
-              observable: text,
-              observable2: text2,
-              observable3: text3,
-              builder: (context, v1, v2, v3) {
-                return Text("$v1 $v2 $v3");
-              }
-          ),
+          )
         ],
       ),
     );

@@ -14,26 +14,25 @@ void main() {
   var test4 = 25.obs;
   var test5 = ObservableInt(25);
 
-  test1.listen((v) {
-    if (kDebugMode) { print(v); }
-  });
-
-  /// Listen observable without UI updating
-  /// Also see ObservableConsumer widget to get both
-  var widgetListener = ObservableListener(
-    observable: test1,
-    listener: (v, context) {
-      if (kDebugMode) { print(v); }
-    },
-    child: const SizedBox(),
-  );
-
+  test1.close();
+  test2.close();
+  test3.close();
+  test4.close();
+  test5.close();
 
   runApp(const ExampleApp());
 }
 
-class ExampleApp extends StatelessWidget {
+class ExampleApp extends StatefulWidget {
   const ExampleApp({super.key});
+
+  @override
+  State<ExampleApp> createState() => _ExampleAppState();
+}
+
+class _ExampleAppState extends State<ExampleApp> {
+
+  var test1 = Observable(25);
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +41,16 @@ class ExampleApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ExampleScreen(),
+      /// Listen observable without UI updating
+      /// Also see ObservableConsumer widget to get both
+      home: ObservableListener(
+          observable: test1,
+          listener: (v, context) {
+            if (kDebugMode) { print(v); }
+          },
+          /// See other examples on [ExampleScreen]
+          child: const ExampleScreen()
+      ),
     );
   }
 }
