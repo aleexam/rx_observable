@@ -3,14 +3,11 @@ import 'package:rx_observable/rx_observable.dart';
 import 'package:rx_observable/src/widget/observer.dart';
 
 extension ObserverWidgetExt<T> on Observable<T> {
-  Widget observer(Widget? Function(BuildContext context, T value) builder) {
-    return Observer<T>(
-        observable: this,
-        builder: builder
-    );
+  Widget observer(Widget? Function(T v) builder) {
+    return Observer<T>(this, builder);
   }
 
-  Widget obx(Widget? Function(BuildContext context, T value) builder) {
+  Widget obW(Widget? Function(T v) builder) {
     return observer(builder);
   }
 }

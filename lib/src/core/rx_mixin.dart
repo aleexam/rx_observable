@@ -1,19 +1,35 @@
 import 'dart:async';
 
-import 'package:rx_observable/src/core/obs_core_extensions.dart';
+import 'package:rx_observable/rx_observable.dart';
 
 /// Mixin for simplified subscription/sink handling for classes that include streams subscriptions/sinks
 mixin RxSubsMixin {
   final List<StreamSubscription> rxSubs = [];
-  final List<StreamSink> rxSinks = [];
+  final List<EventSink> rxSinks = [];
+
+  /// Reg [StreamSubscription] or [EventSink]
+  reg(dynamic sinkOrSub) {
+    if (sinkOrSub is EventSink) {
+      regSink(sinkOrSub);
+    } else if (sinkOrSub is StreamSubscription) {
+      regSub(sinkOrSub);
+    }
+  }
+
+  /// Reg list of [StreamSubscription] or [EventSink]
+  regs(List<dynamic> sinksOrSubs) {
+    for (var sinkOrSub in sinksOrSubs) {
+      reg(sinkOrSub);
+    }
+  }
 
   /// Register object that require close when this class will be destroyed
-  regSink(StreamSink sink) {
+  regSink(EventSink sink) {
     rxSinks.add(sink);
   }
 
   /// Register list of objects that require close when this class will be destroyed
-  regSinks(List<StreamSink> sinks) {
+  regSinks(List<EventSink> sinks) {
     rxSinks.addAll(sinks);
   }
 
