@@ -24,4 +24,6 @@ class ObservableComputed<T> extends Observable<T> with RxSubsMixin {
     return super.close();
   }
 
+  @override
+  void registerFieldsForDispose() {}
 }

@@ -2,8 +2,13 @@ import 'dart:async';
 
 import 'package:rx_observable/rx_observable.dart';
 
+abstract interface class IRegisterFieldsForDispose {
+  void registerFieldsForDispose();
+}
+
+
 /// Mixin for simplified subscription/sink handling for classes that include streams subscriptions/sinks
-mixin RxSubsMixin {
+mixin RxSubsMixin implements IRegisterFieldsForDispose {
 
   final List<StreamSubscription> rxSubs = [];
   final List<EventSink> rxSinks = [];
