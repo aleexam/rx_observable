@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rx_observable/rx_observable.dart';
 import 'package:rx_observable/widgets.dart';
@@ -11,16 +12,27 @@ class ExampleScreen extends StatefulWidget {
 
 class ExampleScreenState extends State<ExampleScreen> {
 
-  var reactiveValue = "Hello".obs;
+  var text = "Hello".obs;
 
   @override
   void initState() {
+
+    text.listen((v) {
+      if (kDebugMode) {
+        print("New value is $v");
+      }
+    });
+
+    Future.delayed(const Duration(seconds: 3)).whenComplete(() {
+      text.value = "GoodBye";
+    });
+
     super.initState();
   }
 
   @override
   void dispose() {
-    reactiveValue.close();
+    text.close();
     super.dispose();
   }
 
@@ -31,12 +43,12 @@ class ExampleScreenState extends State<ExampleScreen> {
       body: Column(
         children: [
           /// Use Observer widget directly to update UI with values
-          Observer(reactiveValue, (v) => Text(v)),
+          Observer(text, (v) => Text(v)),
           /// Use extensions which creates same observer widget
-          reactiveValue.observer((v) => Text(v)),
+          text.observer((v) => Text(v)),
           /// Use big builder version
           Observer.builder(
-              observable: reactiveValue,
+              observable: text,
               builder: (context, v) {
                 return Text(v);
               }

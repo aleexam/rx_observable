@@ -1,35 +1,56 @@
 <!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+Simple reactive variables and widgets.
+Similar to Livedata/observable/mobx, but without code generation and without badcode.
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+Ideal to use with MVVM like patterns.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Create reactive variables, listen them, update UI.
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+Just define var like this:
 
 ```dart
-const like = 'sample';
+  var text = "Hello".obs;
+```
+
+And use Observer widget to subscribe for changes:
+
+```dart
+    return Scaffold(
+      appBar: AppBar(),
+      body: Column(
+        children: [
+          /// Use Observer widget directly to update UI with values
+          Observer(text, (v) => Text(v)),
+          /// Use extensions which creates same observer widget
+          text.observer((v) => Text(v)),
+          /// Use big builder version
+          Observer.builder(
+              observable: text,
+              builder: (context, v) {
+                return Text(v);
+              }
+          )
+        ],
+      ),
+    );
+```
+
+Update value like this:
+
+```dart
+  text.value = "GoodBye";
+```
+
+Listen like this:
+
+```dart
+    text.listen((v) {
+        print("New value is $v");
+    });
 ```
 
 ## Additional information
