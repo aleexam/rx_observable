@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:rx_observable/rx_observable.dart';
 import 'package:rx_observable/src/widget/listener.dart';
+import 'package:rx_observable/src/widget/observer.dart';
 import '../core/obs_core_extensions.dart';
 
 /// Widget that acts like [Observer] and [ObservableListener] together
@@ -15,7 +16,7 @@ class ObservableConsumer<T> extends StatelessWidget {
   });
 
   final Widget? child;
-  final Stream<T> observable;
+  final Observable<T> observable;
   final void Function(T value, BuildContext context) listener;
 
   @override
@@ -37,7 +38,7 @@ class _ObservableConsumer<T> extends StatefulWidget {
   });
 
   final Widget child;
-  final Stream<T> observable;
+  final Observable<T> observable;
   final void Function(T value, BuildContext context) listener;
 
   @override
@@ -58,7 +59,7 @@ class _ObservableConsumerState<T> extends State<_ObservableConsumer<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return Observer(() => widget.child);
   }
 
   @override

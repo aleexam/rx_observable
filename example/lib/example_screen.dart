@@ -11,8 +11,7 @@ class ExampleScreen extends StatefulWidget {
 
 class ExampleScreenState extends State<ExampleScreen> {
 
-  var reactiveValue = Observable(1);
-  var reactiveValue2 = "Hello".obs;
+  var reactiveValue = "Hello".obs;
 
   @override
   void initState() {
@@ -31,15 +30,7 @@ class ExampleScreenState extends State<ExampleScreen> {
       appBar: AppBar(),
       body: Column(
         children: [
-          /// Use Observer widget directly to update UI with values
-          Observer(
-            observable: reactiveValue,
-            builder: (context, value) {
-              return Text(value.toString());
-            }
-          ),
-          /// Use extensions which creates same observer widget
-          reactiveValue2.observer((context, value) => Text(value))
+          Observer(() => Text(reactiveValue.value.toString())),
         ],
       ),
     );

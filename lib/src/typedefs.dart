@@ -7,7 +7,7 @@ typedef Obs<T> = Observable<T>;
 
 typedef ObsComputed<T> = ObservableComputed<T>;
 
-typedef Obx<T> = Observer<T>;
+// typedef Obx<T> = Observer<T>;
 typedef Obl<T> = ObservableListener<T>;
 typedef Obc<T> = ObservableConsumer<T>;
 
