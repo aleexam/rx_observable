@@ -1,8 +1,5 @@
 part of "../observable.dart";
 
-typedef ObservableDouble = Observable<double>;
-typedef ObservableNullableDouble = Observable<double?>;
-
 class ObservableNum extends Observable<num> {
   ObservableNum(super.initialValue);
 

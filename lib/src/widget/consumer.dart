@@ -5,7 +5,7 @@ import 'package:rx_observable/rx_observable.dart';
 import 'package:rx_observable/src/widget/listener.dart';
 import '../core/obs_core_extensions.dart';
 
-/// Widget that acts like [Observer] and [ObservableListener]
+/// Widget that acts like [Observer] and [ObservableListener] together
 class ObservableConsumer<T> extends StatelessWidget {
   const ObservableConsumer({
     super.key,

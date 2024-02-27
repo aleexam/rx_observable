@@ -1,26 +1,18 @@
-import 'dart:async';
-
-abstract class StreamWithCapturedError<T> implements Stream<T> {
-  /// Returns the last emitted error, or `null` if error events haven't yet been emitted.
-  Object? get errorOrNull;
-
-  /// Returns `true` when [error] is available,
-  /// meaning this Stream has emitted at least one error.
-  bool get hasError;
-
-  /// Returns [StackTrace] of the last emitted error.
-  ///
-  /// If error events haven't yet been emitted,
-  /// or the last emitted error didn't have a stack trace,
-  /// the returned value is `null`.
-  StackTrace? get stackTrace;
-}
+part of '../observable.dart';
 
 /// It handles all of the nitty-gritty details that conform to the
 /// StreamController spec and don't need to be repeated over and
 /// over.
 ///
-abstract class StreamViewImpl<T> extends StreamView<T> implements StreamController<T> {
+abstract class StreamWithValue<T> extends StreamView<T> implements StreamController<T> {
+
+  /// Last saved stream value
+  T _value;
+
+  /// If true, listeners will be notified if new value not equals to old value
+  /// Default true
+  final bool notifyOnlyIfChanged;
+
   final StreamController<T> _controller;
 
   bool _isAddingStreamItems = false;
@@ -30,7 +22,7 @@ abstract class StreamViewImpl<T> extends StreamView<T> implements StreamControll
   ///
   /// To guarantee the contract of a [Subject], the [controller] must be
   /// a broadcast [StreamController] and the [stream] must also be a broadcast [Stream].
-  StreamViewImpl(StreamController<T> controller)
+  StreamWithValue(StreamController<T> controller, this.notifyOnlyIfChanged, this._value)
       : _controller = controller, super(controller.stream);
 
   @override
@@ -146,7 +138,11 @@ abstract class StreamViewImpl<T> extends StreamView<T> implements StreamControll
           'You cannot add items while items are being added from addStream');
     }
 
-    _add(event);
+    if (!notifyOnlyIfChanged || event != _value) {
+      _value = event;
+      _add(event);
+    }
+
   }
 
   void _add(T event) {
@@ -173,10 +169,25 @@ abstract class StreamViewImpl<T> extends StreamView<T> implements StreamControll
 
     return _controller.close();
   }
+
+  /// Returns the last emitted error, or `null` if error events haven't yet been emitted.
+  Object? get errorOrNull;
+
+  /// Returns `true` when [error] is available,
+  /// meaning this Stream has emitted at least one error.
+  bool get hasError;
+
+  /// Returns [StackTrace] of the last emitted error.
+  ///
+  /// If error events haven't yet been emitted,
+  /// or the last emitted error didn't have a stack trace,
+  /// the returned value is `null`.
+  StackTrace? get stackTrace;
+
 }
 
 class _StreamImpl<T> extends Stream<T> {
-  final StreamViewImpl<T> _subject;
+  final StreamWithValue<T> _subject;
 
   _StreamImpl(this._subject);
 

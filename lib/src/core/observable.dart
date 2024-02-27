@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:rx_observable/src/core/async/stream_view_impl.dart';
 
 import '../../rx_observable.dart';
 import 'async/error_and_stacktrace.dart';
@@ -7,10 +6,11 @@ import 'async/error_and_stacktrace.dart';
 part 'obs_extensions/obs_string.dart';
 part 'obs_extensions/obs_num.dart';
 part 'observable_computed.dart';
+part 'async/stream_with_value.dart';
 
-abstract interface class IObservable<T> implements StreamWithCapturedError<T> {
+abstract interface class IObservable<T>  {
   /// Returns underlying stream
-  StreamWithCapturedError<T> get stream;
+  StreamWithValue<T> get stream;
 
   /// Returns the last emitted value or initial value.
   T get value;
@@ -18,28 +18,28 @@ abstract interface class IObservable<T> implements StreamWithCapturedError<T> {
 
 class Observable<T> extends ObservableReadOnly<T> {
 
-  /// If true, listeners will be notified if new value not equals to old value
-  /// Default true
-  final bool notifyOnlyIfChanged;
-
-  Observable(super.initialValue, {this.notifyOnlyIfChanged = true});
+  /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
+  /// [onListen], [onCancel], flag to handle events [sync] and
+  /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
+  /// if new value not equals to old value
+  ///
+  /// See also [BehaviorSubject], and [StreamController.broadcast]
+  Observable(super.initialValue,{
+    super.onListen,
+    super.onCancel,
+    super.sync = false,
+    super.notifyOnlyIfChanged = true,
+  });
 
   /// Set and emit the new value.
-  set value(T newValue) {
-    if (!notifyOnlyIfChanged || newValue != value) {
-      _value = newValue;
-      add(value);
-    }
-  }
+  set value(T newValue) => add(newValue);
 
 }
 
 /// Class for observable value (stream + current value). Based on [BehaviorSubject]
-class ObservableReadOnly<T> extends StreamViewImpl<T> implements IObservable<T> {
+class ObservableReadOnly<T> extends StreamWithValue<T> implements IObservable<T> {
 
-  late T _value;
-
-  /// Constructs a [Observable], optionally pass initial value, handlers for
+  /// Constructs a [ObservableReadOnly], pass initial value, handlers for
   /// [onListen], [onCancel], flag to handle events [sync] and
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
   /// if new value not equals to old value
@@ -49,13 +49,12 @@ class ObservableReadOnly<T> extends StreamViewImpl<T> implements IObservable<T> 
     void Function()? onListen,
     void Function()? onCancel,
     bool sync = false,
+    bool notifyOnlyIfChanged = false,
   }) : super(StreamController<T>.broadcast(
     onListen: onListen,
     onCancel: onCancel,
     sync: sync,
-  )) {
-    _value = initialValue;
-  }
+  ), notifyOnlyIfChanged, initialValue);
 
 
   @override
@@ -63,7 +62,7 @@ class ObservableReadOnly<T> extends StreamViewImpl<T> implements IObservable<T> 
     _value = event;
   }
 
-  /// Triggers stream to send new value
+  /// Triggers stream to send current value again to force listeners
   void refresh() {
     add(_value);
   }
@@ -72,7 +71,7 @@ class ObservableReadOnly<T> extends StreamViewImpl<T> implements IObservable<T> 
   void onAddError(Object error, [StackTrace? stackTrace]) => setError(error, stackTrace);
 
   @override
-  StreamWithCapturedError<T> get stream => this;
+  StreamWithValue<T> get stream => this;
 
   T call() {
     return value;

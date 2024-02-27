@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rx_observable/rx_observable.dart';
 import '../core/obs_core_extensions.dart';
 
-/// Widget that listen to an [observable] and call [listener] function.
+/// Widget that listen to an [observable] or [Stream] and call [listener] function.
 class ObservableListener<T> extends StatelessWidget {
   const ObservableListener({
     super.key,

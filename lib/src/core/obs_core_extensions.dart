@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../typedefs.dart';
 import 'observable.dart';
 
 export 'obs_extensions/bool_extensions.dart';
