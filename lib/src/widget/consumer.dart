@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:rx_observable/rx_observable.dart';
 import 'package:rx_observable/src/widget/listener.dart';
 import 'package:rx_observable/src/widget/observer.dart';
 import '../core/obs_core_extensions.dart';
+import '../core/observable.dart';
 
 /// Widget that acts like [Observer] and [ObservableListener] together
 class ObservableConsumer<T> extends StatelessWidget {
