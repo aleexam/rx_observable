@@ -59,6 +59,14 @@ extension CloseStreams on List<StreamSink> {
   }
 }
 
+extension CloseEventSinks on List<EventSink> {
+  closeAll() {
+    for (var sink in this) {
+      sink.close();
+    }
+  }
+}
+
 extension ComputedFunction<T> on T Function() {
   ObservableComputed computed(List<Stream> streams) {
     return ObservableComputed<T>(streams, this);

@@ -8,7 +8,7 @@ part 'obs_extensions/obs_string.dart';
 part 'obs_extensions/obs_num.dart';
 part 'observable_computed.dart';
 
-class Observable<T> extends Rx<T> {
+class Observable<T> extends Rx<T> implements EventSink {
 
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
   /// [onListen], [onCancel], flag to handle events [sync] and
@@ -17,4 +17,10 @@ class Observable<T> extends Rx<T> {
   ///
   /// See also [BehaviorSubject], and [StreamController.broadcast]
   Observable(super.initialValue);
+
+  @override
+  void add(event) {
+    value = event;
+  }
+
 }
