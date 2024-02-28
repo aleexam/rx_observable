@@ -66,5 +66,6 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
   void dispose() {
     rxSubs.cancelAll();
     rxSinks.closeAll();
+    disposables.disposeAll();
   }
 }

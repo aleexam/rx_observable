@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rx_observable/src/i_disposable.dart';
+
 import '../typedefs.dart';
 import 'observable.dart';
 
@@ -63,6 +65,14 @@ extension CloseEventSinks on List<EventSink> {
   closeAll() {
     for (var sink in this) {
       sink.close();
+    }
+  }
+}
+
+extension CloseDisposables on List<IDisposable> {
+  disposeAll() {
+    for (var disposable in this) {
+      disposable.dispose();
     }
   }
 }
