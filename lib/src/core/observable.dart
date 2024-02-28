@@ -62,11 +62,6 @@ class ObservableReadOnly<T> extends StreamWithValue<T> implements IObservable<T>
     _value = event;
   }
 
-  /// Triggers stream to send current value again to force listeners
-  void refresh() {
-    add(_value);
-  }
-
   @override
   void onAddError(Object error, [StackTrace? stackTrace]) => setError(error, stackTrace);
 

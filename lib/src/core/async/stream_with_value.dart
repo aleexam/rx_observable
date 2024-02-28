@@ -145,6 +145,16 @@ abstract class StreamWithValue<T> extends StreamView<T> implements StreamControl
 
   }
 
+  /// Triggers stream to send current value again to force listeners
+  void refresh() {
+    if (_isAddingStreamItems) {
+      throw StateError(
+          'You cannot add items while items are being added from addStream');
+    }
+
+    _add(_value);
+  }
+
   void _add(T event) {
     if (!_controller.isClosed) {
       onAdd(event);
