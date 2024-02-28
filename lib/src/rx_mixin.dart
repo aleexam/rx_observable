@@ -1,6 +1,9 @@
 import 'dart:async';
 
-import 'package:rx_observable/rx_observable.dart';
+import 'package:rx_observable/src/core/obs_core_extensions.dart';
+
+import 'i_disposable.dart';
+
 
 abstract interface class IRegisterFieldsForDispose {
   /// Do not forget to register all async fields that must be closed/cancelled
