@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:rx_observable/src/core/obs_core_extensions.dart';
 import 'i_disposable.dart';
 
@@ -14,7 +15,7 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
   final List<EventSink> rxSinks = [];
   final List<IDisposable> disposables = [];
 
-  /// Reg [StreamSubscription] or [EventSink]
+  /// Reg [StreamSubscription] or [EventSink] or [IDisposable]
   reg(dynamic sinkOrSub) {
     if (sinkOrSub is EventSink) {
       regSink(sinkOrSub);
@@ -22,10 +23,15 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
       regSub(sinkOrSub);
     } else if (sinkOrSub is IDisposable) {
       regDisposable(sinkOrSub);
+    } else {
+      throw UnimplementedError("Object with type ${sinkOrSub.runtimeType} with value ${sinkOrSub.toString()} "
+          "is not supported for automatic register in RxSubsMixin. "
+          "Please close/dispose it manually in dispose method."
+      );
     }
   }
 
-  /// Reg list of [StreamSubscription] or [EventSink]
+  /// Reg list of [StreamSubscription] or [EventSink] or [IDisposable]
   regs(List<dynamic> sinksOrSubs) {
     for (var sinkOrSub in sinksOrSubs) {
       reg(sinkOrSub);
@@ -63,6 +69,7 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
   }
 
   /// Dispose method that automatically close all sinks and cancel all subscriptions
+  @mustCallSuper
   void dispose() {
     rxSubs.cancelAll();
     rxSinks.closeAll();
