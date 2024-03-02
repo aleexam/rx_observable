@@ -89,6 +89,7 @@ class ObservableReadOnly<T> extends StreamWithValue<T> implements IObservable<T>
   @override
   StackTrace? get stackTrace => errorAndStackTrace?.stackTrace;
 
+  /// Same as close, for [IDisposable] compatibility
   @override
   void dispose() {
     close();
