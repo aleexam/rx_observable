@@ -1,3 +1,3 @@
-abstract interface class IDisposable {
-  void dispose();
+abstract interface class IClosable {
+  void close();
 }

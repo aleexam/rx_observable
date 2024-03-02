@@ -8,7 +8,7 @@ part 'obs_extensions/obs_num.dart';
 part 'observable_computed.dart';
 part 'async/stream_with_value.dart';
 
-abstract interface class IObservable<T> implements StreamSink<T>, Stream<T>, IDisposable {
+abstract interface class IObservable<T> implements StreamSink<T>, Stream<T>, IClosable {
   /// Returns underlying stream
   StreamWithValue<T> get stream;
 
@@ -88,10 +88,4 @@ class ObservableReadOnly<T> extends StreamWithValue<T> implements IObservable<T>
 
   @override
   StackTrace? get stackTrace => errorAndStackTrace?.stackTrace;
-
-  @override
-  void dispose() {
-    close();
-  }
-
 }
