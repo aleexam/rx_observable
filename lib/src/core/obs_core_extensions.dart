@@ -69,10 +69,10 @@ extension CloseEventSinks on List<EventSink> {
   }
 }
 
-extension CloseDisposables on List<IClosable> {
+extension CloseDisposables on List<IDisposable> {
   disposeAll() {
     for (var disposable in this) {
-      disposable.close();
+      disposable.dispose();
     }
   }
 }

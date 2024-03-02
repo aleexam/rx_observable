@@ -12,20 +12,20 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
 
   final List<StreamSubscription> rxSubs = [];
   final List<EventSink> rxSinks = [];
-  final List<IClosable> disposables = [];
+  final List<IDisposable> disposables = [];
 
-  /// Reg [StreamSubscription] or [EventSink] or [IClosable]
+  /// Reg [StreamSubscription] or [EventSink]
   reg(dynamic sinkOrSub) {
     if (sinkOrSub is EventSink) {
       regSink(sinkOrSub);
     } else if (sinkOrSub is StreamSubscription) {
       regSub(sinkOrSub);
-    } else if (sinkOrSub is IClosable) {
+    } else if (sinkOrSub is IDisposable) {
       regDisposable(sinkOrSub);
     }
   }
 
-  /// Reg list of [StreamSubscription] or [EventSink] or [IClosable]
+  /// Reg list of [StreamSubscription] or [EventSink]
   regs(List<dynamic> sinksOrSubs) {
     for (var sinkOrSub in sinksOrSubs) {
       reg(sinkOrSub);
@@ -52,13 +52,13 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
     rxSubs.addAll(subs);
   }
 
-  /// Register [IClosable] that require close when this class will be destroyed
-  regDisposable(IClosable disposable) {
+  /// Register [IDisposable] that require close when this class will be destroyed
+  regDisposable(IDisposable disposable) {
     disposables.add(disposable);
   }
 
-  /// Register list of [IClosable] that require close when this class will be destroyed
-  regDisposables(List<IClosable> disposableList) {
+  /// Register list of [IDisposable] that require close when this class will be destroyed
+  regDisposables(List<IDisposable> disposableList) {
     disposables.addAll(disposableList);
   }
 
