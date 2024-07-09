@@ -8,6 +8,9 @@ import 'observable.dart';
 export 'obs_extensions/bool_extensions.dart';
 export 'obs_extensions/obs_string_ext.dart';
 export 'obs_extensions/obs_num_ext.dart';
+export 'obs_extensions/obs_list_ext.dart';
+export 'obs_extensions/obs_map_ext.dart';
+export 'obs_extensions/obs_set_ext.dart';
 
 extension StringExtension on String {
   /// Returns a `ObservableString` with [this] `String` as initial value.
