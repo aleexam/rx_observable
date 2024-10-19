@@ -16,7 +16,8 @@ extension StringExtension on String {
   /// Returns a `ObservableString` with [this] `String` as initial value.
   ObservableString get obs => ObservableString(this);
 
-  ObservableReadOnly<String> get obsReadOnly => ObservableReadOnly<String>(this);
+  ObservableReadOnly<String> get obsReadOnly =>
+      ObservableReadOnly<String>(this);
 }
 
 extension IntExtension on int {
@@ -30,7 +31,8 @@ extension DoubleExtension on double {
   /// Returns a `ObservableDouble` with [this] `double` as initial value.
   ObservableDouble get obs => ObservableDouble(this);
 
-  ObservableReadOnly<double> get obsReadOnly => ObservableReadOnly<double>(this);
+  ObservableReadOnly<double> get obsReadOnly =>
+      ObservableReadOnly<double>(this);
 }
 
 extension BoolExtension on bool {
@@ -51,7 +53,8 @@ extension ListExtension<T> on List<T> {
   /// Returns a `Observable` instance with [this] `List<T>` as initial value.
   Observable<List<T>> get obs => Observable<List<T>>(this);
 
-  ObservableReadOnly<List<T>> get obsReadOnly => ObservableReadOnly<List<T>>(this);
+  ObservableReadOnly<List<T>> get obsReadOnly =>
+      ObservableReadOnly<List<T>>(this);
 }
 
 extension CancelSubs on List<StreamSubscription> {

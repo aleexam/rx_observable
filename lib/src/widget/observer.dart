@@ -99,7 +99,8 @@ class Observer3<T, T2, T3> extends StatelessWidget {
     Widget? Function(T v1, T2 v2, T3 v3) builder, {
     Key? key,
   }) {
-    return Observer3.context(observable, observable2, observable3, (context, v1, v2, v3) {
+    return Observer3.context(observable, observable2, observable3,
+        (context, v1, v2, v3) {
       return builder(v1, v2, v3);
     }, key: key);
   }
@@ -111,7 +112,8 @@ class Observer3<T, T2, T3> extends StatelessWidget {
     required IObservable<T3> observable3,
     required Widget? Function(BuildContext context, T v1, T2 v2, T3 v3) builder,
   }) {
-    return Observer3.context(observable, observable2, observable3, builder, key: key);
+    return Observer3.context(observable, observable2, observable3, builder,
+        key: key);
   }
 
   final IObservable<T> observable;
@@ -130,8 +132,8 @@ class Observer3<T, T2, T3> extends StatelessWidget {
                 return StreamBuilder<T3>(
                     stream: observable3.stream,
                     builder: (context, _) {
-                      return builder(context, observable.value, observable2.value,
-                              observable3.value) ??
+                      return builder(context, observable.value,
+                              observable2.value, observable3.value) ??
                           const SizedBox.shrink();
                     });
               });

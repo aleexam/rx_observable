@@ -4,7 +4,8 @@ part of '../observable.dart';
 /// StreamController spec and don't need to be repeated over and
 /// over.
 ///
-abstract class StreamWithValue<T> extends StreamView<T> implements StreamController<T> {
+abstract class StreamWithValue<T> extends StreamView<T>
+    implements StreamController<T> {
   /// Last saved stream value
   T _value;
 
@@ -81,7 +82,8 @@ abstract class StreamWithValue<T> extends StreamView<T> implements StreamControl
   @override
   void addError(Object error, [StackTrace? stackTrace]) {
     if (_isAddingStreamItems) {
-      throw StateError('You cannot add an error while items are being added from addStream');
+      throw StateError(
+          'You cannot add an error while items are being added from addStream');
     }
 
     _addError(error, stackTrace);
@@ -105,7 +107,8 @@ abstract class StreamWithValue<T> extends StreamView<T> implements StreamControl
   @override
   Future<void> addStream(Stream<T> source, {bool? cancelOnError}) {
     if (_isAddingStreamItems) {
-      throw StateError('You cannot add items while items are being added from addStream');
+      throw StateError(
+          'You cannot add items while items are being added from addStream');
     }
     _isAddingStreamItems = true;
 
@@ -135,7 +138,8 @@ abstract class StreamWithValue<T> extends StreamView<T> implements StreamControl
   @override
   void add(T event) {
     if (_isAddingStreamItems) {
-      throw StateError('You cannot add items while items are being added from addStream');
+      throw StateError(
+          'You cannot add items while items are being added from addStream');
     }
 
     if (!notifyOnlyIfChanged || event != _value) {
@@ -147,7 +151,8 @@ abstract class StreamWithValue<T> extends StreamView<T> implements StreamControl
   /// Triggers stream to send current value again to force listeners
   void refresh() {
     if (_isAddingStreamItems) {
-      throw StateError('You cannot add items while items are being added from addStream');
+      throw StateError(
+          'You cannot add items while items are being added from addStream');
     }
 
     _add(_value);

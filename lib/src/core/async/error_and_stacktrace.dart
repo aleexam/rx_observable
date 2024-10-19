@@ -12,7 +12,8 @@ class ErrorAndStackTrace {
   ErrorAndStackTrace(this.error, this.stackTrace);
 
   @override
-  String toString() => 'ErrorAndStackTrace{error: $error, stackTrace: $stackTrace}';
+  String toString() =>
+      'ErrorAndStackTrace{error: $error, stackTrace: $stackTrace}';
 
   @override
   bool operator ==(Object other) =>

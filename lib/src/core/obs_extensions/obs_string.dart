@@ -1,7 +1,8 @@
 part of "../observable.dart";
 
 /// Observable class for `String` Type.
-class ObservableString extends Observable<String> implements Comparable<String>, Pattern {
+class ObservableString extends Observable<String>
+    implements Comparable<String>, Pattern {
   ObservableString(super.initialValue);
 
   @override

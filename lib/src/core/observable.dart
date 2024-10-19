@@ -8,7 +8,8 @@ part 'obs_extensions/obs_num.dart';
 part 'obs_extensions/obs_string.dart';
 part 'observable_computed.dart';
 
-abstract interface class IObservable<T> implements StreamSink<T>, Stream<T>, IDisposable {
+abstract interface class IObservable<T>
+    implements StreamSink<T>, Stream<T>, IDisposable {
   /// Returns underlying stream
   StreamWithValue<T> get stream;
 
@@ -36,7 +37,8 @@ class Observable<T> extends ObservableReadOnly<T> {
 }
 
 /// Class for observable value (stream + current value). Based on [BehaviorSubject]
-class ObservableReadOnly<T> extends StreamWithValue<T> implements IObservable<T> {
+class ObservableReadOnly<T> extends StreamWithValue<T>
+    implements IObservable<T> {
   /// Constructs a [ObservableReadOnly], pass initial value, handlers for
   /// [onListen], [onCancel], flag to handle events [sync] and
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
@@ -65,7 +67,8 @@ class ObservableReadOnly<T> extends StreamWithValue<T> implements IObservable<T>
   }
 
   @override
-  void onAddError(Object error, [StackTrace? stackTrace]) => setError(error, stackTrace);
+  void onAddError(Object error, [StackTrace? stackTrace]) =>
+      setError(error, stackTrace);
 
   @override
   StreamWithValue<T> get stream => this;
