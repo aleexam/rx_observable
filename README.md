@@ -96,3 +96,78 @@ More examples:
         child: const SizedBox(),
     );
 ```
+Also check RxSubsMixin, for easy dispose of your reactive variables, subscriptions, streams within your viewModel/bloc/store/repository/etc.
+
+## Use with state concept
+
+You can use this approach with states concept, even though bloc creators tells you that state must be immutable and bla-bla-bla.
+
+Just use this simple trick and make sure to always close your reactive vars (RxSubsMixin for help), and no problem will happen:
+
+```dart
+/// Create some viewModel/Bloc-like class, with easy dispose mixin and disposable interface
+class ViewModelExample with RxSubsMixin implements IDisposable {
+
+  /// Define state reactive var, to listen state. Just as Bloc pattern do.
+  Observable<T> state = LoadingState();
+
+  /// Simple example var. You can mix state concept with simple vars or not, it's you to decide
+  var title = "Hello".obs;
+  
+  /// Here is magic. Define private var for some list for example here. It will used in state.
+  final _contactsList = Observable<List<Contact>>([]);
+  
+  ViewModelExample() {
+    /// Auto-dispose of these vars
+    regs([state, title, _contactsList]);
+  }
+  
+  void loadContacts() {
+    /// ...do some magic to get your async data from anywhere
+    /// Then pass it's value to state as pointer, since it's not simple type.
+    state.value = LoadedState(contacts: _contactsList);
+  }
+}
+
+/// The state it self. Whola! You have state with reactive var inside it, but it will not lead to any leaks (probably?)
+/// because real value is inside ViewModelExample, and in state you have only link to it.
+/// Of course some problems might occur because of concurrent access to list, but it never happened in my practice.
+class LoadedState extends BaseState {
+  final ObservableReadOnly<List<Contact>> contacts;
+
+  LoadedState({required this.contacts});
+}
+
+```
+
+Basic UI example of using with these states:
+
+```dart
+var vm = context.read<ViewModelExample>();
+Observer(vm.state, (vmState) {
+        switch (vmState) {
+          case LoadingState():
+            return const LoadingWidget();
+          case LoadedState():
+            return Observer(vmState.contacts, (vmContacts) {
+              if (vmContacts.isEmpty) {
+                return EmptyWidget();
+              } else {
+                return ListWidget(vmContacts);
+            });
+          case ErrorState():
+            return ErrorWidget();
+        }
+      })
+
+```
+
+## Why is this better than mobX, BLoc, getX?
+
+MobX's weakness lies in code generation. It can cause issues during development due to the complexity of store realisation in some cases. 
+Handling final late reactive variables can be challenging for example.
+
+BLoC has too much boilerplate and involves too much effort to manage the entire state. 
+It requires refreshing the whole state just to change a single value.
+
+GetX (or Get), on the other hand, includes too many features inside, bugs, complicated core.

@@ -1,8 +1,16 @@
 name: rx_observable
-description: "A new Flutter project."
-version: 0.5.3
+description: "Simple reactive variables and widgets"
+version: 0.5.4
 homepage: https://github.com/aleexam/rx_observable
 issue_tracker: https://github.com/aleexam/rx_observable/issues
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -17,9 +25,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^3.0.1
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
+
+
 
