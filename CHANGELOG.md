@@ -5,3 +5,7 @@
 ## 0.5.5
 
 * Formatting fixed
+
+## 0.5.6
+
+* Formatting fixed again
