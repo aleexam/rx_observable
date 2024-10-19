@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rx_observable/rx_observable.dart';
+
 import '../core/obs_core_extensions.dart';
 
 /// Widget that listen to an [observable] or [Stream] and call [listener] function.
@@ -10,7 +11,7 @@ class ObservableListener<T> extends StatelessWidget {
     super.key,
     required this.observable,
     required this.listener,
-    required this.child
+    required this.child,
   });
 
   final Widget? child;
@@ -20,9 +21,9 @@ class ObservableListener<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _ObservableListener(
-        observable: observable,
-        listener: listener,
-        child: child ?? const SizedBox()
+      observable: observable,
+      listener: listener,
+      child: child ?? const SizedBox(),
     );
   }
 }
@@ -32,7 +33,7 @@ class _ObservableListener<T> extends StatefulWidget {
     super.key,
     required this.observable,
     required this.listener,
-    required this.child
+    required this.child,
   });
 
   final Widget child;
@@ -44,7 +45,6 @@ class _ObservableListener<T> extends StatefulWidget {
 }
 
 class _ObservableListenerState<T> extends State<_ObservableListener<T>> {
-
   final List<StreamSubscription> rxSubs = [];
 
   @override

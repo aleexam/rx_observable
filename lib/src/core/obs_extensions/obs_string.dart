@@ -2,7 +2,6 @@ part of "../observable.dart";
 
 /// Observable class for `String` Type.
 class ObservableString extends Observable<String> implements Comparable<String>, Pattern {
-
   ObservableString(super.initialValue);
 
   @override
@@ -22,7 +21,8 @@ class ObservableString extends Observable<String> implements Comparable<String>,
 }
 
 /// Observable class for `String` Type.
-class ObservableNullableString extends Observable<String?> implements Comparable<String>, Pattern {
+class ObservableNullableString extends Observable<String?>
+    implements Comparable<String>, Pattern {
   ObservableNullableString(super.initialValue);
 
   @override

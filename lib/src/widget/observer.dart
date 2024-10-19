@@ -6,9 +6,10 @@ import 'package:rx_observable/src/core/observable.dart';
 class Observer<T> extends StatelessWidget {
   const Observer.context(this.observable, this.builder, {super.key});
 
-  factory Observer(IObservable<T> observable,
+  factory Observer(
+    IObservable<T> observable,
     Widget? Function(T v) builder, {
-    Key? key
+    Key? key,
   }) {
     return Observer.context(observable, (context, v) {
       return builder(v);
@@ -32,19 +33,22 @@ class Observer<T> extends StatelessWidget {
         stream: observable.stream,
         builder: (context, _) {
           return builder(context, observable.value) ?? const SizedBox.shrink();
-        }
-    );
+        });
   }
 }
 
 /// Same as [Observer] for 2 observables
 class Observer2<T, T2> extends StatelessWidget {
-  const Observer2.context(this.observable, this.observable2, this.builder, {super.key});
+  const Observer2.context(
+    this.observable,
+    this.observable2,
+    this.builder, {
+    super.key,
+  });
 
   factory Observer2(IObservable<T> observable, IObservable<T2> observable2,
-      Widget? Function(T v1, T2 v2) builder, {
-      Key? key
-    }) {
+      Widget? Function(T v1, T2 v2) builder,
+      {Key? key}) {
     return Observer2.context(observable, observable2, (context, v1, v2) {
       return builder(v1, v2);
     }, key: key);
@@ -66,35 +70,34 @@ class Observer2<T, T2> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<T>(
-      stream: observable.stream,
-      builder: (context, _) {
-        return StreamBuilder<T2>(
-            stream: observable2.stream,
-            builder: (context, _) {
-              return builder(context, observable.value, observable2.value) ?? const SizedBox.shrink();
-            }
-        );
-      }
-    );
+        stream: observable.stream,
+        builder: (context, _) {
+          return StreamBuilder<T2>(
+              stream: observable2.stream,
+              builder: (context, _) {
+                return builder(context, observable.value, observable2.value) ??
+                    const SizedBox.shrink();
+              });
+        });
   }
 }
 
 /// Same as [Observer] for 3 observables
 class Observer3<T, T2, T3> extends StatelessWidget {
   const Observer3.context(
-      this.observable,
-      this.observable2,
-      this.observable3,
-      this.builder, {
-        super.key
-      });
+    this.observable,
+    this.observable2,
+    this.observable3,
+    this.builder, {
+    super.key,
+  });
 
   factory Observer3(
-      IObservable<T> observable,
-      IObservable<T2> observable2,
-      IObservable<T3> observable3,
-      Widget? Function(T v1, T2 v2, T3 v3) builder, {
-      Key? key
+    IObservable<T> observable,
+    IObservable<T2> observable2,
+    IObservable<T3> observable3,
+    Widget? Function(T v1, T2 v2, T3 v3) builder, {
+    Key? key,
   }) {
     return Observer3.context(observable, observable2, observable3, (context, v1, v2, v3) {
       return builder(v1, v2, v3);
@@ -125,15 +128,13 @@ class Observer3<T, T2, T3> extends StatelessWidget {
               stream: observable2.stream,
               builder: (context, _) {
                 return StreamBuilder<T3>(
-                  stream: observable3.stream,
-                  builder: (context, _) {
-                    return builder(context, observable.value, observable2.value, observable3.value)
-                        ?? const SizedBox.shrink();
-                  }
-                );
-              }
-          );
-        }
-    );
+                    stream: observable3.stream,
+                    builder: (context, _) {
+                      return builder(context, observable.value, observable2.value,
+                              observable3.value) ??
+                          const SizedBox.shrink();
+                    });
+              });
+        });
   }
 }

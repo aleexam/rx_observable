@@ -1,7 +1,6 @@
 import '../observable.dart';
 
 extension ObservableMapExt<T, T2> on Observable<Map<T, T2>> {
-
   void put(T key, T2 newItem) {
     if (!notifyOnlyIfChanged || newItem != value[key]) {
       value[key] = newItem;
@@ -19,5 +18,4 @@ extension ObservableMapExt<T, T2> on Observable<Map<T, T2>> {
     value.removeWhere(test);
     refresh();
   }
-
 }

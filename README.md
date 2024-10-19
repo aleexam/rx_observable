@@ -1,5 +1,5 @@
 Simple reactive variables and widgets.
-Similar to Livedata/observable/mobx, but without code generation and without badcode.
+Similar to Livedata/observable/mobx, but without code generation and without complicated boilerplate.
 
 Ideal to use with MVVM like patterns.
 

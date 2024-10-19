@@ -1,7 +1,6 @@
 import '../observable.dart';
 
 extension ObservableSetExt<T> on Observable<Set<T>> {
-
   void addOne(T item) {
     value.add(item);
     refresh();
@@ -22,5 +21,4 @@ extension ObservableSetExt<T> on Observable<Set<T>> {
     value.removeWhere(test);
     refresh();
   }
-
 }

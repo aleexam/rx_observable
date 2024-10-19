@@ -1,7 +1,6 @@
 import '../observable.dart';
 
 extension ObservableListExt<T> on Observable<List<T>> {
-
   void addOne(T item) {
     value.add(item);
     refresh();
@@ -56,5 +55,4 @@ extension ObservableListExt<T> on Observable<List<T>> {
     value.removeWhere(test);
     refresh();
   }
-
 }

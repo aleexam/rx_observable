@@ -5,7 +5,6 @@ part of '../observable.dart';
 /// over.
 ///
 abstract class StreamWithValue<T> extends StreamView<T> implements StreamController<T> {
-
   /// Last saved stream value
   T _value;
 
@@ -22,8 +21,12 @@ abstract class StreamWithValue<T> extends StreamView<T> implements StreamControl
   ///
   /// To guarantee the contract of a [Subject], the [controller] must be
   /// a broadcast [StreamController] and the [stream] must also be a broadcast [Stream].
-  StreamWithValue(StreamController<T> controller, this.notifyOnlyIfChanged, this._value)
-      : _controller = controller, super(controller.stream);
+  StreamWithValue(
+    StreamController<T> controller,
+    this.notifyOnlyIfChanged,
+    this._value,
+  )   : _controller = controller,
+        super(controller.stream);
 
   @override
   StreamSink<T> get sink => _StreamSinkWrapper<T>(this);
@@ -78,8 +81,7 @@ abstract class StreamWithValue<T> extends StreamView<T> implements StreamControl
   @override
   void addError(Object error, [StackTrace? stackTrace]) {
     if (_isAddingStreamItems) {
-      throw StateError(
-          'You cannot add an error while items are being added from addStream');
+      throw StateError('You cannot add an error while items are being added from addStream');
     }
 
     _addError(error, stackTrace);
@@ -103,8 +105,7 @@ abstract class StreamWithValue<T> extends StreamView<T> implements StreamControl
   @override
   Future<void> addStream(Stream<T> source, {bool? cancelOnError}) {
     if (_isAddingStreamItems) {
-      throw StateError(
-          'You cannot add items while items are being added from addStream');
+      throw StateError('You cannot add items while items are being added from addStream');
     }
     _isAddingStreamItems = true;
 
@@ -120,9 +121,9 @@ abstract class StreamWithValue<T> extends StreamView<T> implements StreamControl
       _add,
       onError: identical(cancelOnError, true)
           ? (Object e, StackTrace s) {
-        _addError(e, s);
-        complete();
-      }
+              _addError(e, s);
+              complete();
+            }
           : _addError,
       onDone: complete,
       cancelOnError: cancelOnError,
@@ -134,22 +135,19 @@ abstract class StreamWithValue<T> extends StreamView<T> implements StreamControl
   @override
   void add(T event) {
     if (_isAddingStreamItems) {
-      throw StateError(
-          'You cannot add items while items are being added from addStream');
+      throw StateError('You cannot add items while items are being added from addStream');
     }
 
     if (!notifyOnlyIfChanged || event != _value) {
       _value = event;
       _add(event);
     }
-
   }
 
   /// Triggers stream to send current value again to force listeners
   void refresh() {
     if (_isAddingStreamItems) {
-      throw StateError(
-          'You cannot add items while items are being added from addStream');
+      throw StateError('You cannot add items while items are being added from addStream');
     }
 
     _add(_value);
@@ -193,7 +191,6 @@ abstract class StreamWithValue<T> extends StreamView<T> implements StreamControl
   /// or the last emitted error didn't have a stack trace,
   /// the returned value is `null`.
   StackTrace? get stackTrace;
-
 }
 
 class _StreamImpl<T> extends Stream<T> {
@@ -220,11 +217,11 @@ class _StreamImpl<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(
-      void Function(T event)? onData, {
-        Function? onError,
-        void Function()? onDone,
-        bool? cancelOnError,
-      }) =>
+    void Function(T event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) =>
       _subject.listen(
         onData,
         onError: onError,

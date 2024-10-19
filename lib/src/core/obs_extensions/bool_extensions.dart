@@ -1,4 +1,3 @@
-
 import '../observable.dart';
 
 extension ObservableBoolExt on Observable<bool> {

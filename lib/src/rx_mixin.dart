@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:rx_observable/src/core/obs_core_extensions.dart';
+
 import 'i_disposable.dart';
 
 abstract interface class IRegisterFieldsForDispose {
@@ -10,7 +12,6 @@ abstract interface class IRegisterFieldsForDispose {
 
 /// Mixin for simplified subscription/sink handling for classes that include streams subscriptions/sinks
 mixin RxSubsMixin implements IRegisterFieldsForDispose {
-
   final List<StreamSubscription> rxSubs = [];
   final List<EventSink> rxSinks = [];
   final List<IDisposable> disposables = [];
@@ -24,10 +25,10 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
     } else if (sinkOrSub is IDisposable) {
       regDisposable(sinkOrSub);
     } else {
-      throw UnimplementedError("Object with type ${sinkOrSub.runtimeType} with value ${sinkOrSub.toString()} "
+      throw UnimplementedError(
+          "Object with type ${sinkOrSub.runtimeType} with value ${sinkOrSub.toString()} "
           "is not supported for automatic register in RxSubsMixin. "
-          "Please close/dispose it manually in dispose method."
-      );
+          "Please close/dispose it manually in dispose method.");
     }
   }
 
