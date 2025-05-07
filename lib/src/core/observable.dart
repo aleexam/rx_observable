@@ -14,7 +14,7 @@ abstract interface class IObservableListenable<T> implements IDisposable {
   ObservableSubscription listen(void Function(T) listener, {bool fireImmediately = true});
 }
 
-abstract interface class IObservable<T> extends IObservableListenable
+abstract interface class IObservable<T> extends IObservableListenable<T>
     implements IDisposable, ValueListenable {
   /// Returns the last emitted value or initial value.
   @override
