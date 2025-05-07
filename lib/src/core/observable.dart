@@ -3,22 +3,25 @@ import 'package:flutter/foundation.dart';
 import '../i_cancelable.dart';
 import '../i_disposable.dart';
 
-part '../experimental/observable_context.dart';
-
+part '../experimental/compact_observer/tracking_context.dart';
 part 'obs_extensions/obs_num.dart';
-
 part 'obs_extensions/obs_string.dart';
-
 part 'observable_computed.dart';
-
 part 'rx_subscription.dart';
 
-abstract interface class IObservable<T> implements IDisposable, ValueListenable {
+abstract interface class IObservableListenable<T> implements IDisposable {
+  /// Custom stream-like listen with custom subscription
+  ObservableSubscription listen(void Function(T) listener, {bool fireImmediately = true});
+}
+
+abstract interface class IObservable<T> extends IObservableListenable
+    implements IDisposable, ValueListenable {
   /// Returns the last emitted value or initial value.
   @override
   T get value;
 
   /// Custom stream-like listen with custom subscription
+  @override
   ObservableSubscription listen(void Function(T) listener, {bool fireImmediately = true});
 }
 
@@ -60,6 +63,7 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservable<T> {
     if (ObsTrackingContext.current != null) {
       throw Exception('You cannot modify reactive value inside Observer builder');
     }
+
     /// Experimental end
 
     if (_value != newValue || !notifyOnlyIfChanged) {
@@ -70,7 +74,9 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservable<T> {
 
   @override
   T get value {
-    ObsTrackingContext.current?._register(this); /// Experimental
+    ObsTrackingContext.current?._register(this);
+
+    /// Experimental
     return _value;
   }
 

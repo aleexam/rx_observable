@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../core/observable.dart';
+import '../../core/observable.dart';
 
 @Deprecated("Experimental feature, probably better not to use yet")
 class Observe extends StatefulWidget {

@@ -1,4 +1,4 @@
-part of '../core/observable.dart';
+part of '../../core/observable.dart';
 
 @Deprecated("Experimental feature, probably better not to use yet")
 class ObsTrackingContext {

@@ -14,7 +14,7 @@ class ObservableListener<T> extends StatelessWidget {
   });
 
   final Widget? child;
-  final IObservable<T> observable;
+  final IObservableListenable<T> observable;
   final void Function(BuildContext context, T value) listener;
 
   @override
@@ -28,7 +28,7 @@ class ObservableListener<T> extends StatelessWidget {
 }
 
 class _ObservableListener<T> extends StatefulWidget {
-  final IObservable<T> observable;
+  final IObservableListenable<T> observable;
   final void Function(BuildContext context, T value) listener;
   final Widget child;
 
