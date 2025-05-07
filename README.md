@@ -1,5 +1,6 @@
 Simple reactive variables and widgets.
 Similar to Livedata/observable/mobx, but without code generation and without complicated boilerplate.
+Based on ChangeNotifier
 
 Ideal to use with MVVM like patterns.
 
@@ -44,7 +45,7 @@ Update value like this:
   text.value = "GoodBye";
 ```
 
-Listen like this:
+Listen like ChangeNotifier, or like this:
 
 ```dart
     text.listen((v) {
@@ -55,7 +56,7 @@ Listen like this:
 Dispose like this:
 
 ```dart
-  text.close();
+  text.dispose();
 ```
 
 ## Additional information
@@ -65,7 +66,7 @@ More examples:
 ```dart
 
     // Listen for 2 or 3 observables in Observer
-    Observer3.builder(
+    Observer3(
         observable: text,
         observable2: text2,
         observable3: text3,
@@ -161,6 +162,29 @@ Observer(vm.state, (vmState) {
       })
 
 ```
+
+## Experimental features
+Just wrap widget in Observe widget, and it automatically will listen all observables you used
+
+```dart
+
+    var title = "hello".obs;
+
+    ...
+  
+    return Scaffold(
+      appBar: AppBar(),
+      body: Column(
+        children: [
+          /// Use Observe widget without need to pass any value
+          Observe(() => Text(title.value)),
+        ],
+      ),
+    );
+```
+
+Important! Make sure to not update observables in widget build code, it will lead to endless loop.
+Also notice, that values used in conditions are not automatically registered, and you should mention them in predefinedObservables.
 
 ## Why is this better than mobX, BLoc, getX?
 

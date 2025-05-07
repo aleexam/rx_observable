@@ -19,7 +19,7 @@ class ObsTrackingContext {
 
   T track<T>(T Function() fn, void Function(Set<IObservable>) onTrackedVars) {
     if (_isTracking) {
-      throw Exception('Nested RxContext not allowed');
+      throw Exception('Nested ObsTrackingContext not allowed');
     }
     _isTracking = true;
     _stack.add(this);
