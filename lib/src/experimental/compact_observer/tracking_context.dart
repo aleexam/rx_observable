@@ -1,5 +1,6 @@
 part of '../../core/observable.dart';
 
+/// This needs for experimental [Observe] widget
 @Deprecated("Experimental feature, probably better not to use yet")
 class ObsTrackingContext {
   static final List<ObsTrackingContext> _stack = [];
@@ -8,6 +9,9 @@ class ObsTrackingContext {
 
   final Set<IObservable> _trackedVars = {};
   bool _isTracking = false;
+
+  ObsTrackingContext()
+      : assert(Observable.useExperimental == true, 'This experimental feature available only when useExperimental set true');
 
   void _register(IObservable notifier) {
     if (_isTracking) _trackedVars.add(notifier);

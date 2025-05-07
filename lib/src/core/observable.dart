@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-
 import '../i_cancelable.dart';
 import '../i_disposable.dart';
 
@@ -26,6 +25,11 @@ abstract interface class IObservable<T> extends IObservableListenable<T>
 }
 
 class Observable<T> extends ObservableReadOnly<T> {
+
+  /// Activate experimental features if true. Only use at your own risk
+  /// Activates usage of [Observe], [ObsTrackingContext], [ObservableStreamAdapter]. [StreamObservableAdapter]
+  static const bool useExperimental = false;
+
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
   /// [onListen], [onCancel], flag to handle events [sync] and
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
@@ -43,6 +47,7 @@ class Observable<T> extends ObservableReadOnly<T> {
 
 /// Class for observable value (notifier + current value).
 class ObservableReadOnly<T> extends ChangeNotifier implements IObservable<T> {
+
   /// If true, listeners will be notified if new value not equals to old value
   /// Default true
   bool notifyOnlyIfChanged;
@@ -60,10 +65,9 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservable<T> {
   /// Set and emit the new value.
   void _updateValue(T newValue) {
     /// Experimental start
-    if (ObsTrackingContext.current != null) {
+    if (Observable.useExperimental && ObsTrackingContext.current != null) {
       throw Exception('You cannot modify reactive value inside Observer builder');
     }
-
     /// Experimental end
 
     if (_value != newValue || !notifyOnlyIfChanged) {
@@ -74,9 +78,7 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservable<T> {
 
   @override
   T get value {
-    ObsTrackingContext.current?._register(this);
-
-    /// Experimental
+    if (Observable.useExperimental) ObsTrackingContext.current?._register(this); /// Experimental
     return _value;
   }
 
