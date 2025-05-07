@@ -1,69 +1,42 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:rx_observable/rx_observable.dart';
-import 'package:rx_observable/src/widget/listener.dart';
+import 'package:rx_observable/src/core/observable.dart';
 
-import '../core/obs_core_extensions.dart';
+class ObservableConsumer<T> extends StatefulWidget {
+  final IObservable<T> observable;
+  final void Function(BuildContext context, T value)? listener;
+  final Widget Function(BuildContext context, T value) builder;
 
-/// Widget that acts like [Observer] and [ObservableListener] together
-class ObservableConsumer<T> extends StatelessWidget {
   const ObservableConsumer({
     super.key,
     required this.observable,
-    required this.listener,
-    required this.child,
+    required this.builder,
+    this.listener,
   });
 
-  final Widget? child;
-  final Stream<T> observable;
-  final void Function(T value, BuildContext context) listener;
-
   @override
-  Widget build(BuildContext context) {
-    return _ObservableConsumer(
-      observable: observable,
-      listener: listener,
-      child: child ?? const SizedBox(),
-    );
-  }
+  State<ObservableConsumer<T>> createState() => _ObservableConsumerState<T>();
 }
 
-class _ObservableConsumer<T> extends StatefulWidget {
-  const _ObservableConsumer({
-    super.key,
-    required this.observable,
-    required this.listener,
-    required this.child,
-  });
-
-  final Widget child;
-  final Stream<T> observable;
-  final void Function(T value, BuildContext context) listener;
-
-  @override
-  State<_ObservableConsumer<T>> createState() => _ObservableConsumerState<T>();
-}
-
-class _ObservableConsumerState<T> extends State<_ObservableConsumer<T>> {
-  final List<StreamSubscription> rxSubs = [];
+class _ObservableConsumerState<T> extends State<ObservableConsumer<T>> {
+  late ObservableSubscription _sub;
 
   @override
   void initState() {
-    rxSubs.add(widget.observable.listen((T value) {
-      widget.listener(value, context);
-    }));
     super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.child;
+    _sub = widget.observable.listen((value) {
+      if (mounted) {
+        widget.listener?.call(context, value);
+        setState(() {});
+      }
+    }, fireImmediately: false);
   }
 
   @override
   void dispose() {
-    rxSubs.cancelAll();
+    _sub.cancel();
     super.dispose();
   }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context, widget.observable.value);
 }

@@ -1,16 +1,17 @@
 import 'dart:async';
 
+import 'package:rx_observable/src/i_cancelable.dart';
 import 'package:rx_observable/src/i_disposable.dart';
 
 import '../typedefs.dart';
-import 'observable.dart';
+import '../../src/core/observable.dart';
 
-export 'obs_extensions/bool_extensions.dart';
-export 'obs_extensions/obs_list_ext.dart';
-export 'obs_extensions/obs_map_ext.dart';
-export 'obs_extensions/obs_num_ext.dart';
-export 'obs_extensions/obs_set_ext.dart';
-export 'obs_extensions/obs_string_ext.dart';
+export '../../src/core/obs_extensions/bool_extensions.dart';
+export '../../src/core/obs_extensions/obs_list_ext.dart';
+export '../../src/core/obs_extensions/obs_map_ext.dart';
+export '../../src/core/obs_extensions/obs_num_ext.dart';
+export '../../src/core/obs_extensions/obs_set_ext.dart';
+export '../../src/core/obs_extensions/obs_string_ext.dart';
 
 extension StringExtension on String {
   /// Returns a `ObservableString` with [this] `String` as initial value.
@@ -89,8 +90,16 @@ extension CloseDisposables on List<IDisposable> {
   }
 }
 
+extension CloseCancelables on List<ICancelable> {
+  cancelAll() {
+    for (var cancelable in this) {
+      cancelable.cancel();
+    }
+  }
+}
+
 extension ComputedFunction<T> on T Function() {
-  ObservableComputed computed(List<Stream> streams) {
-    return ObservableComputed<T>(streams, this);
+  ObservableComputed track(List<IObservable> observables) {
+    return ObservableComputed<T>(this, observables);
   }
 }

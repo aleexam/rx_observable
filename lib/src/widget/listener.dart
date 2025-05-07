@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:rx_observable/rx_observable.dart';
 
-import '../core/obs_core_extensions.dart';
+import '../core/observable.dart';
 
 /// Widget that listen to an [observable] or [Stream] and call [listener] function.
 class ObservableListener<T> extends StatelessWidget {
@@ -15,8 +14,8 @@ class ObservableListener<T> extends StatelessWidget {
   });
 
   final Widget? child;
-  final Stream<T> observable;
-  final void Function(T value, BuildContext context) listener;
+  final IObservable<T> observable;
+  final void Function(BuildContext context, T value) listener;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +28,10 @@ class ObservableListener<T> extends StatelessWidget {
 }
 
 class _ObservableListener<T> extends StatefulWidget {
+  final IObservable<T> observable;
+  final void Function(BuildContext context, T value) listener;
+  final Widget child;
+
   const _ObservableListener({
     super.key,
     required this.observable,
@@ -36,33 +39,27 @@ class _ObservableListener<T> extends StatefulWidget {
     required this.child,
   });
 
-  final Widget child;
-  final Stream<T> observable;
-  final void Function(T value, BuildContext context) listener;
-
   @override
   State<_ObservableListener<T>> createState() => _ObservableListenerState<T>();
 }
 
 class _ObservableListenerState<T> extends State<_ObservableListener<T>> {
-  final List<StreamSubscription> rxSubs = [];
+  late ObservableSubscription _sub;
 
   @override
   void initState() {
-    rxSubs.add(widget.observable.listen((T value) {
-      widget.listener(value, context);
-    }));
     super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.child;
+    _sub = widget.observable.listen((value) {
+      widget.listener(context, value);
+    });
   }
 
   @override
   void dispose() {
-    rxSubs.cancelAll();
+    _sub.cancel();
     super.dispose();
   }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

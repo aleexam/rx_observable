@@ -1,20 +1,25 @@
-import 'dart:async';
+import 'package:flutter/foundation.dart';
 
-import '../../rx_observable.dart';
-import 'async/error_and_stacktrace.dart';
+import '../i_cancelable.dart';
+import '../i_disposable.dart';
 
-part 'async/stream_with_value.dart';
+part '../experimental/observable_context.dart';
+
 part 'obs_extensions/obs_num.dart';
+
 part 'obs_extensions/obs_string.dart';
+
 part 'observable_computed.dart';
 
-abstract interface class IObservable<T>
-    implements StreamSink<T>, Stream<T>, IDisposable {
-  /// Returns underlying stream
-  StreamWithValue<T> get stream;
+part 'rx_subscription.dart';
 
+abstract interface class IObservable<T> implements IDisposable, ValueListenable {
   /// Returns the last emitted value or initial value.
+  @override
   T get value;
+
+  /// Custom stream-like listen with custom subscription
+  ObservableSubscription listen(void Function(T) listener, {bool fireImmediately = true});
 }
 
 class Observable<T> extends ObservableReadOnly<T> {
@@ -26,78 +31,84 @@ class Observable<T> extends ObservableReadOnly<T> {
   /// See also [BehaviorSubject], and [StreamController.broadcast]
   Observable(
     super.initialValue, {
-    super.onListen,
-    super.onCancel,
-    super.sync = false,
-    super.notifyOnlyIfChanged = true,
+    super.notifyOnlyIfChanged,
   });
 
   /// Set and emit the new value.
-  set value(T newValue) => add(newValue);
+  set value(T newValue) => _updateValue(newValue);
 }
 
-/// Class for observable value (stream + current value). Based on [BehaviorSubject]
-class ObservableReadOnly<T> extends StreamWithValue<T>
-    implements IObservable<T> {
-  /// Constructs a [ObservableReadOnly], pass initial value, handlers for
-  /// [onListen], [onCancel], flag to handle events [sync] and
+/// Class for observable value (notifier + current value).
+class ObservableReadOnly<T> extends ChangeNotifier implements IObservable<T> {
+  /// If true, listeners will be notified if new value not equals to old value
+  /// Default true
+  bool notifyOnlyIfChanged;
+
+  /// Constructs a [ObservableReadOnly], pass initial value,
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
   /// if new value not equals to old value
-  ///
-  /// See also [BehaviorSubject], and [StreamController.broadcast]
-  ObservableReadOnly(
-    T initialValue, {
-    void Function()? onListen,
-    void Function()? onCancel,
-    bool sync = false,
-    bool notifyOnlyIfChanged = false,
-  }) : super(
-          StreamController<T>.broadcast(
-            onListen: onListen,
-            onCancel: onCancel,
-            sync: sync,
-          ),
-          notifyOnlyIfChanged,
-          initialValue,
-        );
+  ObservableReadOnly(T initialValue, {this.notifyOnlyIfChanged = true}) {
+    _value = initialValue;
+  }
 
-  @override
-  void onAdd(T event) {
-    _value = event;
+  late T _value;
+  final _customListeners = <void Function(T)>[];
+
+  /// Set and emit the new value.
+  void _updateValue(T newValue) {
+    /// Experimental start
+    if (ObsTrackingContext.current != null) {
+      throw Exception('You cannot modify reactive value inside Observer builder');
+    }
+    /// Experimental end
+
+    if (_value != newValue || !notifyOnlyIfChanged) {
+      _value = newValue;
+      notifyListeners();
+    }
   }
 
   @override
-  void onAddError(Object error, [StackTrace? stackTrace]) =>
-      setError(error, stackTrace);
-
-  @override
-  StreamWithValue<T> get stream => this;
-
-  T call() {
-    return value;
+  T get value {
+    ObsTrackingContext.current?._register(this); /// Experimental
+    return _value;
   }
 
   @override
-  T get value => _value;
-
-  @override
-  bool get hasError => errorAndStackTrace != null;
-
-  @override
-  Object? get errorOrNull => errorAndStackTrace?.error;
-
-  ErrorAndStackTrace? errorAndStackTrace;
-
-  void setError(Object error, StackTrace? stackTrace) {
-    errorAndStackTrace = ErrorAndStackTrace(error, stackTrace);
+  ObservableSubscription listen(void Function(T) listener, {bool fireImmediately = false}) {
+    _customListeners.add(listener);
+    if (fireImmediately) listener(_value);
+    return ObservableSubscription(() => _customListeners.remove(listener));
   }
 
   @override
-  StackTrace? get stackTrace => errorAndStackTrace?.stackTrace;
+  void notifyListeners() {
+    for (final listener in List.of(_customListeners)) {
+      try {
+        listener(_value);
+      } catch (exception, stack) {
+        FlutterError.reportError(FlutterErrorDetails(
+          exception: exception,
+          stack: stack,
+          library: 'rx_observable',
+          context: ErrorDescription(
+              'while dispatching rx_observable notifications for $runtimeType'),
+          informationCollector: () => <DiagnosticsNode>[
+            DiagnosticsProperty<ChangeNotifier>(
+              'The $runtimeType sending rx_observable notification was',
+              this,
+              style: DiagnosticsTreeStyle.errorProperty,
+            ),
+          ],
+        ));
+      }
+    }
+    super.notifyListeners(); // this triggers Flutter widgets like Observer, etc.
+  }
 
-  /// Same as close, for [IDisposable] compatibility
   @override
   void dispose() {
-    close();
+    _customListeners.clear();
+    super.dispose();
   }
 }

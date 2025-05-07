@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:rx_observable/src/core/obs_core_extensions.dart';
+import 'package:rx_observable/src/i_cancelable.dart';
 
 import 'i_disposable.dart';
 
@@ -15,6 +16,7 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
   final List<StreamSubscription> rxSubs = [];
   final List<EventSink> rxSinks = [];
   final List<IDisposable> disposables = [];
+  final List<ICancelable> cancelables = [];
 
   /// Reg [StreamSubscription] or [EventSink] or [IDisposable]
   reg(dynamic sinkOrSub) {
@@ -24,6 +26,8 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
       regSub(sinkOrSub);
     } else if (sinkOrSub is IDisposable) {
       regDisposable(sinkOrSub);
+    } else if (sinkOrSub is ICancelable) {
+      regCancelable(sinkOrSub);
     } else {
       throw UnimplementedError(
           "Object with type ${sinkOrSub.runtimeType} with value ${sinkOrSub.toString()} "
@@ -60,7 +64,7 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
   }
 
   /// Register [IDisposable] that require close when this class will be destroyed
-  regDisposable(IDisposable disposable) {
+  regDisposable(IDisposable disposable) async {
     disposables.add(disposable);
   }
 
@@ -69,11 +73,22 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
     disposables.addAll(disposableList);
   }
 
+  /// Register [ICancelable] that require close when this class will be destroyed
+  regCancelable(ICancelable cancelable) async {
+    cancelables.add(cancelable);
+  }
+
+  /// Register list of [ICancelable] that require close when this class will be destroyed
+  regCancelables(List<ICancelable> cancelable) async {
+    cancelables.addAll(cancelable);
+  }
+
   /// Dispose method that automatically close all sinks and cancel all subscriptions
   @mustCallSuper
   void dispose() {
     rxSubs.cancelAll();
     rxSinks.closeAll();
     disposables.disposeAll();
+    cancelables.cancelAll();
   }
 }

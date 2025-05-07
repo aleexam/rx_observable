@@ -1,142 +1,133 @@
 import 'package:flutter/material.dart';
-import 'package:rx_observable/src/core/observable.dart';
 
-/// Widget that listen to an [observable], build [builder] when its changed
-/// and provides [observable] value to builder.
-class Observer<T> extends StatelessWidget {
-  const Observer.context(this.observable, this.builder, {super.key});
+import '../core/observable.dart';
+
+class Observer<T> extends StatefulWidget {
+  final IObservable<T> observable;
+  final Widget Function(BuildContext, T) builder;
 
   factory Observer(
     IObservable<T> observable,
-    Widget? Function(T v) builder, {
+    Widget Function(T v) builder, {
     Key? key,
   }) {
-    return Observer.context(observable, (context, v) {
-      return builder(v);
+    return Observer.context(observable, (ctx, val) {
+      return builder(val);
     }, key: key);
   }
 
   factory Observer.builder({
     Key? key,
     required IObservable<T> observable,
-    required Widget? Function(BuildContext context, T v) builder,
+    required Widget Function(BuildContext ctx, T val) builder,
   }) {
     return Observer.context(observable, builder, key: key);
   }
 
-  final IObservable<T> observable;
-  final Widget? Function(BuildContext context, T v) builder;
+  const Observer.context(this.observable, this.builder, {super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<T>(
-        stream: observable.stream,
-        builder: (context, _) {
-          return builder(context, observable.value) ?? const SizedBox.shrink();
-        });
-  }
+  State<Observer<T>> createState() => _ObserverState<T>();
 }
 
-/// Same as [Observer] for 2 observables
-class Observer2<T, T2> extends StatelessWidget {
-  const Observer2.context(
-    this.observable,
-    this.observable2,
-    this.builder, {
-    super.key,
-  });
-
-  factory Observer2(IObservable<T> observable, IObservable<T2> observable2,
-      Widget? Function(T v1, T2 v2) builder,
-      {Key? key}) {
-    return Observer2.context(observable, observable2, (context, v1, v2) {
-      return builder(v1, v2);
-    }, key: key);
-  }
-
-  factory Observer2.builder({
-    Key? key,
-    required IObservable<T> observable,
-    required IObservable<T2> observable2,
-    required Widget? Function(BuildContext context, T v1, T2 v2) builder,
-  }) {
-    return Observer2.context(observable, observable2, builder, key: key);
-  }
-
-  final IObservable<T> observable;
-  final IObservable<T2> observable2;
-  final Widget? Function(BuildContext, T v1, T2 v2) builder;
+class _ObserverState<T> extends State<Observer<T>> {
+  late ObservableSubscription _sub;
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<T>(
-        stream: observable.stream,
-        builder: (context, _) {
-          return StreamBuilder<T2>(
-              stream: observable2.stream,
-              builder: (context, _) {
-                return builder(context, observable.value, observable2.value) ??
-                    const SizedBox.shrink();
-              });
-        });
+  void initState() {
+    super.initState();
+    _sub = widget.observable.listen((_) => setState(() {}), fireImmediately: false);
   }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext ctx) => widget.builder(ctx, widget.observable.value);
 }
 
-/// Same as [Observer] for 3 observables
-class Observer3<T, T2, T3> extends StatelessWidget {
-  const Observer3.context(
-    this.observable,
-    this.observable2,
-    this.observable3,
-    this.builder, {
+class Observer2<A, B> extends StatefulWidget {
+  final IObservable<A> observable;
+  final IObservable<B> observable2;
+  final Widget Function(BuildContext context, A a, B b) builder;
+
+  const Observer2({
     super.key,
+    required this.observable,
+    required this.observable2,
+    required this.builder,
   });
 
-  factory Observer3(
-    IObservable<T> observable,
-    IObservable<T2> observable2,
-    IObservable<T3> observable3,
-    Widget? Function(T v1, T2 v2, T3 v3) builder, {
-    Key? key,
-  }) {
-    return Observer3.context(observable, observable2, observable3,
-        (context, v1, v2, v3) {
-      return builder(v1, v2, v3);
-    }, key: key);
-  }
+  @override
+  State<Observer2<A, B>> createState() => _Observer2State<A, B>();
+}
 
-  factory Observer3.builder({
-    Key? key,
-    required IObservable<T> observable,
-    required IObservable<T2> observable2,
-    required IObservable<T3> observable3,
-    required Widget? Function(BuildContext context, T v1, T2 v2, T3 v3) builder,
-  }) {
-    return Observer3.context(observable, observable2, observable3, builder,
-        key: key);
-  }
-
-  final IObservable<T> observable;
-  final IObservable<T2> observable2;
-  final IObservable<T3> observable3;
-  final Widget? Function(BuildContext, T v1, T2 v2, T3 v3) builder;
+class _Observer2State<A, B> extends State<Observer2<A, B>> {
+  late ObservableSubscription _subA;
+  late ObservableSubscription _subB;
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<T>(
-        stream: observable.stream,
-        builder: (context, _) {
-          return StreamBuilder<T2>(
-              stream: observable2.stream,
-              builder: (context, _) {
-                return StreamBuilder<T3>(
-                    stream: observable3.stream,
-                    builder: (context, _) {
-                      return builder(context, observable.value,
-                              observable2.value, observable3.value) ??
-                          const SizedBox.shrink();
-                    });
-              });
-        });
+  void initState() {
+    super.initState();
+    _subA = widget.observable.listen((_) => setState(() {}), fireImmediately: false);
+    _subB = widget.observable2.listen((_) => setState(() {}), fireImmediately: false);
   }
+
+  @override
+  void dispose() {
+    _subA.cancel();
+    _subB.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext ctx) =>
+      widget.builder(ctx, widget.observable.value, widget.observable2.value);
+}
+
+class Observer3<A, B, C> extends StatefulWidget {
+  final IObservable<A> observable;
+  final IObservable<B> observable2;
+  final IObservable<C> observable3;
+  final Widget Function(BuildContext context, A a, B b, C c) builder;
+
+  const Observer3({
+    super.key,
+    required this.observable,
+    required this.observable2,
+    required this.observable3,
+    required this.builder,
+  });
+
+  @override
+  State<Observer3<A, B, C>> createState() => _Observer3State<A, B, C>();
+}
+
+class _Observer3State<A, B, C> extends State<Observer3<A, B, C>> {
+  late ObservableSubscription _subA;
+  late ObservableSubscription _subB;
+  late ObservableSubscription _subC;
+
+  @override
+  void initState() {
+    super.initState();
+    _subA = widget.observable.listen((_) => setState(() {}), fireImmediately: false);
+    _subB = widget.observable2.listen((_) => setState(() {}), fireImmediately: false);
+    _subC = widget.observable3.listen((_) => setState(() {}), fireImmediately: false);
+  }
+
+  @override
+  void dispose() {
+    _subA.cancel();
+    _subB.cancel();
+    _subC.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext ctx) => widget.builder(
+      ctx, widget.observable.value, widget.observable2.value, widget.observable3.value);
 }

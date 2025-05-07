@@ -31,8 +31,8 @@ class ExampleScreenState extends State<ExampleScreen> {
 
   @override
   void dispose() {
-    text.close();
-    text2.close();
+    text.dispose();
+    text2.dispose();
     super.dispose();
   }
 
@@ -54,7 +54,7 @@ class ExampleScreenState extends State<ExampleScreen> {
               }
           ),
           /// Listen 2 or 3 observables
-          Observer2.builder(
+          Observer2(
               observable: text,
               observable2: text2,
               builder: (context, v1, v2) {

@@ -3,56 +3,56 @@ import '../observable.dart';
 extension ObservableListExt<T> on Observable<List<T>> {
   void addOne(T item) {
     value.add(item);
-    refresh();
+    notifyListeners();
   }
 
   void addAll(List<T> items) {
     value.addAll(items);
-    refresh();
+    notifyListeners();
   }
 
   void insert(int index, T item) {
     value.insert(index, item);
-    refresh();
+    notifyListeners();
   }
 
   void insertAll(int index, List<T> items) {
     value.insertAll(index, items);
-    refresh();
+    notifyListeners();
   }
 
   void update(int index, T newItem) {
     if (!notifyOnlyIfChanged || newItem != value[index]) {
       value[index] = newItem;
-      refresh();
+      notifyListeners();
     }
   }
 
   bool remove(T item) {
     var result = value.remove(item);
-    refresh();
+    notifyListeners();
     return result;
   }
 
   T removeAt(int index) {
     var result = value.removeAt(index);
-    refresh();
+    notifyListeners();
     return result;
   }
 
   T removeLast() {
     var result = value.removeLast();
-    refresh();
+    notifyListeners();
     return result;
   }
 
   void removeRange(int start, int end) {
     value.removeRange(start, end);
-    refresh();
+    notifyListeners();
   }
 
   void removeWhere(bool Function(T) test) {
     value.removeWhere(test);
-    refresh();
+    notifyListeners();
   }
 }

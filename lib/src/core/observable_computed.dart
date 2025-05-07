@@ -1,29 +1,27 @@
-part of "observable.dart";
+part of 'observable.dart';
 
-/// Listens few Streams
-/// and invoke some function when one of them triggered
-class ObservableComputed<T> extends Observable<T> with RxSubsMixin {
-  final T Function() _computer;
+class ObservableComputed<T> extends ObservableReadOnly<T> {
+  final T Function() _compute;
+  final List<ObservableSubscription> _subscriptions = [];
 
   ObservableComputed(
-    List<Stream> streams,
-    this._computer, {
-    notifyOnlyIfChanged = false,
-  }) : super(_computer(), notifyOnlyIfChanged: notifyOnlyIfChanged) {
-    value = _computer();
-    for (var stream in streams) {
-      regSub(stream.listen((_) {
-        value = _computer();
-      }));
+    this._compute,
+    List<IObservable> observables,
+  ) : super(_compute()) {
+    for (final observable in observables) {
+      final sub = observable.listen((_) {
+        super._value = _compute();
+        notifyListeners();
+      }, fireImmediately: false);
+      _subscriptions.add(sub);
     }
   }
 
   @override
-  Future close() {
-    dispose();
-    return super.close();
+  void dispose() {
+    for (final sub in _subscriptions) {
+      sub.cancel();
+    }
+    super.dispose();
   }
-
-  @override
-  void registerFieldsForDispose() {}
 }
