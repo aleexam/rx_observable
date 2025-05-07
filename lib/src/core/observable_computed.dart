@@ -12,7 +12,7 @@ class ObservableComputed<T> extends ObservableReadOnly<T> {
       final sub = observable.listen((_) {
         super._value = _compute();
         notifyListeners();
-      }, fireImmediately: false);
+      });
       _subscriptions.add(sub);
     }
   }

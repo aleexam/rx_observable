@@ -36,7 +36,7 @@ class _ObserverState<T> extends State<Observer<T>> {
   @override
   void initState() {
     super.initState();
-    _sub = widget.observable.listen((_) => setState(() {}), fireImmediately: false);
+    _sub = widget.observable.listen((_) => setState(() {}));
   }
 
   @override
@@ -72,8 +72,8 @@ class _Observer2State<A, B> extends State<Observer2<A, B>> {
   @override
   void initState() {
     super.initState();
-    _subA = widget.observable.listen((_) => setState(() {}), fireImmediately: false);
-    _subB = widget.observable2.listen((_) => setState(() {}), fireImmediately: false);
+    _subA = widget.observable.listen((_) => setState(() {}));
+    _subB = widget.observable2.listen((_) => setState(() {}));
   }
 
   @override
@@ -114,9 +114,9 @@ class _Observer3State<A, B, C> extends State<Observer3<A, B, C>> {
   @override
   void initState() {
     super.initState();
-    _subA = widget.observable.listen((_) => setState(() {}), fireImmediately: false);
-    _subB = widget.observable2.listen((_) => setState(() {}), fireImmediately: false);
-    _subC = widget.observable3.listen((_) => setState(() {}), fireImmediately: false);
+    _subA = widget.observable.listen((_) => setState(() {}));
+    _subB = widget.observable2.listen((_) => setState(() {}));
+    _subC = widget.observable3.listen((_) => setState(() {}));
   }
 
   @override

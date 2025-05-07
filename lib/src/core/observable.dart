@@ -10,7 +10,7 @@ part 'rx_subscription.dart';
 
 abstract interface class IObservableListenable<T> implements IDisposable {
   /// Custom stream-like listen with custom subscription
-  ObservableSubscription listen(void Function(T) listener, {bool fireImmediately = true});
+  ObservableSubscription listen(void Function(T) listener, {bool fireImmediately = false});
 }
 
 abstract interface class IObservable<T> extends IObservableListenable<T>
@@ -21,14 +21,14 @@ abstract interface class IObservable<T> extends IObservableListenable<T>
 
   /// Custom stream-like listen with custom subscription
   @override
-  ObservableSubscription listen(void Function(T) listener, {bool fireImmediately = true});
+  ObservableSubscription listen(void Function(T) listener, {bool fireImmediately = false});
 }
 
 class Observable<T> extends ObservableReadOnly<T> {
 
   /// Activate experimental features if true. Only use at your own risk
   /// Activates usage of [Observe], [ObsTrackingContext], [ObservableStreamAdapter]. [StreamObservableAdapter]
-  static const bool useExperimental = false;
+  static bool useExperimental = false;
 
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
   /// [onListen], [onCancel], flag to handle events [sync] and

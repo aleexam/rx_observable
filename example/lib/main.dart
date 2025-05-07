@@ -15,7 +15,15 @@ void main() {
   var test5 = ObservableInt(25);
   var test6 = ObservableReadOnly(25); /// You can only read this value
 
-  /// No need to dispose, if no listeners attached
+  test1.dispose();
+  test2.dispose();
+  test3.dispose();
+  test4.dispose();
+  test5.dispose();
+  test6.dispose();
+
+  /// Actually no need to dispose, if no listeners attached.
+  /// Observable acts just like ChangeNotifier
 
   runApp(const ExampleApp());
 }
