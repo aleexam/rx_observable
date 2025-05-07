@@ -1,7 +1,13 @@
 library rx_observable;
 
-export 'package:rx_observable/src/core/obs_core_extensions.dart';
-export 'package:rx_observable/src/core/observable.dart';
-export 'package:rx_observable/src/i_disposable.dart';
-export 'package:rx_observable/src/rx_mixin.dart';
-export 'package:rx_observable/src/typedefs.dart';
+export 'src/core/obs_core_extensions.dart';
+export 'src/core/observable.dart';
+export 'src/i_disposable.dart';
+export 'src/rx_mixin.dart';
+export 'src/typedefs.dart';
+
+/// Experimental
+export 'src/experimental/compact_observer/compact_observer.dart';
+export 'src/experimental/stream_adapters/from_stream_adapter.dart';
+export 'src/experimental/stream_adapters/to_stream_adapter.dart';
+export 'src/experimental/experimental_extensions.dart';
