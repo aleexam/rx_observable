@@ -9,3 +9,6 @@
 ## 0.5.6
 
 * Formatting fixed again
+
+## 0.6.0
+* Migrated from stream based solution to ChangeNotifier
