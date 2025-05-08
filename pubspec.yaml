@@ -1,6 +1,6 @@
 name: rx_observable
 description: "Simple reactive variables and widgets. Ideal to use with MVVM like patterns."
-version: 0.5.6
+version: 0.6.0
 homepage: https://github.com/aleexam/rx_observable
 issue_tracker: https://github.com/aleexam/rx_observable/issues
 
