@@ -1,25 +1,23 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rx_observable/src/core/obs_core_extensions.dart';
 import 'package:rx_observable/src/i_cancelable.dart';
 
 import 'i_disposable.dart';
 
-abstract interface class IRegisterFieldsForDispose {
-  /// Do not forget to register all async fields that must be closed/cancelled
-  void registerFieldsForDispose();
-}
+/// Mixin for simplified subscription/sink handling for classes that include observables, streams subscriptions/sinks
+mixin RxSubsMixin {
+  final List<StreamSubscription> _rxSubs = [];
+  final List<EventSink> _rxSinks = [];
+  final List<IDisposable> _disposables = [];
+  final List<ICancelable> _cancelables = [];
 
-/// Mixin for simplified subscription/sink handling for classes that include streams subscriptions/sinks
-mixin RxSubsMixin implements IRegisterFieldsForDispose {
-  final List<StreamSubscription> rxSubs = [];
-  final List<EventSink> rxSinks = [];
-  final List<IDisposable> disposables = [];
-  final List<ICancelable> cancelables = [];
-
-  /// Reg [StreamSubscription] or [EventSink] or [IDisposable]
-  reg(dynamic sinkOrSub) {
+  /// Reg [IDisposable] or [ICancelable] or [StreamSubscription] or [EventSink]
+  void reg(dynamic sinkOrSub) {
     if (sinkOrSub is EventSink) {
       regSink(sinkOrSub);
     } else if (sinkOrSub is StreamSubscription) {
@@ -37,58 +35,77 @@ mixin RxSubsMixin implements IRegisterFieldsForDispose {
   }
 
   /// Reg list of [StreamSubscription] or [EventSink] or [IDisposable]
-  regs(List<dynamic> sinksOrSubs) {
+  void regs(List<dynamic> sinksOrSubs) {
     for (var sinkOrSub in sinksOrSubs) {
       reg(sinkOrSub);
     }
   }
 
   /// Register object that require close when this class will be destroyed
-  regSink(EventSink sink) {
-    rxSinks.add(sink);
+  void regSink(EventSink sink) {
+    _rxSinks.add(sink);
   }
 
   /// Register list of objects that require close when this class will be destroyed
-  regSinks(List<EventSink> sinks) {
-    rxSinks.addAll(sinks);
+  void regSinks(List<EventSink> sinks) {
+    for (var item in sinks) {
+      regSink(item);
+    }
   }
 
   /// Register subscription that require close when this class will be destroyed
-  regSub(StreamSubscription sub) {
-    rxSubs.add(sub);
+  void regSub(StreamSubscription sub) {
+    if (!_rxSubs.contains(sub)) {
+      _rxSubs.add(sub);
+    }
   }
 
   /// Register list of subscriptions that require close when this class will be destroyed
-  regSubs(List<StreamSubscription> subs) {
-    rxSubs.addAll(subs);
+  void regSubs(List<StreamSubscription> subs) {
+    for (var item in subs) {
+      regSub(item);
+    }
   }
 
   /// Register [IDisposable] that require close when this class will be destroyed
-  regDisposable(IDisposable disposable) async {
-    disposables.add(disposable);
+  void regDisposable(IDisposable disposable) {
+    if (!_disposables.contains(disposable)) {
+      _disposables.add(disposable);
+    }
   }
 
   /// Register list of [IDisposable] that require close when this class will be destroyed
-  regDisposables(List<IDisposable> disposableList) {
-    disposables.addAll(disposableList);
+  void regDisposables(List<IDisposable> disposableList) {
+    for (var item in disposableList) {
+      regDisposable(item);
+    }
   }
 
   /// Register [ICancelable] that require close when this class will be destroyed
-  regCancelable(ICancelable cancelable) async {
-    cancelables.add(cancelable);
+  void regCancelable(ICancelable cancelable) {
+    if (!_cancelables.contains(cancelable)) {
+      _cancelables.add(cancelable);
+    }
   }
 
   /// Register list of [ICancelable] that require close when this class will be destroyed
-  regCancelables(List<ICancelable> cancelable) async {
-    cancelables.addAll(cancelable);
+  void regCancelables(List<ICancelable> cancelableList) {
+    for (var item in cancelableList) {
+      regCancelable(item);
+    }
   }
 
   /// Dispose method that automatically close all sinks and cancel all subscriptions
   @mustCallSuper
   void dispose() {
-    rxSubs.cancelAll();
-    rxSinks.closeAll();
-    disposables.disposeAll();
-    cancelables.cancelAll();
+    _rxSubs.cancelAll();
+    _rxSinks.closeAll();
+    _disposables.disposeAll();
+    _cancelables.cancelAll();
+    if (_rxSubs.isEmpty && _rxSinks.isEmpty && _disposables.isEmpty && _cancelables.isEmpty ) {
+      if (kDebugMode) {
+        print('No fields registered before dispose in $runtimeType.');
+      }
+    }
   }
 }

@@ -48,18 +48,21 @@ class Observable<T> extends ObservableReadOnly<T> {
 /// Class for observable value (notifier + current value).
 class ObservableReadOnly<T> extends ChangeNotifier implements IObservable<T> {
 
-  /// If true, listeners will be notified if new value not equals to old value
-  /// Default true
-  bool notifyOnlyIfChanged;
-
   /// Constructs a [ObservableReadOnly], pass initial value,
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
   /// if new value not equals to old value
-  ObservableReadOnly(T initialValue, {this.notifyOnlyIfChanged = true}) {
+  ObservableReadOnly(T initialValue, {bool notifyOnlyIfChanged = true}) {
     _value = initialValue;
+    _notifyOnlyIfChanged = notifyOnlyIfChanged;
   }
 
   late T _value;
+
+  /// If true, listeners will be notified if new value not equals to old value
+  /// Default true
+  late bool _notifyOnlyIfChanged;
+  bool get notifyOnlyIfChanged => _notifyOnlyIfChanged;
+
   final _customListeners = <void Function(T)>[];
 
   /// Set and emit the new value.
@@ -70,7 +73,7 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservable<T> {
     }
     /// Experimental end
 
-    if (_value != newValue || !notifyOnlyIfChanged) {
+    if (_value != newValue || !_notifyOnlyIfChanged) {
       _value = newValue;
       notifyListeners();
     }
