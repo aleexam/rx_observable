@@ -2,7 +2,6 @@
 
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rx_observable/src/core/obs_core_extensions.dart';
 import 'package:rx_observable/src/i_cancelable.dart';
