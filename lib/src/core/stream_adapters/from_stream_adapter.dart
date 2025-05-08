@@ -3,13 +3,11 @@ import 'dart:async';
 import '../../../rx_observable.dart';
 
 /// Adapter that wraps a Stream<T> and exposes IObservableListenable<T>
-@Deprecated("Experimental feature, not tested yet")
 class StreamObservableAdapter<T> implements IObservableListenable<T> {
   final Stream<T> _stream;
   StreamSubscription<T>? _subscription;
 
-  StreamObservableAdapter(this._stream)
-      : assert(Observable.useExperimental == true, 'This experimental feature available only when useExperimental set true');
+  StreamObservableAdapter(this._stream);
 
   @override
   ObservableSubscription listen(void Function(T) listener, {bool fireImmediately = false}) {

@@ -1,4 +1,4 @@
-part of 'observable.dart';
+part of '../observable.dart';
 
 class ObservableComputed<T> extends ObservableReadOnly<T> {
   final T Function() _compute;

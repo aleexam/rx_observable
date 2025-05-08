@@ -1,4 +1,4 @@
-part of 'observable.dart';
+part of '../observable.dart';
 
 class ObservableGroup extends IObservableListenable<void> {
   final List<IObservableListenable> _observables;
@@ -10,8 +10,7 @@ class ObservableGroup extends IObservableListenable<void> {
   ObservableGroup(this._observables) {
     _subscriptions.addAll(_observables.map((rx) {
       return rx.listen(
-            (_) => _notifyListeners(),
-        fireImmediately: false,
+            (_) => _notifyListeners()
       );
     }));
   }

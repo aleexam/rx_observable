@@ -1,4 +1,4 @@
-part of "../observable.dart";
+import '../observable.dart';
 
 /// Observable class for `String` Type.
 class ObservableString extends Observable<String>

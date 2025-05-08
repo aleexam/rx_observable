@@ -1,4 +1,5 @@
-part of "../observable.dart";
+import '../observable.dart';
+
 
 class ObservableNum extends Observable<num> {
   ObservableNum(super.initialValue);

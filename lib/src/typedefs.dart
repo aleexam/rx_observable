@@ -1,9 +1,14 @@
+import 'core/obs_extensions/obs_num.dart';
+import 'core/obs_extensions/obs_string.dart';
 import 'core/observable.dart';
 import '../widgets.dart';
 
 typedef Obs<T> = Observable<T>;
+typedef ObsA<T> = ObservableAsync<T>;
 typedef ObservableRead<T> = ObservableReadOnly<T>;
+typedef ObservableReadA<T> = ObservableAsyncReadOnly<T>;
 typedef ObsRead<T> = ObservableReadOnly<T>;
+typedef ObsReadA<T> = ObservableAsyncReadOnly<T>;
 
 typedef ObsComputed<T> = ObservableComputed<T>;
 

@@ -2,12 +2,10 @@ import 'dart:async';
 
 import '../../../rx_observable.dart';
 
-@Deprecated("Experimental feature, not tested yet")
 class ObservableStreamAdapter<T> extends Stream<T> {
   final IObservableListenable<T> observable;
 
-  ObservableStreamAdapter(this.observable)
-      : assert(Observable.useExperimental == true, 'This experimental feature available only when useExperimental set true');
+  ObservableStreamAdapter(this.observable);
 
   @override
   StreamSubscription<T> listen(void Function(T)? onData, {

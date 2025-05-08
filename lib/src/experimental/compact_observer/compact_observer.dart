@@ -29,7 +29,7 @@ class _ObserveState extends State<Observe> {
 
     _cachedWidget = _ctx.track(() => widget.builder(), (trackedVars) {
       for (final observable in trackedVars) {
-        final sub = observable.listen((_) => setState(_buildAndTrack), fireImmediately: false);
+        final sub = observable.listen((_) => setState(_buildAndTrack));
         _subs.add(sub);
       }
     });
