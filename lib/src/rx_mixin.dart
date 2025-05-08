@@ -10,10 +10,10 @@ import 'i_disposable.dart';
 
 /// Mixin for simplified subscription/sink handling for classes that include observables, streams subscriptions/sinks
 mixin RxSubsMixin {
-  final List<StreamSubscription> _rxSubs = [];
-  final List<EventSink> _rxSinks = [];
-  final List<IDisposable> _disposables = [];
-  final List<ICancelable> _cancelables = [];
+  final Set<StreamSubscription> _rxSubs = {};
+  final Set<EventSink> _rxSinks = {};
+  final Set<IDisposable> _disposables = {};
+  final Set<ICancelable> _cancelables = {};
 
   /// Reg [IDisposable] or [ICancelable] or [StreamSubscription] or [EventSink]
   void reg(dynamic sinkOrSub) {
@@ -54,9 +54,7 @@ mixin RxSubsMixin {
 
   /// Register subscription that require close when this class will be destroyed
   void regSub(StreamSubscription sub) {
-    if (!_rxSubs.contains(sub)) {
-      _rxSubs.add(sub);
-    }
+    _rxSubs.add(sub);
   }
 
   /// Register list of subscriptions that require close when this class will be destroyed
@@ -68,9 +66,7 @@ mixin RxSubsMixin {
 
   /// Register [IDisposable] that require close when this class will be destroyed
   void regDisposable(IDisposable disposable) {
-    if (!_disposables.contains(disposable)) {
-      _disposables.add(disposable);
-    }
+    _disposables.add(disposable);
   }
 
   /// Register list of [IDisposable] that require close when this class will be destroyed
@@ -82,9 +78,7 @@ mixin RxSubsMixin {
 
   /// Register [ICancelable] that require close when this class will be destroyed
   void regCancelable(ICancelable cancelable) {
-    if (!_cancelables.contains(cancelable)) {
-      _cancelables.add(cancelable);
-    }
+    _cancelables.add(cancelable);
   }
 
   /// Register list of [ICancelable] that require close when this class will be destroyed

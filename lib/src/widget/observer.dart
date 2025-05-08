@@ -131,3 +131,43 @@ class _Observer3State<A, B, C> extends State<Observer3<A, B, C>> {
   Widget build(BuildContext ctx) => widget.builder(
       ctx, widget.observable.value, widget.observable2.value, widget.observable3.value);
 }
+
+class MultiObserver extends StatefulWidget {
+  final List<IObservableListenable> observables;
+  final WidgetBuilder builder;
+
+  const MultiObserver({
+    super.key,
+    required this.observables,
+    required this.builder,
+  });
+
+  @override
+  State<MultiObserver> createState() => _MultiObserverState();
+}
+
+class _MultiObserverState extends State<MultiObserver> {
+  late ObservableGroup _group;
+  ObservableSubscription? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _group = ObservableGroup(widget.observables);
+    _subscription = _group.listen((_) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    _group.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.builder(context);
+  }
+}

@@ -58,7 +58,13 @@ extension ListExtension<T> on List<T> {
       ObservableReadOnly<List<T>>(this);
 }
 
-extension CancelSubs on List<StreamSubscription> {
+extension ComputedFunction<T> on T Function() {
+  ObservableComputed<T> compute(List<IObservable> observables) {
+    return ObservableComputed<T>(this, observables);
+  }
+}
+
+extension CancelSubsList on List<StreamSubscription> {
   cancelAll() {
     for (var sub in this) {
       sub.cancel();
@@ -66,7 +72,16 @@ extension CancelSubs on List<StreamSubscription> {
   }
 }
 
-extension CloseStreams on List<StreamSink> {
+extension CancelSubsSet on Set<StreamSubscription> {
+  cancelAll() {
+    for (var sub in this) {
+      sub.cancel();
+    }
+  }
+}
+
+
+extension CloseStreamsList on List<StreamSink> {
   closeAll() {
     for (var sink in this) {
       sink.close();
@@ -74,7 +89,7 @@ extension CloseStreams on List<StreamSink> {
   }
 }
 
-extension CloseEventSinks on List<EventSink> {
+extension CloseStreamsSet on Set<StreamSink> {
   closeAll() {
     for (var sink in this) {
       sink.close();
@@ -82,7 +97,23 @@ extension CloseEventSinks on List<EventSink> {
   }
 }
 
-extension CloseDisposables on List<IDisposable> {
+extension CloseEventSinksList on List<EventSink> {
+  closeAll() {
+    for (var sink in this) {
+      sink.close();
+    }
+  }
+}
+
+extension CloseEventSinksSet on Set<EventSink> {
+  closeAll() {
+    for (var sink in this) {
+      sink.close();
+    }
+  }
+}
+
+extension CloseDisposablesList on List<IDisposable> {
   disposeAll() {
     for (var disposable in this) {
       disposable.dispose();
@@ -90,7 +121,15 @@ extension CloseDisposables on List<IDisposable> {
   }
 }
 
-extension CloseCancelables on List<ICancelable> {
+extension CloseDisposablesSet on Set<IDisposable> {
+  disposeAll() {
+    for (var disposable in this) {
+      disposable.dispose();
+    }
+  }
+}
+
+extension CloseCancelablesList on List<ICancelable> {
   cancelAll() {
     for (var cancelable in this) {
       cancelable.cancel();
@@ -98,8 +137,10 @@ extension CloseCancelables on List<ICancelable> {
   }
 }
 
-extension ComputedFunction<T> on T Function() {
-  ObservableComputed track(List<IObservable> observables) {
-    return ObservableComputed<T>(this, observables);
+extension CloseCancelablesSet on Set<ICancelable> {
+  cancelAll() {
+    for (var cancelable in this) {
+      cancelable.cancel();
+    }
   }
 }

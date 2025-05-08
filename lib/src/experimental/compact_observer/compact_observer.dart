@@ -8,9 +8,8 @@ import '../../core/observable.dart';
 @Deprecated("Experimental feature, probably better not to use yet")
 class Observe extends StatefulWidget {
   final Widget Function() builder;
-  final List<IObservableListenable> predefinedObservables;
 
-  Observe(this.builder, {super.key, this.predefinedObservables = const []})
+  Observe(this.builder, {super.key})
       : assert(Observable.useExperimental == true, 'This experimental feature available only when useExperimental set true');
 
   @override
@@ -38,10 +37,6 @@ class _ObserveState extends State<Observe> {
 
   @override
   void initState() {
-    for (final observable in widget.predefinedObservables) {
-      final sub = observable.listen((_) => setState(_buildAndTrack));
-      _subs.add(sub);
-    }
     super.initState();
     _buildAndTrack();
   }
@@ -62,4 +57,10 @@ class _ObserveState extends State<Observe> {
 
   @override
   Widget build(BuildContext context) => _cachedWidget;
+}
+
+extension CompactObserverExt on IObservable {
+  void forceObserve() {
+    value;
+  }
 }

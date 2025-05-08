@@ -2,11 +2,12 @@ import 'package:flutter/foundation.dart';
 import '../i_cancelable.dart';
 import '../i_disposable.dart';
 
-part '../experimental/compact_observer/tracking_context.dart';
 part 'obs_extensions/obs_num.dart';
 part 'obs_extensions/obs_string.dart';
 part 'observable_computed.dart';
+part 'observable_group.dart';
 part 'rx_subscription.dart';
+part '../experimental/compact_observer/tracking_context.dart';
 
 abstract interface class IObservableListenable<T> implements IDisposable {
   /// Custom stream-like listen with custom subscription
