@@ -2,7 +2,7 @@ part of 'observable.dart';
 
 /// This observable class is async, based on StreamController.
 /// See [Observable] for same functionality based on ChangeNotifier,
-/// Must always call dispose in [ObservableAsync]
+/// Must always call dispose when use [ObservableAsync]
 class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
     implements IObservableMutable<T> {
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
@@ -12,17 +12,22 @@ class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
   ObservableAsync(
     super.initialValue, {
     super.notifyOnlyIfChanged,
+    super.sync,
+    super.onListen,
+    super.onCancel
   });
 
-  /// Set and emit the new value.
   @override
   set value(T newValue) => _updateValue(newValue);
 }
 
+/// This observable class is async, based on StreamController.
+/// See [ObservableReadOnly] for same functionality based on ChangeNotifier,
+/// Must always call dispose when use [ObservableAsync]
+/// This one is read only variant, you can't set it's value
 class ObservableAsyncReadOnly<T> extends IObservableAsync<T> {
   late final StreamController<T> _controller;
   T _value;
-  // bool _closed = false;
 
   /// If true, listeners will be notified if new value not equals to old value
   /// Default true
@@ -47,10 +52,7 @@ class ObservableAsyncReadOnly<T> extends IObservableAsync<T> {
 
   @override
   T get value {
-    if (ExperimentalObservableFeatures.useExperimental)
-      ObsTrackingContext.current?._register(this);
-
-    /// Experimental
+    if (ExperimentalObservableFeatures.useExperimental) ObsTrackingContext.current?._register(this); /// Experimental
     return _value;
   }
 
@@ -64,6 +66,21 @@ class ObservableAsyncReadOnly<T> extends IObservableAsync<T> {
     return ObservableStreamSubscription(subscription);
   }
 
+  void _updateValue(T newValue) {
+    if (isClosed) return;
+
+    /// Experimental start
+    if (ExperimentalObservableFeatures.useExperimental && ObsTrackingContext.current != null) {
+      throw Exception('You cannot modify reactive value inside Observer builder');
+    }
+    /// Experimental end
+
+    if (_value != newValue || !_notifyOnlyIfChanged) {
+      _value = newValue;
+      add(_value);
+    }
+  }
+
   @override
   void notify() {
     add(_value);
@@ -71,6 +88,11 @@ class ObservableAsyncReadOnly<T> extends IObservableAsync<T> {
 
   @override
   void add(T event) {
+    _value = event;
+    _add(event);
+  }
+
+  void _add(T event) {
     _controller.add(event);
   }
 
@@ -82,24 +104,6 @@ class ObservableAsyncReadOnly<T> extends IObservableAsync<T> {
   @override
   Future addStream(Stream<T> source, {bool? cancelOnError}) {
     return _controller.addStream(stream, cancelOnError: cancelOnError);
-  }
-
-  void _updateValue(T newValue) {
-    if (isClosed) return;
-
-    /// Experimental start
-    if (ExperimentalObservableFeatures.useExperimental &&
-        ObsTrackingContext.current != null) {
-      throw Exception(
-          'You cannot modify reactive value inside Observer builder');
-    }
-
-    /// Experimental end
-
-    if (_value != newValue || !_notifyOnlyIfChanged) {
-      _value = newValue;
-      add(_value);
-    }
   }
 
   @override
@@ -154,7 +158,6 @@ class ObservableAsyncReadOnly<T> extends IObservableAsync<T> {
 
   @override
   Future close() {
-    // _closed = true;
     return _controller.close();
   }
 }

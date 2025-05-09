@@ -2,8 +2,11 @@ part of 'observable.dart';
 
 /// This default observable class is sync, based on ChangeNotifier.
 /// See [ObservableAsync] for same functionality based on StreamController,
+/// You can use it like ChangeNotifier (addListener, notifyListeners, etc)
+/// Or use convenient stream-like listen method
 class Observable<T> extends ObservableReadOnly<T>
     implements IObservableMutable<T> {
+
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
   /// if new value not equals to old value
@@ -12,14 +15,16 @@ class Observable<T> extends ObservableReadOnly<T>
     super.notifyOnlyIfChanged,
   });
 
-  /// Set and emit the new value.
   @override
   set value(T newValue) => _updateValue(newValue);
 }
 
-/// Class for observable value (notifier + current value).
+/// This default observable class is sync, based on ChangeNotifier.
+/// See [ObservableAsyncReadOnly] for same functionality based on StreamController,
+/// This one is read only variant, you can't set it's value
 class ObservableReadOnly<T> extends ChangeNotifier
     implements IObservableSync<T> {
+
   /// Constructs a [ObservableReadOnly], pass initial value,
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
   /// if new value not equals to old value
@@ -30,8 +35,6 @@ class ObservableReadOnly<T> extends ChangeNotifier
 
   late T _value;
 
-  /// If true, listeners will be notified if new value not equals to old value
-  /// Default true
   late bool _notifyOnlyIfChanged;
 
   bool get notifyOnlyIfChanged => _notifyOnlyIfChanged;
@@ -57,10 +60,7 @@ class ObservableReadOnly<T> extends ChangeNotifier
 
   @override
   T get value {
-    if (ExperimentalObservableFeatures.useExperimental)
-      ObsTrackingContext.current?._register(this);
-
-    /// Experimental
+    if (ExperimentalObservableFeatures.useExperimental) ObsTrackingContext.current?._register(this); /// Experimental
     return _value;
   }
 

@@ -16,6 +16,8 @@ void main() {
 
   /// You can only read this value
 
+  test1.value;
+
   test1.dispose();
   test2.dispose();
   test3.dispose();

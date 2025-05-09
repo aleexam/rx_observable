@@ -14,6 +14,8 @@ part 'observable_sync.dart';
 part 'rx_subscription.dart';
 
 abstract class IObservableMutable<T> extends IObservable<T> { // Interface
+
+  /// Set the new value and notify listeners
   set value(T value);
 }
 
@@ -24,6 +26,7 @@ abstract class IObservableAsync<T> // Interface
     implements StreamController<T>, IObservable<T> {}
 
 abstract class IObservable<T> extends IObservableListenable<T> { // Interface
+
   /// Returns the last emitted value or initial value.
   T get value;
 
@@ -33,6 +36,7 @@ abstract class IObservable<T> extends IObservableListenable<T> { // Interface
 
 abstract class IObservableListenable<T> implements IDisposable { // Interface
   /// Custom stream-like listen with custom subscription
+  /// More convenient than addListener API
   ObservableSubscription listen(FutureOr<void> Function(T) listener,
       {bool fireImmediately = false});
 
