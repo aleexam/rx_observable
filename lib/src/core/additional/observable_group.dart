@@ -9,9 +9,7 @@ class ObservableGroup extends IObservableListenable<void> {
 
   ObservableGroup(this._observables) {
     _subscriptions.addAll(_observables.map((rx) {
-      return rx.listen(
-            (_) => _notifyListeners()
-      );
+      return rx.listen((_) => _notifyListeners());
     }));
   }
 
@@ -22,7 +20,8 @@ class ObservableGroup extends IObservableListenable<void> {
   }
 
   @override
-  ObservableSubscription listen(void Function(void) listener, {bool fireImmediately = true}) {
+  ObservableSubscription listen(void Function(void) listener,
+      {bool fireImmediately = true}) {
     _listeners.add(listener);
     if (fireImmediately) {
       listener(null);

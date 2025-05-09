@@ -1,22 +1,10 @@
 part of 'observable.dart';
 
-/// This default observable class is sync, extends ChangeNotifier.
-/// Better to use in view -> state management layers.
+/// This default observable class is sync, based on ChangeNotifier.
 /// See [ObservableAsync] for same functionality based on StreamController,
-/// ObservableAsync better to use in all other layers (data, etc)
-/// Async observable works faster for heavy work, Sync variant works likely
-/// same as sync stream controller or ChangeNotifier itself
-/// Must always call dispose in [ObservableAsync]
-/// No need to call dispose in [Observable], if all
-/// listeners properly cancel their subscriptions
-class Observable<T> extends ObservableReadOnly<T> implements IObservableSync {
-
-  /// Activate experimental features if true. Only use at your own risk
-  /// Activates usage of [Observe], [ObsTrackingContext]
-  static bool useExperimental = false;
-
+class Observable<T> extends ObservableReadOnly<T>
+    implements IObservableMutable<T> {
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
-  /// [onListen], [onCancel], flag to handle events [sync] and
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
   /// if new value not equals to old value
   Observable(
@@ -25,12 +13,13 @@ class Observable<T> extends ObservableReadOnly<T> implements IObservableSync {
   });
 
   /// Set and emit the new value.
+  @override
   set value(T newValue) => _updateValue(newValue);
 }
 
 /// Class for observable value (notifier + current value).
-class ObservableReadOnly<T> extends IObservableSync implements IObservable<T>, ValueListenable {
-
+class ObservableReadOnly<T> extends ChangeNotifier
+    implements IObservableSync<T> {
   /// Constructs a [ObservableReadOnly], pass initial value,
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
   /// if new value not equals to old value
@@ -44,6 +33,7 @@ class ObservableReadOnly<T> extends IObservableSync implements IObservable<T>, V
   /// If true, listeners will be notified if new value not equals to old value
   /// Default true
   late bool _notifyOnlyIfChanged;
+
   bool get notifyOnlyIfChanged => _notifyOnlyIfChanged;
 
   final _customListeners = <void Function(T)>[];
@@ -51,9 +41,12 @@ class ObservableReadOnly<T> extends IObservableSync implements IObservable<T>, V
   /// Set and emit the new value.
   void _updateValue(T newValue) {
     /// Experimental start
-    if (Observable.useExperimental && ObsTrackingContext.current != null) {
-      throw Exception('You cannot modify reactive value inside Observer builder');
+    if (ExperimentalObservableFeatures.useExperimental &&
+        ObsTrackingContext.current != null) {
+      throw Exception(
+          'You cannot modify reactive value inside Observer builder');
     }
+
     /// Experimental end
 
     if (_value != newValue || !_notifyOnlyIfChanged) {
@@ -64,12 +57,16 @@ class ObservableReadOnly<T> extends IObservableSync implements IObservable<T>, V
 
   @override
   T get value {
-    if (Observable.useExperimental) ObsTrackingContext.current?._register(this); /// Experimental
+    if (ExperimentalObservableFeatures.useExperimental)
+      ObsTrackingContext.current?._register(this);
+
+    /// Experimental
     return _value;
   }
 
   @override
-  ObservableSubscription listen(void Function(T) listener, {bool fireImmediately = false}) {
+  ObservableSubscription listen(void Function(T) listener,
+      {bool fireImmediately = false}) {
     _customListeners.add(listener);
     if (fireImmediately) listener(_value);
     return ObservableSubscription(() => _customListeners.remove(listener));
@@ -97,7 +94,8 @@ class ObservableReadOnly<T> extends IObservableSync implements IObservable<T>, V
         ));
       }
     }
-    super.notifyListeners(); // this triggers Flutter widgets like Observer, etc.
+    super
+        .notifyListeners(); // this triggers Flutter widgets like Observer, etc.
   }
 
   @override

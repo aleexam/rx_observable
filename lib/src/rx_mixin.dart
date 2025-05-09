@@ -95,7 +95,10 @@ mixin RxSubsMixin {
     _rxSinks.closeAll();
     _disposables.disposeAll();
     _cancelables.cancelAll();
-    if (_rxSubs.isEmpty && _rxSinks.isEmpty && _disposables.isEmpty && _cancelables.isEmpty ) {
+    if (_rxSubs.isEmpty &&
+        _rxSinks.isEmpty &&
+        _disposables.isEmpty &&
+        _cancelables.isEmpty) {
       if (kDebugMode) {
         print('No fields registered before dispose in $runtimeType.');
       }

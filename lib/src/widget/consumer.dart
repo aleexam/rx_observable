@@ -38,5 +38,6 @@ class _ObservableConsumerState<T> extends State<ObservableConsumer<T>> {
   }
 
   @override
-  Widget build(BuildContext context) => widget.builder(context, widget.observable.value);
+  Widget build(BuildContext context) =>
+      widget.builder(context, widget.observable.value);
 }

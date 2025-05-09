@@ -10,4 +10,4 @@ export 'src/core/stream_adapters/to_stream_adapter.dart';
 
 /// Experimental
 export 'src/experimental/compact_observer/compact_observer.dart';
-export 'src/experimental/experimental_extensions.dart';
+export 'src/experimental/experimental.dart';

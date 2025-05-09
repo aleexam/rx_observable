@@ -1,25 +1,25 @@
 part of 'observable.dart';
 
-/// This observable class is async, implements StreamController.
-/// Better to use in inner app layers.
+/// This observable class is async, based on StreamController.
 /// See [Observable] for same functionality based on ChangeNotifier,
-/// this variant better for use in view -> state management layers
 /// Must always call dispose in [ObservableAsync]
-/// No need to call dispose in [Observable], if all
-/// listeners properly cancel their subscriptions
-class ObservableAsync<T> extends ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
-
+class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
+    implements IObservableMutable<T> {
+  /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
+  /// [onListen], [onCancel], flag to handle events [sync] and
+  /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
+  /// if new value not equals to old value
   ObservableAsync(
-      super.initialValue, {
-      super.notifyOnlyIfChanged,
+    super.initialValue, {
+    super.notifyOnlyIfChanged,
   });
 
   /// Set and emit the new value.
+  @override
   set value(T newValue) => _updateValue(newValue);
 }
 
-class ObservableAsyncReadOnly<T> implements IObservable<T>, IObservableAsync<T> {
-
+class ObservableAsyncReadOnly<T> extends IObservableAsync<T> {
   late final StreamController<T> _controller;
   T _value;
   // bool _closed = false;
@@ -29,28 +29,34 @@ class ObservableAsyncReadOnly<T> implements IObservable<T>, IObservableAsync<T> 
   late bool _notifyOnlyIfChanged;
   bool get notifyOnlyIfChanged => _notifyOnlyIfChanged;
 
-  ObservableAsyncReadOnly(this._value, {
+  /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
+  /// [onListen], [onCancel], flag to handle events [sync] and
+  /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
+  /// if new value not equals to old value
+  ObservableAsyncReadOnly(
+    this._value, {
     bool notifyOnlyIfChanged = true,
     void Function()? onListen,
     void Function()? onCancel,
     bool sync = false,
   }) {
     _controller = StreamController<T>.broadcast(
-      sync: sync,
-      onListen: onListen,
-      onCancel: onCancel
-    );
+        sync: sync, onListen: onListen, onCancel: onCancel);
     _notifyOnlyIfChanged = notifyOnlyIfChanged;
   }
 
   @override
   T get value {
-    if (Observable.useExperimental) ObsTrackingContext.current?._register(this); /// Experimental
+    if (ExperimentalObservableFeatures.useExperimental)
+      ObsTrackingContext.current?._register(this);
+
+    /// Experimental
     return _value;
   }
 
   @override
-  ObservableSubscription listen(FutureOr<void> Function(T) listener, {bool fireImmediately = false}) {
+  ObservableSubscription listen(FutureOr<void> Function(T) listener,
+      {bool fireImmediately = false}) {
     var subscription = _controller.stream.listen(listener);
     if (fireImmediately) {
       listener(_value);
@@ -80,10 +86,14 @@ class ObservableAsyncReadOnly<T> implements IObservable<T>, IObservableAsync<T> 
 
   void _updateValue(T newValue) {
     if (isClosed) return;
+
     /// Experimental start
-    if (Observable.useExperimental && ObsTrackingContext.current != null) {
-      throw Exception('You cannot modify reactive value inside Observer builder');
+    if (ExperimentalObservableFeatures.useExperimental &&
+        ObsTrackingContext.current != null) {
+      throw Exception(
+          'You cannot modify reactive value inside Observer builder');
     }
+
     /// Experimental end
 
     if (_value != newValue || !_notifyOnlyIfChanged) {

@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../core/observable.dart';
-
+import '../experimental.dart';
 
 /// This observer variant gives you ability to wrap any widget,
 /// and all [IObservable] will be listened automatically in this widget
@@ -10,7 +10,8 @@ class Observe extends StatefulWidget {
   final Widget Function() builder;
 
   Observe(this.builder, {super.key})
-      : assert(Observable.useExperimental == true, 'This experimental feature available only when useExperimental set true');
+      : assert(ExperimentalObservableFeatures.useExperimental == true,
+            'This experimental feature available only when useExperimental set true');
 
   @override
   State<Observe> createState() => _ObserveState();

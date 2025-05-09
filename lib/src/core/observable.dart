@@ -1,25 +1,27 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+
+import '../experimental/experimental.dart';
 import '../i_cancelable.dart';
 import '../i_disposable.dart';
 
-part 'observable_sync.dart';
-part 'observable_async.dart';
+part '../experimental/compact_observer/tracking_context.dart';
 part 'additional/observable_computed.dart';
 part 'additional/observable_group.dart';
+part 'observable_async.dart';
+part 'observable_sync.dart';
 part 'rx_subscription.dart';
-part '../experimental/compact_observer/tracking_context.dart';
 
-abstract interface class IObservableListenable<T> implements IDisposable {
-  /// Custom stream-like listen with custom subscription
-  ObservableSubscription listen(FutureOr<void> Function(T) listener, {bool fireImmediately = false});
-
-  /// Must always call dispose in [ObservableAsync]
-  /// No need to call dispose in [Observable], if all
-  /// listeners properly cancel their subscriptions
-  @override
-  void dispose();
+abstract class IObservableMutable<T> extends IObservable<T> {
+  set value(T value);
 }
+
+abstract interface class IObservableSync<T>
+    implements ChangeNotifier, IObservable<T>, ValueListenable<T> {}
+
+abstract interface class IObservableAsync<T>
+    implements StreamController<T>, IObservable<T> {}
 
 abstract interface class IObservable<T> extends IObservableListenable<T> {
   /// Returns the last emitted value or initial value.
@@ -29,5 +31,14 @@ abstract interface class IObservable<T> extends IObservableListenable<T> {
   void notify();
 }
 
-abstract interface class IObservableSync<T> extends ChangeNotifier { }
-abstract interface class IObservableAsync<T> implements StreamController<T> { }
+abstract interface class IObservableListenable<T> implements IDisposable {
+  /// Custom stream-like listen with custom subscription
+  ObservableSubscription listen(FutureOr<void> Function(T) listener,
+      {bool fireImmediately = false});
+
+  /// Must always call dispose in [ObservableAsync]
+  /// No need to call dispose in [Observable], if all
+  /// listeners properly cancel their subscriptions
+  @override
+  void dispose();
+}

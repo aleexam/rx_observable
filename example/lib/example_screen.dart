@@ -11,15 +11,15 @@ class ExampleScreen extends StatefulWidget {
 }
 
 class ExampleScreenState extends State<ExampleScreen> {
-
   var text = "Hello".obs;
   var text2 = "Mister".obs;
 
   @override
   void initState() {
-
     text.listen((v) {
-      if (kDebugMode) { print("New value is $v"); }
+      if (kDebugMode) {
+        print("New value is $v");
+      }
     });
 
     Future.delayed(const Duration(seconds: 3)).whenComplete(() {
@@ -44,23 +44,24 @@ class ExampleScreenState extends State<ExampleScreen> {
         children: [
           /// Use Observer widget directly to update UI with values
           Observer(text, (v) => Text(v)),
+
           /// Use extensions which creates same observer widget
           text.observer((v) => Text(v)),
+
           /// Use big builder version
           Observer.builder(
               observable: text,
               builder: (context, v) {
                 return Text(v);
-              }
-          ),
+              }),
+
           /// Listen 2 or 3 observables
           Observer2(
               observable: text,
               observable2: text2,
               builder: (context, v1, v2) {
                 return Text("$v1 $v2");
-              }
-          )
+              })
         ],
       ),
     );
