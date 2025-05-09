@@ -1,3 +1,3 @@
-abstract interface class ICancelable {
+abstract class ICancelable { // Interface
   void cancel();
 }
