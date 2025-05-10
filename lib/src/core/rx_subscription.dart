@@ -10,6 +10,8 @@ class ObservableSubscription implements ICancelable {
   void cancel() => _cancel();
 }
 
+/// Custom subscription adapter type for [ObservableAsync] listening
+/// implements both [ObservableSubscription] and [StreamSubscription]
 class ObservableStreamSubscription<T> extends ObservableSubscription
     implements StreamSubscription<T> {
   final StreamSubscription<T> _inner;

@@ -1,6 +1,6 @@
 library rx_observable;
 
-export 'src/core/obs_core_extensions.dart';
+export 'src/core/obs_extensions/obs_core_extensions.dart';
 export 'src/core/observable.dart';
 export 'src/i_disposable.dart';
 export 'src/rx_mixin.dart';

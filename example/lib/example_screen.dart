@@ -61,7 +61,12 @@ class ExampleScreenState extends State<ExampleScreen> {
               observable2: text2,
               builder: (context, v1, v2) {
                 return Text("$v1 $v2");
-              })
+              }),
+
+          /// Experimental feature, auto-subscription observer.
+          /// It detects called observables inside it and automatically subscribe on them
+          /// Not well tested, use at your own risk
+          Observe(() => Text(text.value)),
         ],
       ),
     );

@@ -1,7 +1,27 @@
-import 'core/obs_extensions/obs_num.dart';
-import 'core/obs_extensions/obs_string.dart';
 import 'core/observable.dart';
 import '../widgets.dart';
+
+typedef ObservableString = Observable<String>;
+typedef ObservableNullableString =  Observable<String?>;
+typedef ObservableInt = Observable<int>;
+typedef ObservableNullableInt = Observable<int?>;
+typedef ObservableDouble = Observable<double>;
+typedef ObservableNullableDouble = Observable<double?>;
+typedef ObservableNum = Observable<num>;
+typedef ObservableNullableNum = Observable<num?>;
+typedef ObservableBool = Observable<bool>;
+typedef ObservableNullableBool = Observable<bool?>;
+
+typedef ObservableAsyncString = ObservableAsync<String>;
+typedef ObservableAsyncNullableString =  ObservableAsync<String?>;
+typedef ObservableAsyncInt = ObservableAsync<int>;
+typedef ObservableAsyncNullableInt = ObservableAsync<int?>;
+typedef ObservableAsyncDouble = ObservableAsync<double>;
+typedef ObservableAsyncNullableDouble = ObservableAsync<double?>;
+typedef ObservableAsyncNum = ObservableAsync<num>;
+typedef ObservableAsyncNullableNum = ObservableAsync<num?>;
+typedef ObservableAsyncBool = ObservableAsync<bool>;
+typedef ObservableAsyncNullableBool = ObservableAsync<bool?>;
 
 typedef Obs<T> = Observable<T>;
 typedef ObsA<T> = ObservableAsync<T>;
@@ -16,14 +36,23 @@ typedef ObW<T> = Observer<T>;
 typedef Obl<T> = ObservableListener<T>;
 typedef Obc<T> = ObservableConsumer<T>;
 
-typedef ObservableDouble = Observable<double>;
-typedef ObservableNullableDouble = Observable<double?>;
-
 typedef ObsString = ObservableString;
 typedef ObsNString = ObservableNullableString;
-typedef ObsDouble = Observable<double>;
-typedef ObsNDouble = Observable<double?>;
+typedef ObsStringA = ObservableAsyncString;
+typedef ObsNStringA = ObservableAsyncNullableString;
+typedef ObsDouble = ObservableDouble;
+typedef ObsNDouble = ObservableNullableDouble;
+typedef ObsDoubleA = ObservableAsyncDouble;
+typedef ObsNDoubleA = ObservableAsyncNullableDouble;
 typedef ObsInt = ObservableInt;
 typedef ObsNInt = ObservableNullableInt;
+typedef ObsIntA = ObservableAsyncInt;
+typedef ObsNIntA = ObservableAsyncNullableInt;
 typedef ObsNum = ObservableNum;
 typedef ObsNNum = ObservableNullableNum;
+typedef ObsNumA = ObservableAsyncNum;
+typedef ObsNNumA = ObservableAsyncNullableNum;
+typedef ObsBool = ObservableBool;
+typedef ObsNBool = ObservableNullableBool;
+typedef ObsBoolA = ObservableAsyncBool;
+typedef ObsNBoolA = ObservableAsyncNullableBool;

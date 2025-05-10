@@ -19,13 +19,16 @@ class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
 
   @override
   set value(T newValue) => _updateValue(newValue);
+
+  @override
+  set v(T v) => value = v;
 }
 
 /// This observable class is async, based on StreamController.
 /// See [ObservableReadOnly] for same functionality based on ChangeNotifier,
 /// Must always call dispose when use [ObservableAsync]
 /// This one is read only variant, you can't set it's value
-class ObservableAsyncReadOnly<T> extends IObservableAsync<T> {
+class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   late final StreamController<T> _controller;
   T _value;
 
@@ -57,6 +60,9 @@ class ObservableAsyncReadOnly<T> extends IObservableAsync<T> {
   }
 
   @override
+  T get v => value;
+
+  @override
   ObservableSubscription listen(FutureOr<void> Function(T) listener,
       {bool fireImmediately = false}) {
     var subscription = _controller.stream.listen(listener);
@@ -83,11 +89,24 @@ class ObservableAsyncReadOnly<T> extends IObservableAsync<T> {
 
   @override
   void notify() {
+    if (isClosed) return;
     _add(_value);
   }
 
+  /// This will force unchanged value to notify listeners, even if notifyOnlyIfChanged set true
+  /// Sends a data [event].
+  ///
+  /// Listeners receive this event in a later microtask.
+  ///
+  /// Note that a synchronous controller (created by passing true to the `sync`
+  /// parameter of the `StreamController` constructor) delivers events
+  /// immediately. Since this behavior violates the contract mentioned here,
+  /// synchronous controllers should only be used as described in the
+  /// documentation to ensure that the delivered events always *appear* as if
+  /// they were delivered in a separate microtask.
   @override
   void add(T event) {
+    if (isClosed) return;
 
     /// Experimental start
     if (ExperimentalObservableFeatures.useExperimental && ObsTrackingContext.current != null) {

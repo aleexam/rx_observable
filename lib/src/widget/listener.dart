@@ -4,8 +4,26 @@ import 'package:flutter/material.dart';
 
 import '../core/observable.dart';
 
-/// Widget that listen to an [observable] or [Stream] and call [listener] function.
+/// A stateless widget that listens to an [observable]
+/// and triggers the provided [listener] callback whenever the value changes.
+///
+/// Unlike [ObservableConsumer], this widget does **not rebuild** itself.
+/// It is meant for side effects only (e.g., showing dialogs, triggering actions).
+///
+/// Usage:
+/// ObservableListener<int>(
+///   observable: counter,
+///   listener: (context, value) {
+///     if (value > 10) {
+///       ScaffoldMessenger.of(context).showSnackBar(...);
+///     }
+///   },
+///   child: MyWidget(),
+/// );
 class ObservableListener<T> extends StatelessWidget {
+
+  /// Creates an [ObservableListener] that listens to [observable]
+  /// and calls [listener] when its value changes.
   const ObservableListener({
     super.key,
     required this.observable,
@@ -13,9 +31,15 @@ class ObservableListener<T> extends StatelessWidget {
     required this.child,
   });
 
+  /// The child widget to render. It does **not rebuild** on value change.
   final Widget? child;
+
+  /// The observable to listen to.
   final IObservableListenable<T> observable;
+
+  /// The callback that is triggered when the observable emits a new value.
   final void Function(BuildContext context, T value) listener;
+
 
   @override
   Widget build(BuildContext context) {

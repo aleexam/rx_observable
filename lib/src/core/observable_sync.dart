@@ -17,13 +17,15 @@ class Observable<T> extends ObservableReadOnly<T>
 
   @override
   set value(T newValue) => _updateValue(newValue);
+
+  @override
+  set v(T v) => value = v;
 }
 
 /// This default observable class is sync, based on ChangeNotifier.
 /// See [ObservableAsyncReadOnly] for same functionality based on StreamController,
 /// This one is read only variant, you can't set it's value
-class ObservableReadOnly<T> extends ChangeNotifier
-    implements IObservableSync<T> {
+class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T> {
 
   /// Constructs a [ObservableReadOnly], pass initial value,
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
@@ -64,6 +66,9 @@ class ObservableReadOnly<T> extends ChangeNotifier
   }
 
   @override
+  T get v => value;
+
+  @override
   ObservableSubscription listen(void Function(T) listener,
       {bool fireImmediately = false}) {
     _customListeners.add(listener);
@@ -71,6 +76,24 @@ class ObservableReadOnly<T> extends ChangeNotifier
     return ObservableSubscription(() => _customListeners.remove(listener));
   }
 
+  /// Notifies [listen] listeners and common [ChangeNotifier] listeners
+  /// listen listeners will get callback with value,
+  /// while ChangeNotifier listeners gets VoidCallback
+  /// Call all the registered listeners.
+  ///
+  /// Call this method whenever the object changes, to notify any clients the
+  /// object may have changed. Listeners that are added during this iteration
+  /// will not be visited. Listeners that are removed during this iteration will
+  /// not be visited after they are removed.
+  ///
+  /// Exceptions thrown by listeners will be caught and reported using
+  /// [FlutterError.reportError].
+  ///
+  /// This method must not be called after [dispose] has been called.
+  ///
+  /// Surprising behavior can result when reentrantly removing a listener (e.g.
+  /// in response to a notification) that has been registered multiple times.
+  /// See the discussion at [removeListener].
   @override
   void notifyListeners() {
     for (final listener in _customListeners) {
@@ -93,8 +116,7 @@ class ObservableReadOnly<T> extends ChangeNotifier
         ));
       }
     }
-    super
-        .notifyListeners(); // this triggers Flutter widgets like Observer, etc.
+    super.notifyListeners(); // this triggers Flutter widgets like Observer, etc.
   }
 
   @override

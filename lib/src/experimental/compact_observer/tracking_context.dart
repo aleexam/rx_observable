@@ -3,9 +3,6 @@ part of '../../core/observable.dart';
 /// This needs for experimental [Observe] widget
 @Deprecated("Experimental feature, probably better not to use yet")
 class ObsTrackingContext {
-
-  /// List used just in case if somehow double tracking occurs. Actually it should be impossible
-  /// Could be just static ObsTrackingContext var
   static final List<ObsTrackingContext> _stack = [];
 
   static ObsTrackingContext? get current => _stack.isEmpty ? null : _stack.last;
@@ -21,9 +18,9 @@ class ObsTrackingContext {
     if (_isTracking) _trackedVars.add(observable);
   }
 
+  /// Do not ever call this method, it can break [Observe] widget logic
   T track<T>(T Function() fn, void Function(Set<IObservable>) onTrackedVars) {
     if (_isTracking) {
-      // Used just in case if somehow double tracking occurs. Actually it should be impossible
       throw Exception('Nested ObsTrackingContext not allowed');
     }
     _isTracking = true;

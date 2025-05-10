@@ -1,6 +1,6 @@
 Simple reactive variables and widgets.
 Similar to Livedata/observable/mobx, but without code generation and without complicated boilerplate.
-Based on ChangeNotifier
+Based on ChangeNotifier and StreamController (ObservableSync and ObservableAsync)
 
 Ideal to use with MVVM like patterns.
 
@@ -57,6 +57,18 @@ Dispose like this:
 
 ```dart
   text.dispose();
+```
+
+You can also use ObservableAsync, this implementation shares same interface, but based
+on StreamController, and also implements StreamController.
+
+```dart
+  var test1 = ObservableAsync(25);
+  var test2 = 25.obsA;
+
+  /// ObservableAsync should be disposed mandatory (its StreamController based).
+  test1.dispose();
+  test2.dispose();
 ```
 
 ## Additional information
@@ -130,9 +142,9 @@ class ViewModelExample with RxSubsMixin implements IDisposable {
   }
 }
 
-/// The state it self. Whola! You have state with reactive var inside it, but it will not lead to any leaks (probably?)
+/// The state it self. Whola! You have state with reactive var inside it.
 /// because real value is inside ViewModelExample, and in state you have only link to it.
-/// Of course some problems might occur because of concurrent access to list, but it never happened in my practice.
+/// Maybe some problems might occur because of concurrent access to list, but it never happened in my practice.
 class LoadedState extends BaseState {
   final ObservableReadOnly<List<Contact>> contacts;
 
@@ -184,7 +196,8 @@ Just wrap widget in Observe widget, and it automatically will listen all observa
 ```
 
 Important! Make sure to not update observables in widget build code, it will lead to endless loop.
-Also notice, that values used in conditions are not automatically registered, and you should mention them in predefinedObservables.
+Also notice, that for nested context (like builder, etc) fields will not be tracked.
+You can manually track fields using field.observe() inside Observe() widget.
 
 ## Why is this better than mobX, BLoc, getX?
 

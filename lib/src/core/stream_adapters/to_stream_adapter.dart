@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../../../rx_observable.dart';
 
+/// Adapter that wraps a IObservable<T> and exposes Stream<T>
 class ObservableStreamAdapter<T> extends Stream<T> {
   final IObservableListenable<T> observable;
 

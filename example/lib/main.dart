@@ -8,15 +8,13 @@ import 'example_screen.dart';
 void main() {
   // All constructors gives the same result
   var test1 = Observable(25);
-  var test2 = Observable<int>(25);
+  var test2 = ObservableAsync<int>(25);
   var test3 = Obs(25);
   var test4 = 25.obs;
   var test5 = ObservableInt(25);
-  var test6 = ObservableReadOnly(25);
 
   /// You can only read this value
-
-  test1.value;
+  var test6 = ObservableReadOnly(25);
 
   test1.dispose();
   test2.dispose();
@@ -24,9 +22,6 @@ void main() {
   test4.dispose();
   test5.dispose();
   test6.dispose();
-
-  /// Actually no need to dispose, if no listeners attached.
-  /// Observable acts just like ChangeNotifier
 
   runApp(const ExampleApp());
 }
