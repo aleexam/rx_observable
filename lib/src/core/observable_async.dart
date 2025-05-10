@@ -77,17 +77,24 @@ class ObservableAsyncReadOnly<T> extends IObservableAsync<T> {
 
     if (_value != newValue || !_notifyOnlyIfChanged) {
       _value = newValue;
-      add(_value);
+      _add(_value);
     }
   }
 
   @override
   void notify() {
-    add(_value);
+    _add(_value);
   }
 
   @override
   void add(T event) {
+
+    /// Experimental start
+    if (ExperimentalObservableFeatures.useExperimental && ObsTrackingContext.current != null) {
+      throw Exception('You cannot modify reactive value inside Observer builder');
+    }
+    /// Experimental end
+
     _value = event;
     _add(event);
   }

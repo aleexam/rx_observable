@@ -61,7 +61,12 @@ class _ObserveState extends State<Observe> {
 }
 
 extension CompactObserverExt on IObservable {
-  void forceObserve() {
+
+  /// Force [Observe] widget to register value for listening
+  @Deprecated("Experimental feature, probably better not to use yet")
+  void observe() {
+    assert(ExperimentalObservableFeatures.useExperimental == true,
+      "This experimental feature available only when useExperimental set true");
     value;
   }
 }

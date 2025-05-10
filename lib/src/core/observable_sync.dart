@@ -43,13 +43,12 @@ class ObservableReadOnly<T> extends ChangeNotifier
 
   /// Set and emit the new value.
   void _updateValue(T newValue) {
+
     /// Experimental start
-    if (ExperimentalObservableFeatures.useExperimental &&
-        ObsTrackingContext.current != null) {
+    if (ExperimentalObservableFeatures.useExperimental && ObsTrackingContext.current != null) {
       throw Exception(
           'You cannot modify reactive value inside Observer builder');
     }
-
     /// Experimental end
 
     if (_value != newValue || !_notifyOnlyIfChanged) {
