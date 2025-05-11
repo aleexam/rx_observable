@@ -12,7 +12,7 @@ class ObservableComputed<T> extends ObservableReadOnly<T> {
   ObservableComputed(
     this._compute,
     List<IObservable> observables, {
-    bool notifyOnlyIfChanged = true
+    super.notifyOnlyIfChanged,
   }) : super(_compute()) {
     for (final observable in observables) {
       final sub = observable.listen((_) {
@@ -43,8 +43,11 @@ class ObservableComputedAsync<T> extends ObservableAsyncReadOnly<T> {
   /// Recomputes the value and notifies listeners when any dependency changes.
   ObservableComputedAsync(
       this._compute,
-      List<IObservable> observables,
-      ) : super(_compute()) {
+      List<IObservable> observables, {
+      super.onListen,
+      super.onCancel,
+      super.notifyOnlyIfChanged,
+  }) : super(_compute()) {
     for (final observable in observables) {
       final sub = observable.listen((_) {
         super._value = _compute();
