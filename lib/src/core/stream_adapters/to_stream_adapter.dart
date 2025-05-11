@@ -15,7 +15,7 @@ class ObservableStreamAdapter<T> extends Stream<T> {
     void Function()? onDone,
     bool? cancelOnError,
   }) {
-    return _ObservableStreamSubscription<T>(
+    return _StreamAdapterSubscription<T>(
       _observable,
       onData,
       onDone,
@@ -25,8 +25,8 @@ class ObservableStreamAdapter<T> extends Stream<T> {
   }
 }
 
-/// Custom StreamSubscription that delegates cancellation to the observable.
-class _ObservableStreamSubscription<T> extends StreamSubscription<T> {
+/// Compatible with [StreamSubscription] [ObservableSubscription] wrapper
+class _StreamAdapterSubscription<T> extends StreamSubscription<T> {
   final IObservableListenable<T> _observable;
 
   void Function(T)? _onData;
@@ -38,7 +38,7 @@ class _ObservableStreamSubscription<T> extends StreamSubscription<T> {
   bool _isPaused = false;
   final _pendingValues = <T>[];
 
-  _ObservableStreamSubscription(
+  _StreamAdapterSubscription(
       this._observable,
       void Function(T)? onData,
       void Function()? onDone,
