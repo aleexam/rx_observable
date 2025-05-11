@@ -128,6 +128,7 @@ class ViewModelExample with RxSubsMixin implements IDisposable {
   var title = "Hello".obs;
   
   /// Here is magic. Define private var for some list for example here. It will used in state.
+  /// Use Observable<List<Contact>>(List.unmodifiable([])) to be safe from concurrent access
   final _contactsList = Observable<List<Contact>>([]);
   
   ViewModelExample() {
@@ -144,7 +145,7 @@ class ViewModelExample with RxSubsMixin implements IDisposable {
 
 /// The state it self. Whola! You have state with reactive var inside it.
 /// because real value is inside ViewModelExample, and in state you have only link to it.
-/// Maybe some problems might occur because of concurrent access to list, but it never happened in my practice.
+/// Some problems might occur because of concurrent access to list, just make sure you change your data only inside ViewModel.
 class LoadedState extends BaseState {
   final ObservableReadOnly<List<Contact>> contacts;
 

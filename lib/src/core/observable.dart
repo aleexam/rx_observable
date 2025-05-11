@@ -45,6 +45,9 @@ abstract class IObservable<T> extends IObservableListenable<T> { // Interface
   /// Notifies all subscribed listeners of the current value.
   /// This will force unchanged value to notify listeners, even if notifyOnlyIfChanged set true
   void notify();
+
+  /// Maps an [IObservable] of type [T] to an [IObservable] of type [R].
+  IObservable<R> map<R>(R Function(T value) transform);
 }
 
 /// Base class for observable without value.

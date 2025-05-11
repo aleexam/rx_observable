@@ -68,6 +68,8 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T>
   @override
   T get v => value;
 
+  final Set<ICancelable> _mapSubs = {};
+
   @override
   ObservableSubscription listen(void Function(T) listener,
       {bool fireImmediately = false}) {
@@ -125,8 +127,24 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T>
   }
 
   @override
+  Observable<R> map<R>(R Function(T value) transform) {
+
+    final result = Observable<R>(transform(value));
+
+    final subscription = listen((val) {
+      result.value = transform(val);
+    });
+
+    _mapSubs.add(subscription);
+    return result;
+  }
+
+  @override
   void dispose() {
     _customListeners.clear();
+    for (var cancelable in _mapSubs) {
+      cancelable.cancel();
+    }
     super.dispose();
   }
 }

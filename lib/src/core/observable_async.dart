@@ -62,12 +62,14 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   @override
   T get v => value;
 
+  final Set<ICancelable> _mapSubs = {};
+
   @override
-  ObservableSubscription listen(FutureOr<void> Function(T) listener,
+  ObservableSubscription listen(FutureOr<void> Function(T) onData,
       {bool fireImmediately = false}) {
-    var subscription = _controller.stream.listen(listener);
+    var subscription = _controller.stream.listen(onData);
     if (fireImmediately) {
-      listener(_value);
+      onData(_value);
     }
     return ObservableStreamSubscription(subscription);
   }
@@ -91,6 +93,18 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   void notify() {
     if (isClosed) return;
     _add(_value);
+  }
+
+  @override
+  ObservableAsync<R> map<R>(R Function(T value) transform) {
+    final result = ObservableAsync<R>(transform(value));
+
+    final subscription = listen((val) {
+      result.value = transform(val);
+    });
+
+    _mapSubs.add(subscription);
+    return result;
   }
 
   /// This will force unchanged value to notify listeners, even if notifyOnlyIfChanged set true
@@ -179,6 +193,9 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
 
   @override
   void dispose() {
+    for (var cancelable in _mapSubs) {
+      cancelable.cancel();
+    }
     close();
   }
 

@@ -99,6 +99,10 @@ extension ComputedFunction<T> on T Function() {
   ObservableComputed<T> compute(List<IObservable> observables) {
     return ObservableComputed<T>(this, observables);
   }
+
+  ObservableComputedAsync<T> computeAsync(List<IObservable> observables) {
+    return ObservableComputedAsync<T>(this, observables);
+  }
 }
 
 extension ObservableStreamAdapters<T> on Stream<T> {
@@ -108,7 +112,7 @@ extension ObservableStreamAdapters<T> on Stream<T> {
   }
 }
 
-extension StreamObservableAdapters<T> on IObservable<T> {
+extension StreamObservableAdapters<T> on IObservableSync<T> {
   /// Converts an [IObservable] into a [Stream].
   Stream<T> asStream() {
     return ObservableStreamAdapter<T>(this);
