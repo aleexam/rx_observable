@@ -20,6 +20,7 @@ abstract class IObservableMutable<T> extends IObservable<T> { // Interface
   set value(T value);
 
   /// Short version of value setter
+  /// Set the new value and notify listeners
   set v(T v);
 }
 
@@ -40,6 +41,7 @@ abstract class IObservable<T> extends IObservableListenable<T> { // Interface
   T get value;
 
   /// Short version of value getter
+  /// Returns the last emitted value or initial value.
   T get v;
 
   /// Notifies all subscribed listeners of the current value.

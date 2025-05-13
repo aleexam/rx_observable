@@ -114,6 +114,7 @@ extension ObservableStreamAdapters<T> on Stream<T> {
 
 extension StreamObservableAdapters<T> on IObservableSync<T> {
   /// Converts an [IObservable] into a [Stream].
+  @Deprecated("Use ObservableAsync to get stream instead")
   Stream<T> asStream() {
     return ObservableStreamAdapter<T>(this);
   }
