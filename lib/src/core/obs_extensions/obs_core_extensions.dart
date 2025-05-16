@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:rx_observable/src/i_cancelable.dart';
 import 'package:rx_observable/src/i_disposable.dart';
 
@@ -206,6 +207,15 @@ extension CloseCancelablesSet on Set<ICancelable> {
   void cancelAll() {
     for (var cancelable in this) {
       cancelable.cancel();
+    }
+  }
+}
+
+extension DisposeChangeNotifiersSet on Set<ChangeNotifier> {
+  /// Calls `cancel()` on all [ICancelable] instances in the set.
+  void disposeAll() {
+    for (var notifier in this) {
+      notifier.dispose();
     }
   }
 }
