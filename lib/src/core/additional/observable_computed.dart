@@ -2,7 +2,7 @@ part of '../observable.dart';
 
 /// ObservableComputed represents a computed read-only observable value.
 /// It automatically recalculates its value whenever its dependencies change.
-/// /// This one based on [ChangeNotifier]
+/// This one based on [ChangeNotifier]
 class ObservableComputed<T> extends ObservableReadOnly<T> {
   final T Function() _compute;
   final List<ObservableSubscription> _subscriptions = [];

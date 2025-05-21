@@ -113,9 +113,35 @@ Also check RxSubsMixin, for easy dispose of your reactive variables, subscriptio
 
 ## Use with state concept
 
-You can use this approach with states concept, even though bloc creators tells you that state must be immutable and bla-bla-bla.
+You can use this approach with states concept, just use Observable as state var and pass immutable states inside it. 
+```dart
+/// Create some viewModel/Bloc-like class, with easy dispose mixin and disposable interface
+class ViewModelExample with RxSubsMixin implements IDisposable {
 
-Just use this simple trick and make sure to always close your reactive vars (RxSubsMixin for help), and no problem will happen:
+  /// Define state reactive var, to listen state. Just as Bloc pattern do.
+  Observable<T> state = LoadingState();
+
+  /// Simple example var. You can mix state concept with simple vars or not, it's you to decide
+  var title = "Hello".obs;
+  
+  ViewModelExample() {
+    /// Auto-dispose of these vars
+    regs([state, title, _contactsList]);
+  }
+  
+  void loadContacts() {
+    var contactsImmutable = ...
+    /// ...do some magic to get your async data from anywhere
+    /// Then pass it's value to state as pointer, since it's not simple type.
+    state.value = LoadedState(contacts: contactsImmutable);
+  }
+}
+```
+
+You actually can use reactive vars inside state, at your own risk.
+
+To minimize cons, just follow this simple rule: never change the values of state from outside the ViewModel, 
+and always close your reactive variables (use RxSubsMixin to help with that). This way you’ll avoid any problems:
 
 ```dart
 /// Create some viewModel/Bloc-like class, with easy dispose mixin and disposable interface
@@ -128,17 +154,18 @@ class ViewModelExample with RxSubsMixin implements IDisposable {
   var title = "Hello".obs;
   
   /// Here is magic. Define private var for some list for example here. It will used in state.
-  /// Use Observable<List<Contact>>(List.unmodifiable([])) to be safe from concurrent access
   final _contactsList = Observable<List<Contact>>([]);
   
   ViewModelExample() {
     /// Auto-dispose of these vars
     regs([state, title, _contactsList]);
-  }
+  }_contactsList
   
   void loadContacts() {
     /// ...do some magic to get your async data from anywhere
     /// Then pass it's value to state as pointer, since it's not simple type.
+    /// You can map _contactsList to List.unmodifiable here to be safe from concurrent modification
+    /// Like this: state.value = LoadedState(contacts: _contactsList.map((e) => List.unmodifiable(e));
     state.value = LoadedState(contacts: _contactsList);
   }
 }

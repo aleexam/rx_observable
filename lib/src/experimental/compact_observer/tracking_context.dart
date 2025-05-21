@@ -19,6 +19,7 @@ class ObsTrackingContext {
   }
 
   /// Do not ever call this method, it can break [Observe] widget logic
+  @visibleForTesting
   T track<T>(T Function() fn, void Function(Set<IObservable>) onTrackedVars) {
     if (_isTracking) {
       throw Exception('Nested ObsTrackingContext not allowed');

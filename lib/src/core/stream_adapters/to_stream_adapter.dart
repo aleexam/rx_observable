@@ -3,10 +3,10 @@ import 'dart:async';
 import '../../../rx_observable.dart';
 
 @Deprecated("Use ObservableAsync to get stream instead")
-class ObservableStreamAdapter<T> extends Stream<T> {
+class ObservableToStreamAdapter<T> extends Stream<T> {
   final IObservableListenable<T> observable;
 
-  ObservableStreamAdapter(this.observable);
+  ObservableToStreamAdapter(this.observable);
 
   @override
   StreamSubscription<T> listen(void Function(T)? onData, {

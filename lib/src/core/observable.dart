@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../experimental/experimental.dart';
-import '../i_cancelable.dart';
 import '../i_disposable.dart';
 
 part '../experimental/compact_observer/tracking_context.dart';
@@ -30,9 +29,8 @@ abstract class IObservableSync<T> extends IObservable<T> // Interface
     implements ChangeNotifier, ValueListenable<T> {}
 
 /// Interface for an asynchronous observable of type [T].
-/// Extends [IObservable] and acts as a [StreamController].
-abstract class IObservableAsync<T> extends IObservable<T> // Interface
-    implements StreamController<T> {}
+/// Extends [IObservable] and acts as a [StreamController] in mutable version [ObservableAsync].
+abstract class IObservableAsync<T> extends IObservable<T> {} // Interface
 
 /// Base interface for any observable value of type [T].
 abstract class IObservable<T> extends IObservableListenable<T> { // Interface
@@ -49,6 +47,7 @@ abstract class IObservable<T> extends IObservableListenable<T> { // Interface
   void notify();
 
   /// Maps an [IObservable] of type [T] to an [IObservable] of type [R].
+  /// Returned observable is read-only
   IObservable<R> map<R>(R Function(T value) transform);
 }
 
@@ -58,7 +57,7 @@ abstract class IObservable<T> extends IObservableListenable<T> { // Interface
 abstract class IObservableListenable<T> implements IDisposable { // Interface
   /// Custom stream-like listen with custom subscription
   /// More convenient than addListener API
-  ObservableSubscription listen(FutureOr<void> Function(T) listener,
+  ObservableSubscription<T> listen(FutureOr<void> Function(T) listener,
       {bool fireImmediately = false});
 
   /// Must always call dispose in [ObservableAsync]

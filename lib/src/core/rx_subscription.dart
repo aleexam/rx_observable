@@ -1,7 +1,7 @@
 part of 'observable.dart';
 
 /// Custom subscription type for convenient listening of [IObservableSync] based on ChangeNotifier
-class ObservableSubscription implements ICancelable {
+class ObservableSubscription<T> implements ICancelable {
   final void Function() _cancel;
 
   ObservableSubscription(this._cancel);
@@ -12,7 +12,7 @@ class ObservableSubscription implements ICancelable {
 
 /// Custom subscription adapter type for [ObservableAsync] listening
 /// implements both [ObservableSubscription] and [StreamSubscription]
-class ObservableStreamSubscription<T> extends ObservableSubscription
+class ObservableStreamSubscription<T> extends ObservableSubscription<T>
     implements StreamSubscription<T> {
   final StreamSubscription<T> _inner;
 

@@ -5,7 +5,7 @@ import '../experimental.dart';
 
 /// This observer variant gives you ability to wrap any widget,
 /// and all [IObservable] will be listened automatically in this widget
-@Deprecated("Experimental feature, probably better not to use yet")
+@Deprecated("Experimental feature, probably better not to use yet. Not tested")
 class Observe extends StatefulWidget {
   final Widget Function() builder;
 
@@ -28,6 +28,7 @@ class _ObserveState extends State<Observe> {
     }
     _subs.clear();
 
+    // ignore: invalid_use_of_visible_for_testing_member
     _cachedWidget = _ctx.track(() => widget.builder(), (trackedVars) {
       for (final observable in trackedVars) {
         final sub = observable.listen((_) => setState(_buildAndTrack));

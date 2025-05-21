@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:rx_observable/src/i_cancelable.dart';
 import 'package:rx_observable/src/i_disposable.dart';
 
 import '../observable.dart';
@@ -109,7 +108,7 @@ extension ComputedFunction<T> on T Function() {
 extension ObservableStreamAdapters<T> on Stream<T> {
   /// Wraps a [Stream] into an [IObservableListenable].
   IObservableListenable<T> asObservable() {
-    return StreamObservableAdapter<T>(this);
+    return StreamToObservableAdapter<T>(this);
   }
 }
 
@@ -117,7 +116,7 @@ extension StreamObservableAdapters<T> on IObservableSync<T> {
   /// Converts an [IObservable] into a [Stream].
   @Deprecated("Use ObservableAsync to get stream instead")
   Stream<T> asStream() {
-    return ObservableStreamAdapter<T>(this);
+    return ObservableToStreamAdapter<T>(this);
   }
 }
 

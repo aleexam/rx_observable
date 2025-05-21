@@ -1,12 +1,10 @@
 part of 'observable.dart';
 
-/// This default observable class is sync, based on ChangeNotifier.
+/// This default observable class is sync, based on [ChangeNotifier].
 /// See [ObservableAsync] for same functionality based on StreamController,
-/// You can use it like ChangeNotifier (addListener, notifyListeners, etc)
+/// You can use it like ChangeNotifier anywhere (addListener, notifyListeners, etc)
 /// Or use convenient stream-like listen method
-class Observable<T> extends ObservableReadOnly<T>
-    implements IObservableMutable<T> {
-
+class Observable<T> extends ObservableReadOnly<T> implements IObservableMutable<T> {
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
   /// if new value not equals to old value
@@ -26,7 +24,6 @@ class Observable<T> extends ObservableReadOnly<T>
 /// See [ObservableAsyncReadOnly] for same functionality based on StreamController,
 /// This one is read only variant, you can't set it's value
 class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T> {
-
   /// Constructs a [ObservableReadOnly], pass initial value,
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
   /// if new value not equals to old value
@@ -45,11 +42,9 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T>
 
   /// Set and emit the new value.
   void _updateValue(T newValue) {
-
     /// Experimental start
     if (ExperimentalObservableFeatures.useExperimental && ObsTrackingContext.current != null) {
-      throw Exception(
-          'You cannot modify reactive value inside Observer builder');
+      throw Exception('You cannot modify reactive value inside Observer builder');
     }
     /// Experimental end
 
@@ -71,8 +66,7 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T>
   final Set<ICancelable> _mapSubs = {};
 
   @override
-  ObservableSubscription listen(void Function(T) listener,
-      {bool fireImmediately = false}) {
+  ObservableSubscription<T> listen(void Function(T) listener, {bool fireImmediately = false}) {
     _customListeners.add(listener);
     if (fireImmediately) listener(_value);
     return ObservableSubscription(() => _customListeners.remove(listener));
@@ -118,7 +112,7 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T>
         ));
       }
     }
-    super.notifyListeners(); // this triggers Flutter widgets like Observer, etc.
+    super.notifyListeners();
   }
 
   @override
@@ -127,15 +121,17 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T>
   }
 
   @override
-  Observable<R> map<R>(R Function(T value) transform) {
-
-    final result = Observable<R>(transform(value));
+  ObservableReadOnly<R> map<R>(R Function(T value) transform) {
+    final result = Observable<R>(transform(value), notifyOnlyIfChanged: _notifyOnlyIfChanged);
 
     final subscription = listen((val) {
       result.value = transform(val);
     });
 
-    _mapSubs.add(subscription);
+    _mapSubs.add(DisposableAdapter(() {
+      subscription.cancel();
+      result.dispose();
+    }));
     return result;
   }
 
