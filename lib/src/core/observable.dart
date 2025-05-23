@@ -56,7 +56,8 @@ abstract class IObservable<T> extends IObservableListenable<T> { // Interface
 /// [ObservableListener] for example, can work with observable or stream under the hood
 abstract class IObservableListenable<T> implements IDisposable { // Interface
   /// Custom stream-like listen with custom subscription
-  /// More convenient than addListener API
+  /// More convenient than addListener API,
+  /// but works same as AddListener/RemoveListener, so expect same result
   ObservableSubscription<T> listen(FutureOr<void> Function(T) listener,
       {bool fireImmediately = false});
 
