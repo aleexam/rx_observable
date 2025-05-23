@@ -170,7 +170,7 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   }
 
   Future addStream(Stream<T> source, {bool? cancelOnError}) {
-    return _controller.addStream(stream, cancelOnError: cancelOnError);
+    return _controller.addStream(source, cancelOnError: cancelOnError);
   }
 
   bool get hasListener => _controller.hasListener;
