@@ -72,7 +72,9 @@ class _ObservableListenerState<T> extends State<_ObservableListener<T>> {
   void initState() {
     super.initState();
     _sub = widget.observable.listen((value) {
-      widget.listener(context, value);
+      if (mounted) {
+        widget.listener(context, value);
+      }
     });
   }
 

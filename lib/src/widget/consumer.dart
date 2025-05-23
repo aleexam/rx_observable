@@ -40,7 +40,9 @@ class _ObservableConsumerState<T> extends State<ObservableConsumer<T>> {
     _sub = widget.observable.listen((value) {
       if (mounted) {
         widget.listener?.call(context, value);
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       }
     }, fireImmediately: false);
   }

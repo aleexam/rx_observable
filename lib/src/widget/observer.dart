@@ -54,7 +54,11 @@ class _ObserverState<T> extends State<Observer<T>> {
   @override
   void initState() {
     super.initState();
-    _sub = widget.observable.listen((_) => setState(() {}));
+    _sub = widget.observable.listen((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -108,11 +112,17 @@ class _Observer2State<A, B> extends State<Observer2<A, B>> {
   late ObservableSubscription _subA;
   late ObservableSubscription _subB;
 
+  void _setStateIfMounted() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    _subA = widget.observable.listen((_) => setState(() {}));
-    _subB = widget.observable2.listen((_) => setState(() {}));
+    _subA = widget.observable.listen((_) => _setStateIfMounted());
+    _subB = widget.observable2.listen((_) => _setStateIfMounted());
   }
 
   @override
@@ -172,12 +182,18 @@ class _Observer3State<A, B, C> extends State<Observer3<A, B, C>> {
   late ObservableSubscription _subB;
   late ObservableSubscription _subC;
 
+  void _setStateIfMounted() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    _subA = widget.observable.listen((_) => setState(() {}));
-    _subB = widget.observable2.listen((_) => setState(() {}));
-    _subC = widget.observable3.listen((_) => setState(() {}));
+    _subA = widget.observable.listen((_) => _setStateIfMounted());
+    _subB = widget.observable2.listen((_) => _setStateIfMounted());
+    _subC = widget.observable3.listen((_) => _setStateIfMounted());
   }
 
   @override
@@ -216,7 +232,9 @@ class _MultiObserverState extends State<MultiObserver> {
     super.initState();
     _group = ObservableGroup(widget.observables);
     _subscription = _group.listen((_) {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
