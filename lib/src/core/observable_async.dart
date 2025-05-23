@@ -90,11 +90,39 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   @override
   ObservableStreamSubscription<T> listen(FutureOr<void> Function(T) onData,
       {bool fireImmediately = false}) {
-    var subscription = _controller.stream.listen(onData);
+    var subscription = _controller.stream.listen((event) {
+      try {
+        onData(event);
+      } catch (exception, stack) {
+        _reportObservableError(exception, stack);
+      }
+    });
     if (fireImmediately) {
-      onData(_value);
+      Future.microtask(() {
+        try {
+          onData(_value);
+        } catch (exception, stack) {
+          _reportObservableError(exception, stack);
+        }
+      });
     }
     return ObservableStreamSubscription(subscription);
+  }
+
+  void _reportObservableError(Object exception, StackTrace stack) {
+    FlutterError.reportError(FlutterErrorDetails(
+      exception: exception,
+      stack: stack,
+      library: 'foundation library',
+      context: ErrorDescription('while dispatching notifications for $runtimeType'),
+      informationCollector: () => <DiagnosticsNode>[
+        DiagnosticsProperty<ObservableAsyncReadOnly>(
+          'The $runtimeType sending notification was',
+          this,
+          style: DiagnosticsTreeStyle.errorProperty,
+        ),
+      ],
+    ));
   }
 
   void _updateValue(T newValue) {
