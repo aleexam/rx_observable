@@ -86,7 +86,6 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T>
       mappedObservable.value = transform(val);
     });
 
-
     var disposer = DisposableAdapter(() {
       mappedObservable._onDispose = null;
       subscription.cancel();
@@ -105,10 +104,10 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T>
   @override
   void dispose() {
     assert(ChangeNotifier.debugAssertNotDisposed(this));
+    _onDispose?.call();
     for (var cancelable in _mapSubs) {
       cancelable.cancel();
     }
-    _onDispose?.call();
     super.dispose();
   }
 

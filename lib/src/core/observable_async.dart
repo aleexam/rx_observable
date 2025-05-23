@@ -148,17 +148,25 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
 
   @override
   ObservableAsyncReadOnly<R> map<R>(R Function(T value) transform) {
-    final result = ObservableAsync<R>(transform(value), notifyOnlyIfChanged: _notifyOnlyIfChanged);
+    final mappedObservable = ObservableAsync<R>(transform(value), notifyOnlyIfChanged: _notifyOnlyIfChanged);
 
     final subscription = listen((val) {
-      result.value = transform(val);
+      mappedObservable.value = transform(val);
     });
 
-    _mapSubs.add(DisposableAdapter(() {
+    var disposer = DisposableAdapter(() {
+      mappedObservable._onDispose = null;
       subscription.cancel();
-      result.dispose();
-    }));
-    return result;
+      mappedObservable.dispose();
+    });
+
+    mappedObservable._onDispose = () {
+      subscription.cancel();
+      _mapSubs.remove(disposer);
+    };
+
+    _mapSubs.add(disposer);
+    return mappedObservable;
   }
 
   void _add(T event) {
@@ -208,11 +216,14 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
 
   @override
   void dispose() {
+    _onDispose?.call();
     for (var cancelable in _mapSubs) {
       cancelable.cancel();
     }
     close();
   }
+
+    void Function()? _onDispose;
 
   Future close() {
     return _controller.close();
