@@ -46,7 +46,9 @@ class _ObserveState extends State<Observe> {
   @override
   void didUpdateWidget(covariant Observe oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _buildAndTrack();
+    if (widget.builder != oldWidget.builder) {
+      _buildAndTrack();
+    }
   }
 
   @override
