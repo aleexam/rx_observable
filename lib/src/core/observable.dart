@@ -67,3 +67,19 @@ abstract class IObservableListenable<T> implements IDisposable { // Interface
   @override
   void dispose();
 }
+
+void _reportObservableError<T>(Object exception, StackTrace stack, IObservable<T> obs) {
+  FlutterError.reportError(FlutterErrorDetails(
+    exception: exception,
+    stack: stack,
+    library: 'foundation library',
+    context: ErrorDescription('while dispatching notifications for ${obs.runtimeType}'),
+    informationCollector: () => <DiagnosticsNode>[
+      DiagnosticsProperty<IObservable<T>>(
+        'The ${obs.runtimeType} sending notification was',
+        obs,
+        style: DiagnosticsTreeStyle.errorProperty,
+      ),
+    ],
+  ));
+}

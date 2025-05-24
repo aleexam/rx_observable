@@ -42,6 +42,7 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T>
   /// Set and emit the new value.
   void _updateValue(T newValue) {
     /// Experimental start
+    // ignore: deprecated_member_use_from_same_package
     if (ExperimentalObservableFeatures.useExperimental && ObsTrackingContext.current != null) {
       throw Exception('You cannot modify reactive value inside Observer builder');
     }
@@ -55,6 +56,7 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T>
 
   @override
   T get value {
+    // ignore: deprecated_member_use_from_same_package
     if (ExperimentalObservableFeatures.useExperimental) ObsTrackingContext.current?._register(this); /// Experimental
     return _value;
   }
@@ -69,8 +71,8 @@ class ObservableReadOnly<T> extends ChangeNotifier implements IObservableSync<T>
     assert(ChangeNotifier.debugAssertNotDisposed(this));
     listenerWrapper() => listener(_value);
     addListener(listenerWrapper);
-    if (fireImmediately) listener(_value);
-    return ObservableSubscription(() => removeListener(listenerWrapper));
+    if (fireImmediately) listenerWrapper();
+    return ObservableSubscription<T>(() => removeListener(listenerWrapper));
   }
 
   @override

@@ -16,7 +16,11 @@ class ObservableComputed<T> extends ObservableReadOnly<T> {
   }) : super(_compute()) {
     for (final observable in observables) {
       final sub = observable.listen((_) {
-        super._value = _compute();
+        try {
+          super._value = _compute();
+        } catch (e, s) {
+          _reportObservableError(e, s, this);
+        }
       });
       _subscriptions.add(sub);
     }
@@ -50,7 +54,11 @@ class ObservableComputedAsync<T> extends ObservableAsyncReadOnly<T> {
   }) : super(_compute()) {
     for (final observable in observables) {
       final sub = observable.listen((_) {
-        super._value = _compute();
+        try {
+          super._value = _compute();
+        } catch (e, s) {
+          super.addError(e, s);
+        }
       });
       _subscriptions.add(sub);
     }
