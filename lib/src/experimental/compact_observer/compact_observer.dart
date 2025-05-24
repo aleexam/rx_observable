@@ -17,7 +17,9 @@ class Observe extends StatefulWidget {
   State<Observe> createState() => _ObserveState();
 }
 
+// ignore: deprecated_member_use_from_same_package
 class _ObserveState extends State<Observe> {
+  // ignore: deprecated_member_use_from_same_package
   final ObsTrackingContext _ctx = ObsTrackingContext();
   final List<ObservableSubscription> _subs = [];
   late Widget _cachedWidget;
@@ -44,6 +46,7 @@ class _ObserveState extends State<Observe> {
   }
 
   @override
+  // ignore: deprecated_member_use_from_same_package
   void didUpdateWidget(covariant Observe oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.builder != oldWidget.builder) {
