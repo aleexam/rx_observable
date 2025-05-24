@@ -5,8 +5,8 @@ import 'package:rx_observable/widgets.dart';
 
 import 'example_screen.dart';
 
-void main() {
-  // All constructors gives the same result
+void main() {  
+  // Examples of different ways to create observables
   var test1 = Observable(25);
   var test2 = ObservableAsync<int>(25);
   var test3 = Obs(25);
@@ -16,6 +16,7 @@ void main() {
   /// You can only read this value
   var test6 = ObservableReadOnly(25);
 
+  // Always dispose observables when no longer needed
   test1.dispose();
   test2.dispose();
   test3.dispose();
@@ -45,17 +46,17 @@ class _ExampleAppState extends State<ExampleApp> {
       ),
 
       /// Listen observable without UI updating
-      /// Also see ObservableConsumer widget to get both
+      /// Also see [ObservableConsumer] widget to get both
       home: ObservableListener(
-          observable: test1,
-          listener: (v, context) {
-            if (kDebugMode) {
-              print(v);
-            }
-          },
-
-          /// See other examples on [ExampleScreen]
-          child: const ExampleScreen()),
+        observable: test1,
+        listener: (v, context) {
+          if (kDebugMode) {
+            print("Observable value changed: $v");
+          }
+        },
+        /// See other examples on [ExampleScreen]
+        child: const ExampleScreen()
+      ),
     );
   }
 }

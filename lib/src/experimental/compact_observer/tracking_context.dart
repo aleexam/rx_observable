@@ -18,15 +18,18 @@ class ObsTrackingContext {
     if (_isTracking) _trackedVars.add(observable);
   }
 
-  /// Do not ever call this method, it can break [Observe] widget logic
+  /// IMPORTANT: This method is for internal use only. Do not ever call it directly
+  /// as it may break the [Observe] widget's tracking logic.
   @visibleForTesting
   T track<T>(T Function() fn, void Function(Set<IObservable>) onTrackedVars) {
     if (_isTracking) {
       throw Exception('Nested ObsTrackingContext not allowed');
     }
+    
     _isTracking = true;
     _stack.add(this);
     _trackedVars.clear();
+    
     try {
       final result = fn();
       onTrackedVars(Set.of(_trackedVars));

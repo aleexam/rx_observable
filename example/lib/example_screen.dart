@@ -13,9 +13,14 @@ class ExampleScreen extends StatefulWidget {
 class ExampleScreenState extends State<ExampleScreen> {
   var text = "Hello".obs;
   var text2 = "Mister".obs;
+  var counter = 0.obs;
 
   @override
   void initState() {
+    
+    // Uncomment this to enable experimental features
+    // ExperimentalObservableFeatures.useExperimental = true;
+
     text.listen((v) {
       if (kDebugMode) {
         print("New value is $v");
@@ -29,46 +34,109 @@ class ExampleScreenState extends State<ExampleScreen> {
     super.initState();
   }
 
+  void incrementCounter() {
+    counter.value++;
+  }
+
+  // Helper method for tracking text2 in experimental feature
+  Widget _buildManualTrackingExample() {
+    // Manually track text2
+    // ignore: deprecated_member_use
+    text2.observe();
+    return Text(
+      "Manual tracking: ${text2.value} is here",
+      style: const TextStyle(color: Colors.green),
+    );
+  }
+
   @override
   void dispose() {
     text.dispose();
     text2.dispose();
+    counter.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: [
-          /// Use Observer widget directly to update UI with values
-          Observer(text, (v) => Text(v)),
+      appBar: AppBar(
+        title: const Text("rx_observable Example"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Standard Observers:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
 
-          /// Use extensions which creates same observer widget
-          text.observer((v) => Text(v)),
+            // Standard observer with single observable
+            Observer(text, (v) => Text("Single observable: $v")),
 
-          /// Use big builder version
-          Observer.builder(
+            // Extension method to create an observer
+            text.observer((v) => Text("Using extension: $v")),
+
+            // Builder version for more control
+            Observer.builder(
               observable: text,
               builder: (context, v) {
-                return Text(v);
-              }),
+                return Text("Builder version: $v");
+              },
+            ),
 
-          /// Listen 2 or 3 observables
-          Observer2(
+            // Observing multiple values with Observer2
+            Observer2(
               observable: text,
               observable2: text2,
               builder: (context, v1, v2) {
-                return Text("$v1 $v2");
-              }),
+                return Text("Two observables: $v1 $v2");
+              },
+            ),
 
-          /// Experimental feature, auto-subscription observer.
-          /// It detects called observables inside it and automatically subscribe on them
-          /// Not well tested, use at your own risk
-          // ignore: deprecated_member_use
-          Observe(() => Text(text.value)),
-        ],
+            const SizedBox(height: 24),
+            Observer(
+                counter,
+                (count) => Text(
+                      "Counter value: $count",
+                      style: const TextStyle(fontSize: 16),
+                    )),
+
+            // Only use the experimental feature if it's enabled
+            // ignore: deprecated_member_use
+            if (ExperimentalObservableFeatures.useExperimental)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Experimental features:",
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red)),
+                  // Observe widget automatically detects and subscribes to observables
+                  // ignore: deprecated_member_use
+                  Observe(() => Text(
+                        "Automatic tracking: ${text.value} - Count: ${counter.value}",
+                        style: const TextStyle(color: Colors.blue),
+                      )),
+
+                  const SizedBox(height: 8),
+
+                  // Example of manual tracking using a helper method
+                  // ignore: deprecated_member_use
+                  Observe(() => _buildManualTrackingExample()),
+                ],
+              ),
+
+            ElevatedButton(
+              onPressed: incrementCounter,
+              child: const Text("Increment Counter"),
+            ),
+          ],
+        ),
       ),
     );
   }
