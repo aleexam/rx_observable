@@ -13,7 +13,7 @@
 ## 0.6.0
 * Migrated from stream based solution to ChangeNotifier
 
-## 0.7.0
+## 0.6.9
 * Observable now support two types - Sync (ChangeNotifier based) and Async (StreamController based).
   Both share same interface and can be used as same type, also can be used as ChangeNotifier or StreamController
 * Lot of optimization
