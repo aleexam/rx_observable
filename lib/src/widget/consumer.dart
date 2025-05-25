@@ -9,7 +9,6 @@ import 'package:rx_observable/src/core/observable.dart';
 /// To listen [Stream] use extension [ObservableStreamAdapters.asObservable]
 /// to convert Stream to IObservable, or use [ObservableAsync]
 class ObservableConsumer<T> extends StatefulWidget {
-
   /// The observable to listen to.
   final IObservable<T> observable;
 
@@ -40,7 +39,9 @@ class _ObservableConsumerState<T> extends State<ObservableConsumer<T>> {
     _sub = widget.observable.listen((value) {
       if (mounted) {
         widget.listener?.call(context, value);
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       }
     }, fireImmediately: false);
   }

@@ -12,52 +12,52 @@ mixin RxSubsMixin {
 
   /// Reg [IDisposable] or [ICancelable] or [StreamSubscription] or [EventSink]
   void reg<C extends Object>(C sinkOrSub) {
-     _mixinRoot.reg(sinkOrSub);
+    _mixinRoot.reg(sinkOrSub);
   }
 
   /// Reg list of [StreamSubscription] or [EventSink] or [IDisposable]
   void regs<C extends Object>(List<C> sinksOrSubs) {
-     _mixinRoot.regs(sinksOrSubs);
+    _mixinRoot.regs(sinksOrSubs);
   }
 
   /// Register object that require close when this class will be destroyed
   void regSink(EventSink sink) {
-     _mixinRoot.regSink(sink);
+    _mixinRoot.regSink(sink);
   }
 
   /// Register list of objects that require close when this class will be destroyed
   void regSinks(List<EventSink> sinks) {
-     _mixinRoot.regSinks(sinks);
+    _mixinRoot.regSinks(sinks);
   }
 
   /// Register subscription that require close when this class will be destroyed
   void regSub(StreamSubscription sub) {
-     _mixinRoot.regSub(sub);
+    _mixinRoot.regSub(sub);
   }
 
   /// Register list of subscriptions that require close when this class will be destroyed
   void regSubs(List<StreamSubscription> subs) {
-     _mixinRoot.regSubs(subs);
+    _mixinRoot.regSubs(subs);
   }
 
   /// Register [IDisposable] that require close when this class will be destroyed
   void regDisposable(IDisposable disposable) {
-     _mixinRoot.regDisposable(disposable);
+    _mixinRoot.regDisposable(disposable);
   }
 
   /// Register list of [IDisposable] that require close when this class will be destroyed
   void regDisposables(List<IDisposable> disposableList) {
-     _mixinRoot.regDisposables(disposableList);
+    _mixinRoot.regDisposables(disposableList);
   }
 
   /// Register [ICancelable] that require close when this class will be destroyed
   void regCancelable(ICancelable cancelable) {
-     _mixinRoot.regCancelable(cancelable);
+    _mixinRoot.regCancelable(cancelable);
   }
 
   /// Register list of [ICancelable] that require close when this class will be destroyed
   void regCancelables(List<ICancelable> cancelableList) {
-     _mixinRoot.regCancelables(cancelableList);
+    _mixinRoot.regCancelables(cancelableList);
   }
 
   /// Dispose method that automatically close all sinks and cancel all subscriptions
@@ -74,52 +74,52 @@ mixin RxSubsStateMixin<T extends StatefulWidget> on State<T> {
 
   /// Reg [IDisposable] or [ICancelable] or [StreamSubscription] or [EventSink]
   void reg<C extends Object>(C sinkOrSub) {
-     _mixinRoot.reg(sinkOrSub);
+    _mixinRoot.reg(sinkOrSub);
   }
 
   /// Reg list of [StreamSubscription] or [EventSink] or [IDisposable]
   void regs<C extends Object>(List<C> sinksOrSubs) {
-     _mixinRoot.regs(sinksOrSubs);
+    _mixinRoot.regs(sinksOrSubs);
   }
 
   /// Register object that require close when this class will be destroyed
   void regSink(EventSink sink) {
-     _mixinRoot.regSink(sink);
+    _mixinRoot.regSink(sink);
   }
 
   /// Register list of objects that require close when this class will be destroyed
   void regSinks(List<EventSink> sinks) {
-     _mixinRoot.regSinks(sinks);
+    _mixinRoot.regSinks(sinks);
   }
 
   /// Register subscription that require close when this class will be destroyed
   void regSub(StreamSubscription sub) {
-     _mixinRoot.regSub(sub);
+    _mixinRoot.regSub(sub);
   }
 
   /// Register list of subscriptions that require close when this class will be destroyed
   void regSubs(List<StreamSubscription> subs) {
-     _mixinRoot.regSubs(subs);
+    _mixinRoot.regSubs(subs);
   }
 
   /// Register [IDisposable] that require close when this class will be destroyed
   void regDisposable(IDisposable disposable) {
-     _mixinRoot.regDisposable(disposable);
+    _mixinRoot.regDisposable(disposable);
   }
 
   /// Register list of [IDisposable] that require close when this class will be destroyed
   void regDisposables(List<IDisposable> disposableList) {
-     _mixinRoot.regDisposables(disposableList);
+    _mixinRoot.regDisposables(disposableList);
   }
 
   /// Register [ICancelable] that require close when this class will be destroyed
   void regCancelable(ICancelable cancelable) {
-     _mixinRoot.regCancelable(cancelable);
+    _mixinRoot.regCancelable(cancelable);
   }
 
   /// Register list of [ICancelable] that require close when this class will be destroyed
   void regCancelables(List<ICancelable> cancelableList) {
-     _mixinRoot.regCancelables(cancelableList);
+    _mixinRoot.regCancelables(cancelableList);
   }
 
   /// Dispose method that automatically close all sinks and cancel all subscriptions
@@ -142,8 +142,6 @@ class _RxSubsMixinObject {
   void reg(dynamic sinkOrSub) {
     if (sinkOrSub is List) {
       regs(sinkOrSub);
-    } else if (sinkOrSub is List) {
-      regs(sinkOrSub);
     } else if (sinkOrSub is EventSink) {
       regSink(sinkOrSub);
     } else if (sinkOrSub is StreamSubscription) {
@@ -157,8 +155,8 @@ class _RxSubsMixinObject {
     } else {
       throw UnimplementedError(
           "Object with type ${sinkOrSub.runtimeType} with value ${sinkOrSub.toString()} "
-              "is not supported for automatic register in RxSubsMixin. "
-              "Please close/dispose it manually in dispose method.");
+          "is not supported for automatic register in RxSubsMixin. "
+          "Please use DisposableAdapter() or close/dispose it manually in dispose method.");
     }
   }
 

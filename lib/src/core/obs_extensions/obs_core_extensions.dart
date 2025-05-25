@@ -18,7 +18,8 @@ extension StringExtension on String {
   ObservableAsync<String> get obsA => ObservableAsync<String>(this);
 
   /// Creates a read-only observable wrapping this String value.
-  ObservableReadOnly<String> get obsReadOnly => ObservableReadOnly<String>(this);
+  ObservableReadOnly<String> get obsReadOnly =>
+      ObservableReadOnly<String>(this);
 
   /// Creates a read-only asynchronous observable wrapping this String value.
   ObservableAsync<String> get obsAReadOnly => ObservableAsync<String>(this);
@@ -46,7 +47,8 @@ extension DoubleExtension on double {
   ObservableAsync<double> get obsA => ObservableAsync<double>(this);
 
   /// Creates a read-only observable wrapping this double value.
-  ObservableReadOnly<double> get obsReadOnly => ObservableReadOnly<double>(this);
+  ObservableReadOnly<double> get obsReadOnly =>
+      ObservableReadOnly<double>(this);
 
   /// Creates a read-only asynchronous observable wrapping this double value.
   ObservableAsync<double> get obsAReadOnly => ObservableAsync<double>(this);
@@ -88,7 +90,8 @@ extension ListExtension<T> on List<T> {
   ObservableAsync<List<T>> get obsA => ObservableAsync<List<T>>(this);
 
   /// Creates a read-only observable wrapping this list.
-  ObservableReadOnly<List<T>> get obsReadOnly => ObservableReadOnly<List<T>>(this);
+  ObservableReadOnly<List<T>> get obsReadOnly =>
+      ObservableReadOnly<List<T>>(this);
 
   /// Creates a read-only asynchronous observable wrapping this list.
   ObservableAsync<List<T>> get obsAReadOnly => ObservableAsync<List<T>>(this);
@@ -107,7 +110,7 @@ extension ComputedFunction<T> on T Function() {
 
 extension ObservableStreamAdapters<T> on Stream<T> {
   /// Wraps a [Stream] into an [IObservableListenable].
-  IObservableListenable<T> asObservable() {
+  StreamToObservableAdapter<T> asObservable() {
     return StreamToObservableAdapter<T>(this);
   }
 }
@@ -126,6 +129,7 @@ extension CancelSubsList on List<StreamSubscription> {
     for (var sub in this) {
       sub.cancel();
     }
+    clear();
   }
 }
 
@@ -135,6 +139,7 @@ extension CancelSubsSet on Set<StreamSubscription> {
     for (var sub in this) {
       sub.cancel();
     }
+    clear();
   }
 }
 
@@ -144,6 +149,7 @@ extension CloseStreamsList on List<StreamSink> {
     for (var sink in this) {
       sink.close();
     }
+    clear();
   }
 }
 
@@ -153,6 +159,7 @@ extension CloseStreamsSet on Set<StreamSink> {
     for (var sink in this) {
       sink.close();
     }
+    clear();
   }
 }
 
@@ -162,6 +169,7 @@ extension CloseEventSinksList on List<EventSink> {
     for (var sink in this) {
       sink.close();
     }
+    clear();
   }
 }
 
@@ -171,6 +179,7 @@ extension CloseEventSinksSet on Set<EventSink> {
     for (var sink in this) {
       sink.close();
     }
+    clear();
   }
 }
 
@@ -180,6 +189,7 @@ extension CloseDisposablesList on List<IDisposable> {
     for (var disposable in this) {
       disposable.dispose();
     }
+    clear();
   }
 }
 
@@ -189,6 +199,7 @@ extension CloseDisposablesSet on Set<IDisposable> {
     for (var disposable in this) {
       disposable.dispose();
     }
+    clear();
   }
 }
 
@@ -198,6 +209,7 @@ extension CloseCancelablesList on List<ICancelable> {
     for (var cancelable in this) {
       cancelable.cancel();
     }
+    clear();
   }
 }
 
@@ -207,6 +219,7 @@ extension CloseCancelablesSet on Set<ICancelable> {
     for (var cancelable in this) {
       cancelable.cancel();
     }
+    clear();
   }
 }
 
@@ -216,5 +229,6 @@ extension DisposeChangeNotifiersSet on Set<ChangeNotifier> {
     for (var notifier in this) {
       notifier.dispose();
     }
+    clear();
   }
 }

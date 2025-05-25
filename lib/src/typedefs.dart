@@ -2,7 +2,7 @@ import 'core/observable.dart';
 import '../widgets.dart';
 
 typedef ObservableString = Observable<String>;
-typedef ObservableNullableString =  Observable<String?>;
+typedef ObservableNullableString = Observable<String?>;
 typedef ObservableInt = Observable<int>;
 typedef ObservableNullableInt = Observable<int?>;
 typedef ObservableDouble = Observable<double>;
@@ -13,7 +13,7 @@ typedef ObservableBool = Observable<bool>;
 typedef ObservableNullableBool = Observable<bool?>;
 
 typedef ObservableAsyncString = ObservableAsync<String>;
-typedef ObservableAsyncNullableString =  ObservableAsync<String?>;
+typedef ObservableAsyncNullableString = ObservableAsync<String?>;
 typedef ObservableAsyncInt = ObservableAsync<int>;
 typedef ObservableAsyncNullableInt = ObservableAsync<int?>;
 typedef ObservableAsyncDouble = ObservableAsync<double>;

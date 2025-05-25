@@ -16,7 +16,11 @@ class ObservableComputed<T> extends ObservableReadOnly<T> {
   }) : super(_compute()) {
     for (final observable in observables) {
       final sub = observable.listen((_) {
-        super._value = _compute();
+        try {
+          _updateValue(_compute());
+        } catch (e, s) {
+          reportObservableError(e, s, this);
+        }
       });
       _subscriptions.add(sub);
     }
@@ -28,6 +32,7 @@ class ObservableComputed<T> extends ObservableReadOnly<T> {
     for (final sub in _subscriptions) {
       sub.cancel();
     }
+    _subscriptions.clear();
     super.dispose();
   }
 }
@@ -42,15 +47,19 @@ class ObservableComputedAsync<T> extends ObservableAsyncReadOnly<T> {
   /// Constructor takes a compute function and a list of dependent observables.
   /// Recomputes the value and notifies listeners when any dependency changes.
   ObservableComputedAsync(
-      this._compute,
-      List<IObservable> observables, {
-      super.onListen,
-      super.onCancel,
-      super.notifyOnlyIfChanged,
+    this._compute,
+    List<IObservable> observables, {
+    super.onListen,
+    super.onCancel,
+    super.notifyOnlyIfChanged,
   }) : super(_compute()) {
     for (final observable in observables) {
       final sub = observable.listen((_) {
-        super._value = _compute();
+        try {
+          _updateValue(_compute());
+        } catch (e, s) {
+          super._addError(e, s);
+        }
       });
       _subscriptions.add(sub);
     }
@@ -62,6 +71,7 @@ class ObservableComputedAsync<T> extends ObservableAsyncReadOnly<T> {
     for (final sub in _subscriptions) {
       sub.cancel();
     }
+    _subscriptions.clear();
     super.dispose();
   }
 }

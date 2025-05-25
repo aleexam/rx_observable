@@ -21,7 +21,6 @@ abstract class ICancelable {
 /// Example: regDisposable(DisposableAdapter(() => someObject.dispose());
 /// In RxSubsMixin dispose method, () => someObject.dispose() will be called
 class DisposableAdapter implements IDisposable, ICancelable {
-
   final void Function() disposeCallback;
 
   DisposableAdapter(this.disposeCallback);
@@ -35,5 +34,4 @@ class DisposableAdapter implements IDisposable, ICancelable {
   void cancel() {
     disposeCallback();
   }
-
 }

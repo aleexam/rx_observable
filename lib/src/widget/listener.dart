@@ -19,7 +19,6 @@ import '../core/observable.dart';
 ///   child: MyWidget(),
 /// );
 class ObservableListener<T> extends StatelessWidget {
-
   /// Creates an [ObservableListener] that listens to [observable]
   /// and calls [listener] when its value changes.
   const ObservableListener({
@@ -37,7 +36,6 @@ class ObservableListener<T> extends StatelessWidget {
 
   /// The callback that is triggered when the observable emits a new value.
   final void Function(BuildContext context, T value) listener;
-
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +70,9 @@ class _ObservableListenerState<T> extends State<_ObservableListener<T>> {
   void initState() {
     super.initState();
     _sub = widget.observable.listen((value) {
-      widget.listener(context, value);
+      if (mounted) {
+        widget.listener(context, value);
+      }
     });
   }
 

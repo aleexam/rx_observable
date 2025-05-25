@@ -1,0 +1,120 @@
+import 'dart:async';
+
+import '../observable.dart';
+
+class MappedObservableAsyncReadOnly<T, M>
+    implements ObservableAsyncReadOnly<M> {
+  final ObservableAsyncReadOnly<T> _source;
+  final StreamController<T> _sourceController;
+  final M Function(T) _transform;
+
+  MappedObservableAsyncReadOnly(
+    this._source,
+    this._sourceController,
+    this._transform, {
+    this.notifyOnlyIfChanged = true,
+  }) {
+    _lastValue = _transform(_source.value);
+  }
+
+  @override
+  bool notifyOnlyIfChanged;
+
+  @override
+  M get value {
+    try {
+      var val = _transform(_source.value);
+      _lastValue = val;
+      return val;
+    } catch (e, s) {
+      if (_lastValue != null) {
+        _sourceController.addError(e, s);
+        return _lastValue!;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  @override
+  M get v => value;
+
+  M? _lastValue;
+  bool _isClosed = false;
+
+  bool _shouldNotify(M value) {
+    if ((notifyOnlyIfChanged && _lastValue == value) || _isClosed) {
+      return false;
+    }
+    _lastValue = value;
+    return true;
+  }
+
+  @override
+  ObservableStreamSubscription<M> listen(FutureOr<void> Function(M) onData,
+      {bool fireImmediately = false}) {
+    var subscription = _source.stream
+        .map(_transform)
+        .where(_shouldNotify)
+        .listen(onData, onError: (e, s) {
+      reportObservableError(e, s, this);
+    });
+    return ObservableStreamSubscription<M>(subscription);
+  }
+
+  @override
+  StreamSubscription<M> listenAsStream(void Function(M)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
+    return _source.stream.map(_transform).where(_shouldNotify).listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }
+
+  @override
+  ObservableAsyncReadOnly<R> map<R>(R Function(M value) newTransform,
+      {bool? notifyOnlyIfChanged}) {
+    return _source.map((value) => newTransform(_transform(value)),
+        notifyOnlyIfChanged: notifyOnlyIfChanged ?? this.notifyOnlyIfChanged);
+  }
+
+  @override
+  void notify() {
+    _source.notify();
+  }
+
+  @override
+  FutureOr<void> Function()? onCancel;
+
+  @override
+  void Function()? onListen;
+
+  @override
+  void Function()? onPause;
+
+  @override
+  void Function()? onResume;
+
+  @override
+  Future get done => _source.done;
+
+  @override
+  bool get hasListener => _source.hasListener;
+
+  @override
+  bool get isClosed => _source.isClosed;
+
+  @override
+  bool get isPaused => _source.isPaused;
+
+  @override
+  Stream<M> get stream => _source.stream.map(_transform);
+
+  @override
+  void dispose() {
+    _isClosed = true;
+  }
+
+  @override
+  Future close() async {
+    return dispose();
+  }
+}

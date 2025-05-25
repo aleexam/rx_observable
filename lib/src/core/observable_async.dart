@@ -1,3 +1,5 @@
+// ignore_for_file: override_on_non_overriding_member
+
 part of 'observable.dart';
 
 /// This observable class is async, based on [StreamController].
@@ -5,7 +7,7 @@ part of 'observable.dart';
 /// You can use it like usual broadcast StreamController anywhere
 /// Must always call dispose when use [ObservableAsync]
 class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
-    implements IObservableMutable<T>, StreamController<T>  {
+    implements IObservableMutable<T>, StreamController<T> {
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
   /// [onListen], [onCancel], flag to handle events [sync] and
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
@@ -35,15 +37,31 @@ class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
     if (isClosed) throw StateError("Cannot add new events after calling close");
 
     /// Experimental start
-    if (ExperimentalObservableFeatures.useExperimental && ObsTrackingContext.current != null) {
-      throw Exception('You cannot modify reactive value inside Observer builder');
-    }
+    ObsTrackingContext._handleModificationDuringTracking(this);
 
     /// Experimental end
 
     _value = event;
     _add(event);
   }
+
+  @override
+  StreamSink<T> get sink {
+    _customSink ??= _CustomStreamSink<T>(_controller.sink, (value) {
+      _value = value;
+    });
+    return _customSink!;
+  }
+
+  _CustomStreamSink<T>? _customSink;
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) =>
+      _addError(error, stackTrace);
+
+  @override
+  Future addStream(Stream<T> source, {bool? cancelOnError}) =>
+      _addStream(source, cancelOnError: cancelOnError);
 }
 
 /// This observable class is async, based on StreamController.
@@ -71,67 +89,58 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
     void Function()? onCancel,
     bool sync = false,
   }) {
-    _controller =
-        StreamController<T>.broadcast(sync: sync, onListen: onListen, onCancel: onCancel);
+    _controller = StreamController<T>.broadcast(
+        sync: sync, onListen: onListen, onCancel: onCancel);
     _notifyOnlyIfChanged = notifyOnlyIfChanged;
   }
 
   @override
   T get value {
-    if (ExperimentalObservableFeatures.useExperimental) ObsTrackingContext.current?._register(this); /// Experimental
+    ObsTrackingContext.current?._register(this);
+
+    /// Experimental
     return _value;
   }
 
   @override
   T get v => value;
 
-  final Set<ICancelable> _mapSubs = {};
-
   @override
   ObservableStreamSubscription<T> listen(FutureOr<void> Function(T) onData,
       {bool fireImmediately = false}) {
     var subscription = _controller.stream.listen((event) {
-      try {
-        onData(event);
-      } catch (exception, stack) {
-        _reportObservableError(exception, stack);
-      }
+      onData(event);
+    }, onError: (e, s) {
+      reportObservableError(e, s, this);
     });
-    if (fireImmediately) {
+    if (fireImmediately && !isClosed) {
       Future.microtask(() {
         try {
           onData(_value);
         } catch (exception, stack) {
-          _reportObservableError(exception, stack);
+          reportObservableError(exception, stack, this);
         }
       });
     }
-    return ObservableStreamSubscription(subscription);
+    return ObservableStreamSubscription<T>(subscription);
   }
 
-  void _reportObservableError(Object exception, StackTrace stack) {
-    FlutterError.reportError(FlutterErrorDetails(
-      exception: exception,
-      stack: stack,
-      library: 'foundation library',
-      context: ErrorDescription('while dispatching notifications for $runtimeType'),
-      informationCollector: () => <DiagnosticsNode>[
-        DiagnosticsProperty<ObservableAsyncReadOnly>(
-          'The $runtimeType sending notification was',
-          this,
-          style: DiagnosticsTreeStyle.errorProperty,
-        ),
-      ],
-    ));
+  StreamSubscription<T> listenAsStream(
+    void Function(T)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    return _controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   void _updateValue(T newValue) {
     if (isClosed) throw StateError("Cannot update value after calling dispose");
 
     /// Experimental start
-    if (ExperimentalObservableFeatures.useExperimental && ObsTrackingContext.current != null) {
-      throw Exception('You cannot modify reactive value inside Observer builder');
-    }
+    ObsTrackingContext._handleModificationDuringTracking(this);
+
     /// Experimental end
 
     if (_value != newValue || !_notifyOnlyIfChanged) {
@@ -147,74 +156,130 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   }
 
   @override
-  ObservableAsyncReadOnly<R> map<R>(R Function(T value) transform) {
-    final result = ObservableAsync<R>(transform(value), notifyOnlyIfChanged: _notifyOnlyIfChanged);
-
-    final subscription = listen((val) {
-      result.value = transform(val);
-    });
-
-    _mapSubs.add(DisposableAdapter(() {
-      subscription.cancel();
-      result.dispose();
-    }));
-    return result;
+  ObservableAsyncReadOnly<R> map<R>(R Function(T value) transform,
+      {bool? notifyOnlyIfChanged}) {
+    return MappedObservableAsyncReadOnly<T, R>(this, _controller, transform,
+        notifyOnlyIfChanged: notifyOnlyIfChanged ?? _notifyOnlyIfChanged);
   }
 
   void _add(T event) {
     _controller.add(event);
   }
 
-  void addError(Object error, [StackTrace? stackTrace]) {
+  /// Override is not necessary, and this class is not actually implements stream controller,
+  /// but this makes more likely to understand which methods are implements to be compatible
+  /// withstream controller
+  /// Excluding add method, because readonly class should not be able to add events,
+  /// and therefore add() method implemented in ObservableAsync only,
+  /// and ObservableAsync implements StreamController
+
+  @override
+  void _addError(Object error, [StackTrace? stackTrace]) {
     _controller.addError(error, stackTrace);
   }
 
-  Future addStream(Stream<T> source, {bool? cancelOnError}) {
-    return _controller.addStream(stream, cancelOnError: cancelOnError);
+  @override
+  Future _addStream(Stream<T> source, {bool? cancelOnError}) {
+    final transformedStream = source.map((event) {
+      _value = event;
+      return event;
+    });
+
+    return _controller.addStream(transformedStream,
+        cancelOnError: cancelOnError);
   }
 
+  @override
   bool get hasListener => _controller.hasListener;
 
+  @override
   bool get isClosed => _controller.isClosed;
 
+  @override
   bool get isPaused => _controller.isPaused;
 
-  StreamSink<T> get sink => _controller.sink;
-
+  @override
   Stream<T> get stream => _controller.stream;
 
+  @override
   Future get done => _controller.done;
 
+  @override
   FutureOr<void> Function()? onCancel;
 
+  @override
   void Function()? get onPause => _controller.onPause;
 
+  @override
   set onPause(void Function()? function) {
     _controller.onPause = function;
   }
 
+  @override
   void Function()? get onResume => _controller.onResume;
 
+  @override
   set onResume(void Function()? function) {
     _controller.onResume = function;
   }
 
+  @override
   void Function()? get onListen => _controller.onListen;
 
+  @override
   set onListen(void Function()? function) {
     _controller.onListen = function;
   }
 
+  @override
+  void dispose() async {
+    if (!isClosed) {
+      await _controller.close();
+      //_customSink?.close();
+      _onDispose?.call();
+    }
+  }
+
+  void Function()? _onDispose;
 
   @override
-  void dispose() {
-    for (var cancelable in _mapSubs) {
-      cancelable.cancel();
-    }
-    close();
+  Future close() async {
+    return dispose();
+  }
+}
+
+class _CustomStreamSink<T> implements StreamSink<T> {
+  final StreamSink<T> _inner;
+  final void Function(T value) _onAdd;
+
+  _CustomStreamSink(this._inner, this._onAdd);
+
+  @override
+  void add(T event) {
+    _onAdd(event);
+    _inner.add(event);
   }
 
-  Future close() {
-    return _controller.close();
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) {
+    _inner.addError(error, stackTrace);
   }
+
+  @override
+  Future close() {
+    return _inner.close();
+  }
+
+  @override
+  Future addStream(Stream<T> stream) {
+    return _inner.addStream(
+      stream.map((event) {
+        _onAdd(event);
+        return event;
+      }),
+    );
+  }
+
+  @override
+  Future get done => _inner.done;
 }

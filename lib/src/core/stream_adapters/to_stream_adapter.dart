@@ -9,7 +9,8 @@ class ObservableToStreamAdapter<T> extends Stream<T> {
   ObservableToStreamAdapter(this.observable);
 
   @override
-  StreamSubscription<T> listen(void Function(T)? onData, {
+  StreamSubscription<T> listen(
+    void Function(T)? onData, {
     Function? onError,
     void Function()? onDone,
     bool? cancelOnError,
@@ -23,7 +24,8 @@ class ObservableToStreamAdapter<T> extends Stream<T> {
       controller.close();
     };
 
-    return controller.stream.listen(onData,
+    return controller.stream.listen(
+      onData,
       onError: onError,
       onDone: onDone,
       cancelOnError: cancelOnError ?? false,

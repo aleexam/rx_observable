@@ -24,13 +24,8 @@ class ObservableGroup extends IObservableListenable<void> {
   }
 
   @override
-  ObservableSubscription listen(void Function(void) listener,
-      {bool fireImmediately = true}) {
+  ObservableSubscription listen(void Function(void) listener) {
     _listeners.add(listener);
-    if (fireImmediately) {
-      listener(null);
-    }
-
     return ObservableSubscription(() {
       _listeners.remove(listener);
     });
