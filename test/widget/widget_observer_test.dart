@@ -8,52 +8,52 @@ import 'package:rx_observable/widgets.dart';
 void main() {
   group('Observer widget', () {
     testWidgets('Observer rebuilds only when necessary',
-            (WidgetTester tester) async {
-          final counter = Observable<int>(0);
+        (WidgetTester tester) async {
+      final counter = Observable<int>(0);
 
-          await tester.pumpWidget(
-            MaterialApp(
-              home: Observer(counter, (value) => Text('Count: $value')),
-            ),
-          );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Observer(counter, (value) => Text('Count: $value')),
+        ),
+      );
 
-          expect(find.text('Count: 0'), findsOneWidget);
+      expect(find.text('Count: 0'), findsOneWidget);
 
-          counter.value = 0;
-          await tester.pump();
+      counter.value = 0;
+      await tester.pump();
 
-          expect(find.text('Count: 0'), findsOneWidget);
+      expect(find.text('Count: 0'), findsOneWidget);
 
-          counter.value = 1;
-          await tester.pump();
+      counter.value = 1;
+      await tester.pump();
 
-          expect(find.text('Count: 1'), findsOneWidget);
+      expect(find.text('Count: 1'), findsOneWidget);
     });
 
     testWidgets('Observer rebuilds only when necessary async',
-            (WidgetTester tester) async {
-          final counter = ObservableAsync<int>(0);
+        (WidgetTester tester) async {
+      final counter = ObservableAsync<int>(0);
 
-          await tester.pumpWidget(
-            MaterialApp(
-              home: Observer(counter, (value) => Text('Count: $value')),
-            ),
-          );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Observer(counter, (value) => Text('Count: $value')),
+        ),
+      );
 
-          expect(find.text('Count: 0'), findsOneWidget);
+      expect(find.text('Count: 0'), findsOneWidget);
 
-          counter.value = 0;
-          await tester.pump();
-          await tester.pump();
+      counter.value = 0;
+      await tester.pump();
+      await tester.pump();
 
-          expect(find.text('Count: 0'), findsOneWidget);
+      expect(find.text('Count: 0'), findsOneWidget);
 
-          counter.value = 1;
-          await tester.pump();
-          await tester.pump();
+      counter.value = 1;
+      await tester.pump();
+      await tester.pump();
 
-          expect(find.text('Count: 1'), findsOneWidget);
-        });
+      expect(find.text('Count: 1'), findsOneWidget);
+    });
 
     testWidgets('Observer unsubscribes when disposed',
         (WidgetTester tester) async {
@@ -241,7 +241,8 @@ void main() {
         (WidgetTester tester) async {
       final counter1 = Observable<int>(0);
       final counter2 = ObservableAsync<int>(10);
-      final counter3 = [counter1, counter2].compute(() => counter2.v + counter1.v);
+      final counter3 =
+          [counter1, counter2].compute(() => counter2.v + counter1.v);
 
       final observables = [counter1, counter2, counter3];
 

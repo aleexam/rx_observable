@@ -170,8 +170,7 @@ void main() {
       expect(cancelable.cancelled, true);
       expect(() => controller.sink.add(1), throwsStateError);
       expect(observable.value, 42);
-      expect(() => observable.value = 100,
-          throwsAssertionError);
+      expect(() => observable.value = 100, throwsAssertionError);
       expect(observableAsync.isClosed, true);
       controller.close();
     });

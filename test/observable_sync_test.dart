@@ -58,7 +58,6 @@ void main() {
       expect(() => (readOnly as dynamic).value = 44, throwsNoSuchMethodError);
       expect(() => (readOnly2 as dynamic).value = 44, throwsNoSuchMethodError);
     });
-
   });
 
   group('Listeners and Subscriptions', () {
@@ -144,7 +143,6 @@ void main() {
       expect(obs2.value, 10);
       expect(obs3.value, 11);
     });
-
   });
 
   group('Transformation and Mapping', () {
@@ -306,7 +304,8 @@ void main() {
   });
 
   group('Compatibility with ChangeNotifier', () {
-    test('Observable matches ChangeNotifier behavior for nested notifications', () {
+    test('Observable matches ChangeNotifier behavior for nested notifications',
+        () {
       final observable = Observable<int>(0);
       final notifier = ChangeNotifier();
 

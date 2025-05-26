@@ -136,7 +136,6 @@ void main() {
       expect(defaultListenerCalled, true);
       expect(alwaysNotifyListenerCalled, true);
     });
-
   });
 
   group('AsyncMapper Tests', () {
@@ -178,7 +177,7 @@ void main() {
 
       bool errorCaught = false;
       mapped.stream.listen(
-            (_) {},
+        (_) {},
         onError: (error) {
           errorCaught = true;
           expect(error, isA<Exception>());

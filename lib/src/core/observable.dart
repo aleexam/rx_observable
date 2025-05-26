@@ -32,7 +32,6 @@ abstract class IObservableSync<T> extends IObservable<T>
 /// Interface for an asynchronous observable of type [T].
 /// Extends [IObservable] and acts as a [StreamController] in mutable version [ObservableAsync].
 abstract class IObservableAsync<T> extends IObservable<T> {
-
   @override
   Future<void> dispose();
 }

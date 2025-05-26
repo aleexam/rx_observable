@@ -11,7 +11,7 @@ void main() {
       expect(obs.value, 25);
       obs.value = 1;
       expect(obs.value, 1);
-      
+
       obs.v = 2;
       expect(obs.v, 2);
       expect(obs.value, 2);
@@ -32,11 +32,11 @@ void main() {
       });
 
       obs.value = 42; // Same value
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 0);
 
       obs.value = 43; // Different value
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 1);
     });
 
@@ -49,11 +49,11 @@ void main() {
       });
 
       obs.value = 42; // Same value
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 1);
 
       obs.value = 42; // Same value again
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 2);
     });
 
@@ -66,7 +66,7 @@ void main() {
       });
 
       obs.notify();
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 1);
     });
   });
@@ -80,7 +80,7 @@ void main() {
       });
 
       obs.value = 43;
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(lastValue, 43);
     });
 
@@ -95,7 +95,7 @@ void main() {
         fireImmediately: true,
       );
 
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(lastValue, 42);
     });
   });
@@ -107,7 +107,7 @@ void main() {
       expect(mapped.value, '42');
 
       obs.value = 43;
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(mapped.value, '43');
     });
 
@@ -121,11 +121,11 @@ void main() {
       });
 
       obs.value = 43; // Still 'high', shouldn't notify
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 0);
 
       obs.value = 39; // Changes to 'low', should notify
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 1);
     });
 
@@ -136,7 +136,7 @@ void main() {
       expect(mapped.value, '42');
 
       obs.value = 43;
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(mapped.value, '43');
     });
 
@@ -150,11 +150,11 @@ void main() {
       });
 
       obs.value = 43;
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 0);
 
       obs.value = 39;
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 1);
     });
   });
@@ -168,12 +168,12 @@ void main() {
       });
 
       obs.value = 43;
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 1);
 
       await subscription.cancel();
       obs.value = 44;
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 1);
     });
 
@@ -200,20 +200,20 @@ void main() {
     test('operations after close throw appropriate errors', () async {
       final obs = ObservableAsync<int>(42);
       await obs.close();
-      
+
       expect(obs.value, 42);
       expect(obs.isClosed, true);
-      
+
       expect(() => obs.value = 43, throwsStateError);
       expect(() => obs.add(44), throwsStateError);
       expect(() => obs.notify(), throwsStateError);
       expect(() => obs.addError(Exception('Test')), throwsStateError);
     });
-    
+
     test('can still read value after close', () {
       final obs = ObservableAsync<int>(42);
       obs.dispose();
-      
+
       expect(obs.value, 42);
       expect(obs.isClosed, true);
     });
@@ -229,16 +229,16 @@ void main() {
       });
 
       obs.value = null;
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 0);
 
       obs.value = 'test';
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 1);
       expect(obs.value, 'test');
 
       obs.value = null;
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 2);
       expect(obs.value, null);
     });
@@ -257,11 +257,11 @@ void main() {
       });
 
       obs.value = objC;
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 0);
 
       obs.value = objB;
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(notificationCount, 1);
     });
 
@@ -285,7 +285,7 @@ void main() {
 
       asyncObs.value = 43;
       expect(asyncNotified, false);
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(asyncNotified, true);
     });
 
@@ -326,7 +326,7 @@ void main() {
       final testError = Exception('Test error');
       obs.addError(testError);
 
-      await Future.delayed(Duration.zero); 
+      await Future.delayed(Duration.zero);
       expect(caughtError, testError);
     });
 
@@ -750,7 +750,8 @@ void main() {
       expect(source.value, 10);
     });
 
-    test('can be used in place of StreamController for broadcast stream', () async {
+    test('can be used in place of StreamController for broadcast stream',
+        () async {
       final obs = ObservableAsync<int>(0, sync: true);
       final stream = obs.stream.asBroadcastStream();
 
