@@ -66,6 +66,7 @@ class ExampleScreenState extends State<ExampleScreen> {
           /// Experimental feature, auto-subscription observer.
           /// It detects called observables inside it and automatically subscribe on them
           /// Not well tested, use at your own risk
+          // ignore: deprecated_member_use
           Observe(() => Text(text.value)),
         ],
       ),

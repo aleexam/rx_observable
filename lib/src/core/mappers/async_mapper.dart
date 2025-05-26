@@ -57,7 +57,8 @@ class MappedObservableAsyncReadOnly<T, M>
         .map(_transform)
         .where(_shouldNotify)
         .listen(onData, onError: (e, s) {
-      reportObservableError(e, s, this);
+      // ignore: invalid_use_of_visible_for_testing_member
+      reportObservableFlutterError(e, s, this);
     });
     return ObservableStreamSubscription<M>(subscription);
   }

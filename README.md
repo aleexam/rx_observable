@@ -24,20 +24,8 @@ dependencies:
 ### Creating Observables
 
 ```dart
-    // Multiple ways to create observables, all equivalent
-    var text1 = "Hello".obs;               // Extension method
-    var text2 = Observable("Hello");       // Constructor
-    var text3 = ObservableString("Hello"); // Type-specific constructor
-    var text4 = Obs("Hello");              // Short alias
-    
-    // Create read-only observables
-    var readOnly = "Hello".obsReadOnly;    // Can't be modified from outside
-    var readOnly2 = ObservableReadOnly("Hello");    // Or like this
-    
-    // Create async observables (StreamController-based)
-    var asyncText = ObservableAsync("Hello");          // Constructor
-    var asyncText2 = ObservableAsyncReadOnly("Hello"); // Can't be modified from outside
-    var asyncText3 = "Hello".obsA;                     // Extension method
+    var text = "Hello".obs;           // Extension method
+    var text2 = Observable("Hello");  // Constructor
 ```
 
 ### Listening to Changes
@@ -121,6 +109,29 @@ dependencies:
     )
 ```
 
+### Other constructors
+```dart
+    // Multiple ways to create observables, all equivalent
+    var text = "Hello".obs;                // Extension method
+    var text2 = Observable("Hello");       // Constructor
+    var text3 = ObservableString("Hello"); // Type-specific constructor
+    var text4 = Obs("Hello");              // Short alias
+    
+    // Create read-only observables
+    var readOnly = "Hello".obsReadOnly;             // Can't be modified from outside
+    var readOnly2 = ObservableReadOnly("Hello");    // Or like this
+    
+    // Create async observables (StreamController-based)
+    var asyncText = ObservableAsync("Hello");          // Constructor
+    var asyncText2 = ObservableAsyncReadOnly("Hello"); // Can't be modified from outside
+    var asyncText3 = "Hello".obsA;                     // Extension method
+
+
+    /// Works with nullable types of course
+    var nText = Observable<String?>(null);
+    var nText2 = ObsNString(null);
+```
+
 ### Resource Management
 
 Use `RxSubsMixin` to easily manage your observables, subscriptions, and other disposable resources:
@@ -172,17 +183,35 @@ For StatefulWidgets, use `RxSubsStateMixin`:
     }
 ```
 
-### Computed Observables
+### Computed and Group Observables
 
 Create observables that depend on other observables:
 
 ```dart
     final firstName = "John".obs;
-    final lastName = "Doe".obs;
+    final age = 25.obs;
     
     // Create a computed observable that updates when dependencies change
-    final fullName = (() => "${firstName.value} ${lastName.value}")
-        .compute([firstName, lastName]);
+    var userInfo = 
+      [firstName, age].computed(() => "${firstName.value}, ${age.value}");
+
+    /// Listen to computed value
+    userInfo.listen((info) {
+      print(info); /// Prints "John, 25"
+    }, fireImmediately: true);
+
+
+    /// Create a group of observables. Difference from computed, is that no value stored
+    /// And you don't need to specify compute function
+    var group = [firstName, age].group();
+    group.onChange(() {
+        /// Do something
+    });
+
+
+    /// Don't forget to properly dispose
+    userInfo.dispose();
+    group.dispose(); 
 ```
 
 ### Working with States Pattern

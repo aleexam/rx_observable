@@ -111,14 +111,14 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
     var subscription = _controller.stream.listen((event) {
       onData(event);
     }, onError: (e, s) {
-      reportObservableError(e, s, this);
+      reportObservableFlutterError(e, s, this);
     });
     if (fireImmediately && !isClosed) {
       Future.microtask(() {
         try {
           onData(_value);
         } catch (exception, stack) {
-          reportObservableError(exception, stack, this);
+          reportObservableFlutterError(exception, stack, this);
         }
       });
     }

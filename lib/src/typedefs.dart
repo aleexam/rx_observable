@@ -31,6 +31,7 @@ typedef ObsRead<T> = ObservableReadOnly<T>;
 typedef ObsReadA<T> = ObservableAsyncReadOnly<T>;
 
 typedef ObsComputed<T> = ObservableComputed<T>;
+typedef ObsGroup = ObservableGroup;
 
 typedef ObW<T> = Observer<T>;
 typedef Obl<T> = ObservableListener<T>;

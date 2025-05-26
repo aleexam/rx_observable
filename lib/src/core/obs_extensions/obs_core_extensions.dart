@@ -97,14 +97,37 @@ extension ListExtension<T> on List<T> {
   ObservableAsync<List<T>> get obsAReadOnly => ObservableAsync<List<T>>(this);
 }
 
-extension ComputedFunction<T> on T Function() {
-  /// Converts a function into an [ObservableComputed] with specified dependencies.
-  ObservableComputed<T> compute(List<IObservable> observables) {
-    return ObservableComputed<T>(this, observables);
+extension ListObservableExtension<T> on List<IObservable> {
+  /// Creates an [ObservableComputed] that depends on all [IObservable] items in the list.
+  ///
+  /// This simplifies reactive computations based on multiple observables.
+  /// The provided [computer] function will be re-evaluated automatically whenever
+  /// any of the observables in the list change.
+  ///
+  /// Example:
+  /// final userInfo = [firstName, age].mapObs(() {
+  ///   return "${firstName.value} ${age.value}";
+  /// });
+  ///
+  /// In this example, `userInfo` will automatically update when either `firstName` or `age` changes.
+  ObservableComputed<T> compute(T Function() computer) {
+    return ObservableComputed<T>(this, computer: computer);
   }
 
-  ObservableComputedAsync<T> computeAsync(List<IObservable> observables) {
-    return ObservableComputedAsync<T>(this, observables);
+  ObservableGroup group() {
+    return ObservableGroup(this);
+  }
+}
+
+extension ComputedFunction<T> on T Function() {
+  /// Converts a function into an [ObservableComputed] with specified dependencies.
+  ObservableComputed<T> computeWith(List<IObservable> observables) {
+    return ObservableComputed<T>(observables, computer: this);
+  }
+
+  /// Converts a function into an [ObservableComputedAsync] with specified dependencies.
+  ObservableComputedAsync<T> computeWithAsync(List<IObservable> observables) {
+    return ObservableComputedAsync<T>(observables, computer: this);
   }
 }
 

@@ -27,7 +27,8 @@ class MappedObservableReadOnly<T, M>
       return val;
     } catch (e, s) {
       if (_lastValue != null) {
-        reportObservableError(e, s, this);
+        // ignore: invalid_use_of_visible_for_testing_member
+        reportObservableFlutterError(e, s, this);
         return _lastValue!;
       } else {
         rethrow;

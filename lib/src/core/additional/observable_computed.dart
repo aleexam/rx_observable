@@ -2,24 +2,25 @@ part of '../observable.dart';
 
 /// ObservableComputed represents a computed read-only observable value.
 /// It automatically recalculates its value whenever its dependencies change.
-/// This one based on [ChangeNotifier]
+/// This one based on [ChangeNotifier], should be always disposed properly
 class ObservableComputed<T> extends ObservableReadOnly<T> {
-  final T Function() _compute;
+  late final T Function() _compute;
   final List<ObservableSubscription> _subscriptions = [];
 
   /// Constructor takes a compute function and a list of dependent observables.
   /// Recomputes the value and notifies listeners when any dependency changes.
   ObservableComputed(
-    this._compute,
     List<IObservable> observables, {
+    required final T Function() computer,
     super.notifyOnlyIfChanged,
-  }) : super(_compute()) {
+  }) : super(computer()) {
+    _compute = computer;
     for (final observable in observables) {
       final sub = observable.listen((_) {
         try {
           _updateValue(_compute());
         } catch (e, s) {
-          reportObservableError(e, s, this);
+          reportObservableFlutterError(e, s, this);
         }
       });
       _subscriptions.add(sub);
@@ -41,18 +42,19 @@ class ObservableComputed<T> extends ObservableReadOnly<T> {
 /// It automatically recalculates its value whenever its dependencies change.
 /// This one based on [StreamController], should be always disposed properly
 class ObservableComputedAsync<T> extends ObservableAsyncReadOnly<T> {
-  final T Function() _compute;
+  late final T Function() _compute;
   final List<ObservableSubscription> _subscriptions = [];
 
   /// Constructor takes a compute function and a list of dependent observables.
   /// Recomputes the value and notifies listeners when any dependency changes.
   ObservableComputedAsync(
-    this._compute,
     List<IObservable> observables, {
+    required final T Function() computer,
     super.onListen,
     super.onCancel,
     super.notifyOnlyIfChanged,
-  }) : super(_compute()) {
+  }) : super(computer()) {
+    _compute = computer;
     for (final observable in observables) {
       final sub = observable.listen((_) {
         try {

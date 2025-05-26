@@ -18,8 +18,6 @@ part 'rx_subscription.dart';
 
 /// Interface for a mutable observable value of type [T].
 abstract class IObservableMutable<T> extends IObservable<T> {
-  // Interface
-
   /// Set the new value and notify listeners
   set value(T value);
 
@@ -30,19 +28,15 @@ abstract class IObservableMutable<T> extends IObservable<T> {
 
 /// Interface for a synchronous observable of type [T].
 /// Extends [IObservable] and acts as a [ChangeNotifier] and [ValueListenable].
-abstract class IObservableSync<T> extends IObservable<T> // Interface
-    implements
-        ChangeNotifier,
-        ValueListenable<T> {}
+abstract class IObservableSync<T> extends IObservable<T>
+    implements ChangeNotifier, ValueListenable<T> {}
 
 /// Interface for an asynchronous observable of type [T].
 /// Extends [IObservable] and acts as a [StreamController] in mutable version [ObservableAsync].
-abstract class IObservableAsync<T> extends IObservable<T> {} // Interface
+abstract class IObservableAsync<T> extends IObservable<T> {}
 
 /// Base interface for any observable value of type [T].
 abstract class IObservable<T> extends IObservableListenable<T> {
-  // Interface
-
   /// Returns the last emitted value or initial value.
   T get value;
 
@@ -56,7 +50,8 @@ abstract class IObservable<T> extends IObservableListenable<T> {
 
   /// Custom stream-like listen with custom subscription
   /// More convenient than addListener API,
-  /// but works same as AddListener/RemoveListener, so expect same result
+  /// but works same as AddListener/RemoveListener for sync version, so expect same result
+  /// For async version works just like stream.listen
   @override
   ObservableSubscription<T> listen(FutureOr<void> Function(T) listener,
       {bool fireImmediately = false});
@@ -73,10 +68,10 @@ abstract class IObservable<T> extends IObservableListenable<T> {
 /// This needs to allow streams to be represented as observable, for compatibility
 /// [ObservableListener] for example, can work with observable or stream under the hood
 abstract class IObservableListenable<T> implements IDisposable {
-  // Interface
   /// Custom stream-like listen with custom subscription
   /// More convenient than addListener API,
-  /// but works same as AddListener/RemoveListener, so expect same result
+  /// but works same as AddListener/RemoveListener for sync version, so expect same result
+  /// For async version works just like stream.listen
   ObservableSubscription<T> listen(FutureOr<void> Function(T) listener);
 
   /// Must always call dispose in [ObservableAsync]
@@ -86,8 +81,10 @@ abstract class IObservableListenable<T> implements IDisposable {
   void dispose();
 }
 
-void reportObservableError<T>(
-    Object exception, StackTrace stack, IObservable<T> obs) {
+@visibleForTesting
+@protected
+void reportObservableFlutterError<R extends IObservableListenable<T>, T>(
+    Object exception, StackTrace stack, R obs) {
   FlutterError.reportError(FlutterErrorDetails(
     exception: exception,
     stack: stack,
@@ -95,7 +92,7 @@ void reportObservableError<T>(
     context: ErrorDescription(
         'while dispatching notifications for ${obs.runtimeType}'),
     informationCollector: () => <DiagnosticsNode>[
-      DiagnosticsProperty<IObservable<T>>(
+      DiagnosticsProperty<R>(
         'The ${obs.runtimeType} sending notification was',
         obs,
         style: DiagnosticsTreeStyle.errorProperty,

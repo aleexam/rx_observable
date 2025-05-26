@@ -14,27 +14,6 @@ class Observable<T> extends ObservableReadOnly<T>
     super.notifyOnlyIfChanged,
   });
 
-  static ObservableComputed compute<C>(
-    final C Function() computeFunction,
-    List<IObservable> observables, {
-    bool notifyOnlyIfChanged = true,
-  }) {
-    return ObservableComputed(computeFunction, observables);
-  }
-
-  static ObservableComputedAsync computeAsync<C>(
-    final C Function() computeFunction,
-    List<IObservable> observables, {
-    bool notifyOnlyIfChanged = true,
-  }) {
-    return ObservableComputedAsync(computeFunction, observables);
-  }
-
-  static ObservableGroup merge(
-      List<IObservableListenable<dynamic>> observables) {
-    return ObservableGroup(observables);
-  }
-
   @override
   set value(T newValue) => _updateValue(newValue);
 

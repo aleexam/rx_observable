@@ -91,7 +91,7 @@ void main() {
       var lastValue = 0;
 
       obs.listen(
-            (value) {
+        (value) {
           lastValue = value;
         },
         fireImmediately: true,
@@ -100,7 +100,6 @@ void main() {
       await Future.delayed(Duration.zero); // Wait for stream to process
       expect(lastValue, 42);
     });
-
   });
   group('Transformation and Mapping', () {
     test('map creates new observable that updates with transform', () async {
