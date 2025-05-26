@@ -92,10 +92,10 @@ class ExampleScreenState extends State<ExampleScreen> with RxSubsStateMixin {
             const SizedBox(height: 24),
             Observer(
                 counter,
-                    (count) => Text(
-                  "Counter value: $count",
-                  style: const TextStyle(fontSize: 16),
-                )),
+                (count) => Text(
+                      "Counter value: $count",
+                      style: const TextStyle(fontSize: 16),
+                    )),
 
             // Only use the experimental feature if it's enabled
             // ignore: deprecated_member_use
