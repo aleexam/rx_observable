@@ -91,9 +91,6 @@ class ObservableReadOnly<T> extends ChangeNotifier
   @override
   void dispose() {
     assert(ChangeNotifier.debugAssertNotDisposed(this));
-    _onDispose?.call();
     super.dispose();
   }
-
-  void Function()? _onDispose;
 }

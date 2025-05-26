@@ -236,11 +236,8 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
     if (!isClosed) {
       await _controller.close();
       //_customSink?.close();
-      _onDispose?.call();
     }
   }
-
-  void Function()? _onDispose;
 
   @override
   Future close() async {
