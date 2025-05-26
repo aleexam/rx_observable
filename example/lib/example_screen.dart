@@ -10,10 +10,12 @@ class ExampleScreen extends StatefulWidget {
   ExampleScreenState createState() => ExampleScreenState();
 }
 
-class ExampleScreenState extends State<ExampleScreen> {
+class ExampleScreenState extends State<ExampleScreen> with RxSubsStateMixin {
   var text = "Hello".obs;
   var text2 = "Mister".obs;
   var counter = 0.obs;
+
+  late IObservable computed;
 
   @override
   void initState() {
@@ -26,23 +28,22 @@ class ExampleScreenState extends State<ExampleScreen> {
       }
     });
 
+    /// Computed value example
+    computed = [text, text2].compute(() => "${text.v}, ${text2.v}");
+
     Future.delayed(const Duration(seconds: 5)).whenComplete(() {
       text.value = "GoodBye";
     });
+
+    /// Use widget version of RxSubsMixin to easily handle observable disposal
+    /// All registered objects will be disposed automatically on widget dispose()
+    regs([text, text2, counter]);
 
     super.initState();
   }
 
   void incrementCounter() {
     counter.value++;
-  }
-
-  @override
-  void dispose() {
-    text.dispose();
-    text2.dispose();
-    counter.dispose();
-    super.dispose();
   }
 
   @override
@@ -64,6 +65,9 @@ class ExampleScreenState extends State<ExampleScreen> {
 
             // Standard observer with single observable
             Observer(text, (v) => Text("Single observable: $v")),
+
+            // Standard observer with computed observable
+            Observer(computed, (v) => Text("Single observable: $v")),
 
             // Extension method to create an observer
             text.observer((v) => Text("Using extension: $v")),
@@ -88,41 +92,44 @@ class ExampleScreenState extends State<ExampleScreen> {
             const SizedBox(height: 24),
             Observer(
                 counter,
-                (count) => Text(
-                      "Counter value: $count",
-                      style: const TextStyle(fontSize: 16),
-                    )),
+                    (count) => Text(
+                  "Counter value: $count",
+                  style: const TextStyle(fontSize: 16),
+                )),
 
             // Only use the experimental feature if it's enabled
             // ignore: deprecated_member_use
             if (ExperimentalObservableFeatures.useExperimental)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Experimental features:",
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red)),
-                  // Observe widget automatically detects and subscribes to observables
-                  // ignore: deprecated_member_use
-                  Observe(() =>
-                      Text("Text: ${text.value} - Count: ${counter.value}")),
-                  const SizedBox(height: 8),
-                  // Example of manual tracking, when value not used directly in Observe
-                  // ignore: deprecated_member_use
-                  Observe(() {
-                    // Force Observe to track text2 and rebuild on change
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Experimental features:",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red)),
+                    // Observe widget automatically detects and subscribes to observables
                     // ignore: deprecated_member_use
-                    counter.observe();
-                    return Builder(builder: (context) {
-                      return Text(
-                        "Manual tracking: ${counter.value} is here",
-                        style: const TextStyle(color: Colors.green),
-                      );
-                    });
-                  }),
-                ],
+                    Observe(() =>
+                        Text("Text: ${text.value} - Count: ${counter.value}")),
+                    const SizedBox(height: 8),
+                    // Example of manual tracking, when value not used directly in Observe
+                    // ignore: deprecated_member_use
+                    Observe(() {
+                      // Force Observe to track text2 and rebuild on change
+                      // ignore: deprecated_member_use
+                      counter.observe();
+                      return Builder(builder: (context) {
+                        return Text(
+                          "Manual tracking: ${text.v} | ${counter.value} is here",
+                          style: const TextStyle(color: Colors.green),
+                        );
+                      });
+                    }),
+                  ],
+                ),
               ),
 
             ElevatedButton(
