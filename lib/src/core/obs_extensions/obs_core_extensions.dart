@@ -97,7 +97,7 @@ extension ListExtension<T> on List<T> {
   ObservableAsync<List<T>> get obsAReadOnly => ObservableAsync<List<T>>(this);
 }
 
-extension ListObservableExtension<T> on List<IObservable> {
+extension ListObservableExtension on List<IObservable> {
   /// Creates an [ObservableComputed] that depends on all [IObservable] items in the list.
   ///
   /// This simplifies reactive computations based on multiple observables.
@@ -105,15 +105,32 @@ extension ListObservableExtension<T> on List<IObservable> {
   /// any of the observables in the list change.
   ///
   /// Example:
-  /// final userInfo = [firstName, age].mapObs(() {
+  /// final userInfo = [firstName, age].compute(() {
   ///   return "${firstName.value} ${age.value}";
   /// });
   ///
   /// In this example, `userInfo` will automatically update when either `firstName` or `age` changes.
-  ObservableComputed<T> compute(T Function() computer) {
+  ObservableComputed<T> compute<T>(T Function() computer) {
     return ObservableComputed<T>(this, computer: computer);
   }
 
+  /// Creates an [ObservableComputedAsync] that depends on all [IObservable] items in the list.
+  ///
+  /// This simplifies reactive computations based on multiple observables.
+  /// The provided [computer] function will be re-evaluated automatically whenever
+  /// any of the observables in the list change.
+  ///
+  /// Example:
+  /// final userInfo = [firstName, age].compute(() {
+  ///   return "${firstName.value} ${age.value}";
+  /// });
+  ///
+  /// In this example, `userInfo` will automatically update when either `firstName` or `age` changes.
+  ObservableComputedAsync<T> computeA<T>(T Function() computer) {
+    return ObservableComputedAsync<T>(this, computer: computer);
+  }
+
+  /// Creates ObservableGroup, that allows you to group multiple observables into one.
   ObservableGroup group() {
     return ObservableGroup(this);
   }
@@ -158,9 +175,9 @@ extension CancelSubsList on List<StreamSubscription> {
 
 extension CancelSubsSet on Set<StreamSubscription> {
   /// Cancels all [StreamSubscription] instances in the set.
-  void cancelAll() {
+  Future<void> cancelAll() async {
     for (var sub in this) {
-      sub.cancel();
+      await sub.cancel();
     }
     clear();
   }
@@ -168,9 +185,9 @@ extension CancelSubsSet on Set<StreamSubscription> {
 
 extension CloseStreamsList on List<StreamSink> {
   /// Closes all [StreamSink] instances in the list.
-  void closeAll() {
+  Future<void> closeAll() async {
     for (var sink in this) {
-      sink.close();
+      await sink.close();
     }
     clear();
   }
@@ -178,9 +195,9 @@ extension CloseStreamsList on List<StreamSink> {
 
 extension CloseStreamsSet on Set<StreamSink> {
   /// Closes all [StreamSink] instances in the set.
-  void closeAll() {
+  Future<void> closeAll() async {
     for (var sink in this) {
-      sink.close();
+      await sink.close();
     }
     clear();
   }

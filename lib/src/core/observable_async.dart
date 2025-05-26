@@ -35,11 +35,7 @@ class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
   @override
   void add(T event) {
     if (isClosed) throw StateError("Cannot add new events after calling close");
-
-    /// Experimental start
     ObsTrackingContext._handleModificationDuringTracking(this);
-
-    /// Experimental end
 
     _value = event;
     _add(event);
@@ -48,6 +44,7 @@ class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
   @override
   StreamSink<T> get sink {
     _customSink ??= _CustomStreamSink<T>(_controller.sink, (value) {
+      ObsTrackingContext._handleModificationDuringTracking(this);
       _value = value;
     });
     return _customSink!;
@@ -97,8 +94,6 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   @override
   T get value {
     ObsTrackingContext.current?._register(this);
-
-    /// Experimental
     return _value;
   }
 
@@ -137,11 +132,7 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
 
   void _updateValue(T newValue) {
     if (isClosed) throw StateError("Cannot update value after calling dispose");
-
-    /// Experimental start
     ObsTrackingContext._handleModificationDuringTracking(this);
-
-    /// Experimental end
 
     if (_value != newValue || !_notifyOnlyIfChanged) {
       _value = newValue;
@@ -232,7 +223,7 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   }
 
   @override
-  void dispose() async {
+  Future<void> dispose() async {
     if (!isClosed) {
       await _controller.close();
       //_customSink?.close();

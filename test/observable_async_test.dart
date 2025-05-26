@@ -3,17 +3,15 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rx_observable/rx_observable.dart';
 
+/// ✅
 void main() {
   group('Basic Functionality', () {
     test('initial value set and updates correctly', () {
       final obs = ObservableAsync<int>(25);
       expect(obs.value, 25);
-
-      // Test value setter
       obs.value = 1;
       expect(obs.value, 1);
-
-      // Test v setter
+      
       obs.v = 2;
       expect(obs.v, 2);
       expect(obs.value, 2);
@@ -34,11 +32,11 @@ void main() {
       });
 
       obs.value = 42; // Same value
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 0);
 
       obs.value = 43; // Different value
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 1);
     });
 
@@ -51,11 +49,11 @@ void main() {
       });
 
       obs.value = 42; // Same value
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 1);
 
       obs.value = 42; // Same value again
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 2);
     });
 
@@ -68,7 +66,7 @@ void main() {
       });
 
       obs.notify();
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 1);
     });
   });
@@ -82,7 +80,7 @@ void main() {
       });
 
       obs.value = 43;
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(lastValue, 43);
     });
 
@@ -97,7 +95,7 @@ void main() {
         fireImmediately: true,
       );
 
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(lastValue, 42);
     });
   });
@@ -109,7 +107,7 @@ void main() {
       expect(mapped.value, '42');
 
       obs.value = 43;
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(mapped.value, '43');
     });
 
@@ -123,11 +121,11 @@ void main() {
       });
 
       obs.value = 43; // Still 'high', shouldn't notify
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 0);
 
       obs.value = 39; // Changes to 'low', should notify
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 1);
     });
 
@@ -138,7 +136,7 @@ void main() {
       expect(mapped.value, '42');
 
       obs.value = 43;
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(mapped.value, '43');
     });
 
@@ -151,12 +149,12 @@ void main() {
         notificationCount++;
       });
 
-      obs.value = 43; // Still 'high', shouldn't notify
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      obs.value = 43;
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 0);
 
-      obs.value = 39; // Changes to 'low', should notify
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      obs.value = 39;
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 1);
     });
   });
@@ -170,61 +168,52 @@ void main() {
       });
 
       obs.value = 43;
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 1);
 
       await subscription.cancel();
       obs.value = 44;
-      await Future.delayed(Duration.zero); // Wait for stream to process
-      expect(notificationCount, 1); // Should not have increased
+      await Future.delayed(Duration.zero); 
+      expect(notificationCount, 1);
     });
 
     test('disposal cleans up all subscriptions and mapped observables', () {
       final obs = ObservableAsync<int>(42);
       final mapped = obs.map((value) => value.toString());
 
-      // Get a subscription to test
       obs.listen((_) {});
 
       obs.dispose();
 
-      // Value getters should still work
       expect(obs.value, 42);
       expect(mapped.value, '42');
 
-      // But modifications and notifications should throw
       expect(() => obs.value = 43, throwsStateError);
       expect(() => obs.notify(), throwsStateError);
       expect(() => mapped.notify(), throwsStateError);
       expect(() => obs.add(44), throwsStateError);
 
-      // Check that the observable is closed
       expect(obs.isClosed, true);
       expect(mapped.isClosed, true);
     });
 
-    // Add tests for edge cases after close/dispose
     test('operations after close throw appropriate errors', () async {
       final obs = ObservableAsync<int>(42);
       await obs.close();
-
-      // Value should still be accessible
+      
       expect(obs.value, 42);
       expect(obs.isClosed, true);
-
-      // Operations that should throw
+      
       expect(() => obs.value = 43, throwsStateError);
       expect(() => obs.add(44), throwsStateError);
       expect(() => obs.notify(), throwsStateError);
       expect(() => obs.addError(Exception('Test')), throwsStateError);
     });
-
-    // Testing only the basic behavior of mapping after close
+    
     test('can still read value after close', () {
       final obs = ObservableAsync<int>(42);
       obs.dispose();
-
-      // Value should still be accessible after dispose
+      
       expect(obs.value, 42);
       expect(obs.isClosed, true);
     });
@@ -239,17 +228,17 @@ void main() {
         notificationCount++;
       });
 
-      obs.value = null; // Same value (null)
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      obs.value = null;
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 0);
 
       obs.value = 'test';
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 1);
       expect(obs.value, 'test');
 
       obs.value = null;
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 2);
       expect(obs.value, null);
     });
@@ -267,12 +256,12 @@ void main() {
         notificationCount++;
       });
 
-      obs.value = objC; // Equal to objA, shouldn't notify
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      obs.value = objC;
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 0);
 
-      obs.value = objB; // Different, should notify
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      obs.value = objB;
+      await Future.delayed(Duration.zero); 
       expect(notificationCount, 1);
     });
 
@@ -285,7 +274,6 @@ void main() {
       });
 
       syncObs.value = 43;
-      // With sync=true, notification happens synchronously
       expect(syncNotified, true);
 
       final asyncObs = ObservableAsync<int>(42, sync: false);
@@ -296,9 +284,8 @@ void main() {
       });
 
       asyncObs.value = 43;
-      // With sync=false (default), notification happens asynchronously
       expect(asyncNotified, false);
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(asyncNotified, true);
     });
 
@@ -332,7 +319,6 @@ void main() {
       final obs = ObservableAsync<int>(42);
       dynamic caughtError;
 
-      // Use the standard stream subscription to catch errors
       obs.stream.listen((value) {}, onError: (error) {
         caughtError = error;
       });
@@ -340,7 +326,7 @@ void main() {
       final testError = Exception('Test error');
       obs.addError(testError);
 
-      await Future.delayed(Duration.zero); // Wait for stream to process
+      await Future.delayed(Duration.zero); 
       expect(caughtError, testError);
     });
 
@@ -369,38 +355,25 @@ void main() {
       final obs = ObservableAsync<int>(0);
       final receivedValues = <int>[];
 
-      // Listen to the observable
       obs.listen((value) {
         receivedValues.add(value);
       });
 
-      // Create a simple stream of integers
       final values = [1, 2, 3];
       final stream = Stream.fromIterable(values);
 
-      // Add the stream to our observable
       await obs.addStream(stream);
-
-      // Wait for all events to be processed
       await Future.delayed(Duration.zero);
 
-      // Check that all values were received by listeners
       expect(receivedValues, [1, 2, 3]);
-
-      // Verify that the observable's value is updated to the last value from the stream
       expect(obs.value, 3);
     });
 
     test('addStream updates value even without listeners', () async {
       final obs = ObservableAsync<int>(0);
-
-      // Create a stream with a single value
       final stream = Stream.value(42);
 
-      // Add the stream to our observable
       await obs.addStream(stream);
-
-      // The observable's value should be updated
       expect(obs.value, 42);
     });
 
@@ -408,25 +381,23 @@ void main() {
       final obs = ObservableAsync<int>(0);
       dynamic receivedError;
 
-      // Listen to the observable
       obs.stream.listen((_) {}, onError: (error) {
         receivedError = error;
       });
 
-      // Create a stream that will emit an error
       final controller = StreamController<int>();
-      controller.addError('Test error');
-      controller.close();
 
-      // Add the stream to our observable
+      Future.microtask(() {
+        controller.addError('Test error');
+        controller.close();
+      });
+
       await obs.addStream(controller.stream).catchError((_) {
         // Catch error to prevent test failure
       });
 
-      // Wait for all events to be processed
       await Future.delayed(Duration.zero);
 
-      // Check that the error was forwarded
       expect(receivedError, 'Test error');
     });
 
@@ -439,17 +410,13 @@ void main() {
       expect(obs.hasListener, true);
 
       sub.cancel();
-      // Note: in some StreamController implementations, hasListener might not
-      // update synchronously after cancellation
     });
 
     test('done future completes when observable is closed', () async {
       final obs = ObservableAsync<int>(42);
 
-      // Create a listener to ensure the stream is active
       obs.listen((value) {});
 
-      // Create a separate future to check when done completes
       var doneCompleted = false;
       obs.done.then((_) {
         doneCompleted = true;
@@ -457,16 +424,12 @@ void main() {
 
       expect(doneCompleted, false);
 
-      // Close the observable
       obs.dispose();
 
-      // Wait for microtask to complete
       await Future.delayed(Duration.zero);
 
       expect(doneCompleted, true);
     });
-
-    // Additional edge cases and complex scenarios
 
     test('handles rapid value changes correctly', () async {
       final obs = ObservableAsync<int>(0, sync: true);
@@ -476,12 +439,10 @@ void main() {
         receivedValues.add(value);
       });
 
-      // Rapidly update values
       for (int i = 1; i <= 100; i++) {
         obs.value = i;
       }
 
-      // With sync=true, all values should be received immediately
       expect(receivedValues.length, 100);
       expect(receivedValues.last, 100);
     });
@@ -526,7 +487,7 @@ void main() {
       await Future.delayed(Duration.zero);
 
       expect(earlyListener, [1, 2, 3]);
-      expect(lateListener, [3]); // Should only get values after subscription
+      expect(lateListener, [3]);
     });
 
     test('disposing observable during stream processing', () async {
@@ -536,11 +497,10 @@ void main() {
       obs.listen((value) {
         receivedValues.add(value);
         if (value == 5) {
-          obs.dispose(); // Dispose during stream processing
+          obs.dispose();
         }
       });
 
-      // Add values
       for (int i = 1; i <= 10; i++) {
         try {
           obs.value = i;
@@ -550,7 +510,6 @@ void main() {
         }
       }
 
-      // Should only receive values up to 5
       expect(receivedValues.length, 5);
       expect(receivedValues.last, 5);
       expect(obs.isClosed, true);
@@ -564,7 +523,6 @@ void main() {
         receivedValues.add(value);
       });
 
-      // Use sink instead of direct add
       obs.sink.add(1);
       obs.sink.add(2);
       obs.sink.add(3);
@@ -572,19 +530,17 @@ void main() {
       await Future.delayed(Duration.zero);
 
       expect(receivedValues, [1, 2, 3]);
-      expect(obs.value, 3); // Value should be updated with sink as well
+      expect(obs.value, 3);
     });
 
     test('cancelOnError parameter in addStream', () async {
       final obs = ObservableAsync<int>(0);
       var completed = false;
 
-      // Stream that will emit values then an error
       final controller = StreamController<int>();
       controller.add(1);
       controller.add(2);
 
-      // Start adding the stream but don't await
       obs.addStream(controller.stream, cancelOnError: true).then((_) {
         completed = true;
       }).catchError((_) {
@@ -594,20 +550,16 @@ void main() {
       await Future.delayed(Duration.zero);
       expect(completed, false);
 
-      // Now add an error
       controller.addError('Test error');
 
       await Future.delayed(Duration.zero);
-      // With cancelOnError: true, the addStream operation should complete
       expect(completed, true);
 
       controller.close();
     });
 
     // StreamController compatibility tests
-
     test('can be used as a drop-in replacement for StreamController', () async {
-      // Create a function that expects a StreamController
       Future<List<int>> collectStreamValues(
           StreamController<int> controller) async {
         final values = <int>[];
@@ -624,7 +576,6 @@ void main() {
         return values;
       }
 
-      // Use our ObservableAsync as the StreamController
       final obs = ObservableAsync<int>(0);
       final values = await collectStreamValues(obs);
 
@@ -632,7 +583,6 @@ void main() {
     });
 
     test('matches StreamController behavior with sink.addStream', () async {
-      // Compare behavior between ObservableAsync and StreamController
       final obs = ObservableAsync<int>(0);
       final controller = StreamController<int>.broadcast();
 
@@ -642,10 +592,8 @@ void main() {
       obs.listen((value) => obsValues.add(value));
       controller.stream.listen((value) => controllerValues.add(value));
 
-      // Create a source stream
       final source = Stream.fromIterable([1, 2, 3]);
 
-      // Add to both using sink.addStream
       await Future.wait([
         obs.sink.addStream(source),
         controller.sink.addStream(source),
@@ -691,7 +639,6 @@ void main() {
 
       controller.stream.listen((_) {}, onDone: () => controllerDone = true);
 
-      // Close both
       await Future.wait([obs.close(), controller.close()]);
 
       await Future.delayed(Duration.zero);
@@ -701,38 +648,27 @@ void main() {
     });
 
     test('difference between close() and dispose() methods', () async {
-      // Setup two observables for comparison
       final obsWithClose = ObservableAsync<int>(0);
       final obsWithDispose = ObservableAsync<int>(0);
 
-      // Create mapped observables from both to verify cleanup behavior
       final mappedFromClose = obsWithClose.map((v) => v.toString());
       final mappedFromDispose = obsWithDispose.map((v) => v.toString());
 
-      // Add listeners to both mapped observables
       mappedFromClose.listen((_) {});
       mappedFromDispose.listen((_) {});
 
-      // Close the first one
       await obsWithClose.close();
-
-      // Dispose the second one
       obsWithDispose.dispose();
 
-      // Both should be marked as closed
       expect(obsWithClose.isClosed, true);
       expect(obsWithDispose.isClosed, true);
 
-      // Both should throw on value changes
       expect(() => obsWithClose.value = 1, throwsStateError);
       expect(() => obsWithDispose.value = 1, throwsStateError);
 
-      // The mapped observables should be closed in both cases
-      // This matches the current implementation behavior where close() calls dispose()
       expect(mappedFromClose.isClosed, true);
       expect(mappedFromDispose.isClosed, true);
 
-      // Additional verification to test that close() behaves like dispose()
       expect(() => mappedFromClose.notify(), throwsStateError);
       expect(() => mappedFromDispose.notify(), throwsStateError);
     });
@@ -740,37 +676,29 @@ void main() {
     test('chained mapping propagates values through entire chain', () async {
       final source = ObservableAsync<int>(0);
 
-      // Create a chain of transformations
       final step1 = source.map((v) => v * 2); // 0 -> 0
       final step2 = step1.map((v) => v + 10); // 0 -> 10
       final step3 = step2.map((v) => v.toString()); // 10 -> "10"
       final step4 = step3.map((v) => 'Value is: $v'); // "10" -> "Value is: 10"
       final step5 = step4.map((v) => v.length); // "Value is: 10" -> 12
 
-      // Verify initial transformation chain
       expect(step1.value, 0);
       expect(step2.value, 10);
       expect(step3.value, "10");
       expect(step4.value, "Value is: 10");
-      // "Value is: 10" has 12 characters (verified with print statement)
       expect(step5.value, 12);
 
-      // Update the source
       source.value = 5;
       await Future.delayed(Duration.zero);
 
-      // Verify the value propagated through the entire chain
       expect(step1.value, 10); // 5 * 2
       expect(step2.value, 20); // 10 + 10
       expect(step3.value, "20");
       expect(step4.value, "Value is: 20");
-      // "Value is: 20" has 12 characters too (verified with print statement)
       expect(step5.value, 12);
 
-      // Test disposing the source
       source.dispose();
 
-      // All mapped observables should be disposed
       expect(step1.isClosed, true);
       expect(step2.isClosed, true);
       expect(step3.isClosed, true);
@@ -788,7 +716,6 @@ void main() {
         receivedValues.add(value);
       });
 
-      // Simulate concurrent updates using microtasks
       Future<void> simulateConcurrentUpdates() async {
         await Future.wait([
           Future.microtask(() => obs.value = 1),
@@ -802,11 +729,9 @@ void main() {
       await simulateConcurrentUpdates();
       await Future.delayed(Duration.zero);
 
-      // Should have received all values (order may vary but should have 5 values)
       expect(receivedValues.length, 5);
       expect(receivedValues.toSet(), {1, 2, 3, 4, 5});
 
-      // Final value should be one of the values (typically the last one processed)
       expect([1, 2, 3, 4, 5].contains(obs.value), true);
     });
 
@@ -814,20 +739,76 @@ void main() {
       final source = ObservableAsync<int>(10);
       var errorReceived = false;
 
-      // Listen for errors
       source.stream.listen((_) {}, onError: (e) {
         errorReceived = true;
       });
 
-      // Propagate an error
       source.addError(Exception('Test error'));
       await Future.delayed(Duration.zero);
 
-      // Error should be received by listener
       expect(errorReceived, true);
-
-      // Value should remain unchanged
       expect(source.value, 10);
+    });
+
+    test('can be used in place of StreamController for broadcast stream', () async {
+      final obs = ObservableAsync<int>(0, sync: true);
+      final stream = obs.stream.asBroadcastStream();
+
+      final values1 = <int>[];
+      final values2 = <int>[];
+
+      stream.listen((v) => values1.add(v));
+      stream.listen((v) => values2.add(v));
+
+      obs.value = 1;
+      obs.value = 2;
+
+      await Future.delayed(Duration.zero);
+
+      expect(values1, [1, 2]);
+      expect(values2, [1, 2]);
+    });
+
+    test('can use addError like StreamController', () async {
+      final obs = ObservableAsync<int>(0);
+      dynamic error1;
+      dynamic error2;
+
+      obs.stream.listen((_) {}, onError: (e) => error1 = e);
+      obs.stream.listen((_) {}, onError: (e) => error2 = e);
+
+      final testError = Exception('Stream error');
+      obs.addError(testError);
+
+      await Future.delayed(Duration.zero);
+
+      expect(error1, testError);
+      expect(error2, testError);
+    });
+
+    test('supports close as StreamController and notifies onDone', () async {
+      final obs = ObservableAsync<int>(1);
+      var doneCalled = false;
+
+      obs.stream.listen((_) {}, onDone: () => doneCalled = true);
+
+      await obs.close();
+      expect(doneCalled, true);
+      expect(obs.isClosed, true);
+    });
+
+    test('sink.addError behaves like StreamController sink', () async {
+      final obs = ObservableAsync<int>(0);
+      dynamic receivedError;
+
+      obs.stream.listen((_) {}, onError: (e) => receivedError = e);
+
+      final err = Exception('Sink error');
+      obs.sink.addError(err);
+
+      await Future.delayed(Duration.zero);
+
+      expect(receivedError, err);
     });
   });
 }

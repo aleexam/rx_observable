@@ -5,7 +5,7 @@ part of 'observable.dart';
 /// You can use it like ChangeNotifier anywhere (addListener, notifyListeners, etc)
 /// Or use convenient stream-like listen method
 class Observable<T> extends ObservableReadOnly<T>
-    implements IObservableMutable<T> {
+    implements IObservableMutable<T>, ValueNotifier<T> {
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
   /// if new value not equals to old value
@@ -43,10 +43,7 @@ class ObservableReadOnly<T> extends ChangeNotifier
 
   /// Set and emit the new value.
   void _updateValue(T newValue) {
-    /// Experimental start
     ObsTrackingContext._handleModificationDuringTracking(this);
-
-    /// Experimental end
 
     if (_value != newValue || !_notifyOnlyIfChanged) {
       _value = newValue;
@@ -57,8 +54,6 @@ class ObservableReadOnly<T> extends ChangeNotifier
   @override
   T get value {
     ObsTrackingContext.current?._register(this);
-
-    /// Experimental
     return _value;
   }
 

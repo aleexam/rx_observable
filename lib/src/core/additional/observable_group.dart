@@ -2,9 +2,9 @@ part of '../observable.dart';
 
 /// ObservableGroup allows you to group multiple observables into one.
 /// It listens to all provided observables and notifies its own listeners
-/// without valuem whenever any of observables changes.
+/// without value, whenever any of observables changes.
 /// Difference from [ObservableComputed] is that this class doesn't store any value
-/// and doesn't require any function
+/// and doesn't require any function adn since it based on [ChangeNotifier], it always sync
 class ObservableGroup extends ChangeNotifier
     implements IObservableListenable<void> {
   final List<IObservableListenable> _observables;
@@ -17,16 +17,17 @@ class ObservableGroup extends ChangeNotifier
     }));
   }
 
-  // This works similiar as AddListener, but returns
-  // subscription just like [listen] method
-  ObservableSubscription onChange(void Function() listener) {
+  /// This works similar to AddListener, without value,
+  /// but returns subscription just like [listen] method
+  ObservableSubscription listener(void Function() listener) {
     assert(ChangeNotifier.debugAssertNotDisposed(this));
     addListener(listener);
     return ObservableSubscription<void>(() => removeListener(listener));
   }
 
-  /// For this class better to use [addListener] or [onChange] method
-  /// For better code readability
+  /// For ObservableGroup better to use [addListener] or [listener] method
+  /// For better code readability, since this one use callback
+  /// with void parameter (similar to .then in Future<void>)
   @override
   ObservableSubscription listen(void Function(void) listener) {
     assert(ChangeNotifier.debugAssertNotDisposed(this));

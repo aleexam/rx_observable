@@ -216,8 +216,12 @@ class _RxSubsMixinObject {
     }
   }
 
+
+  bool _disposed = false;
   @mustCallSuper
   void dispose() {
+    if (_disposed) return;
+    _disposed = true;
     _rxSubs.cancelAll();
     _rxSinks.closeAll();
     _disposables.disposeAll();
@@ -226,7 +230,9 @@ class _RxSubsMixinObject {
     if (_rxSubs.isEmpty &&
         _rxSinks.isEmpty &&
         _disposables.isEmpty &&
-        _cancelables.isEmpty) {
+        _cancelables.isEmpty &&
+        _changeNotifiers.isEmpty
+    ) {
       if (kDebugMode) {
         print('No fields registered before dispose in $runtimeType.');
       }

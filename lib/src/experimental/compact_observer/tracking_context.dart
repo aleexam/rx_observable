@@ -20,11 +20,13 @@ class ObsTrackingContext {
       : assert(ExperimentalObservableFeatures.useExperimental,
             'This experimental feature is only available when ExperimentalObservableFeatures.useExperimental is set to true');
 
+  /// Experimental
   void _register(IObservable observable) {
     if (!ExperimentalObservableFeatures.useExperimental || !_isTracking) return;
     _trackedVars.add(observable);
   }
 
+  /// Experimental
   static void _handleModificationDuringTracking(IObservable observable) {
     if (ExperimentalObservableFeatures.useExperimental &&
         ObsTrackingContext.current != null) {

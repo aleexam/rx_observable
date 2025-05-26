@@ -69,7 +69,7 @@ class ObservableComputedAsync<T> extends ObservableAsyncReadOnly<T> {
 
   /// Cancels all subscriptions and disposes of this computed observable.
   @override
-  void dispose() {
+  Future<void> dispose() async {
     for (final sub in _subscriptions) {
       sub.cancel();
     }

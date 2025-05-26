@@ -110,7 +110,7 @@ class MappedObservableAsyncReadOnly<T, M>
   Stream<M> get stream => _source.stream.map(_transform);
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     _isClosed = true;
   }
 

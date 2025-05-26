@@ -13,8 +13,6 @@ part 'additional/observable_group.dart';
 part 'observable_async.dart';
 part 'observable_sync.dart';
 part 'rx_subscription.dart';
-// part 'mappers/sync_mapper.dart';
-// part 'mappers/async_mapper.dart';
 
 /// Interface for a mutable observable value of type [T].
 abstract class IObservableMutable<T> extends IObservable<T> {
@@ -33,7 +31,11 @@ abstract class IObservableSync<T> extends IObservable<T>
 
 /// Interface for an asynchronous observable of type [T].
 /// Extends [IObservable] and acts as a [StreamController] in mutable version [ObservableAsync].
-abstract class IObservableAsync<T> extends IObservable<T> {}
+abstract class IObservableAsync<T> extends IObservable<T> {
+
+  @override
+  Future<void> dispose();
+}
 
 /// Base interface for any observable value of type [T].
 abstract class IObservable<T> extends IObservableListenable<T> {

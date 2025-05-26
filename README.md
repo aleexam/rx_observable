@@ -183,6 +183,14 @@ For StatefulWidgets, use `RxSubsStateMixin`:
     }
 ```
 
+You can wrap unsupported for auto-disposal by default classes in DisposableAdapter 
+and still dispose them automatically:
+
+```dart
+    var client = HttpClient();
+    reg(DisposableAdapter(() => client.close()));
+```
+
 ### Computed and Group Observables
 
 Create observables that depend on other observables:
@@ -193,7 +201,7 @@ Create observables that depend on other observables:
     
     // Create a computed observable that updates when dependencies change
     var userInfo = 
-      [firstName, age].computed(() => "${firstName.value}, ${age.value}");
+      [firstName, age].compute(() => "${firstName.value}, ${age.value}");
 
     /// Listen to computed value
     userInfo.listen((info) {
@@ -204,7 +212,7 @@ Create observables that depend on other observables:
     /// Create a group of observables. Difference from computed, is that no value stored
     /// And you don't need to specify compute function
     var group = [firstName, age].group();
-    group.onChange(() {
+    group.listener(() {
         /// Do something
     });
 
