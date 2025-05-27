@@ -16,7 +16,7 @@ Similar to LiveData, MobX, Cubit, RxDart, but without code generation or complex
 
 ```yaml
 dependencies:
-  rx_observable: ^0.6.9
+  rx_observable: ^0.6.7
 ```
 
 ## Basic Usage
