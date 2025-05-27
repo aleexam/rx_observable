@@ -58,22 +58,22 @@ typedef ObsNBool = ObservableNullableBool;
 typedef ObsBoolA = ObservableAsyncBool;
 typedef ObsNBoolA = ObservableAsyncNullableBool;
 
-/// Creates unmodifiable Observable<List>
+/// Creates unmodifiable Observable List
 Observable<List<T>> obsListUnmodifiable<T>(List<T> list) {
   return Observable<List<T>>(List.unmodifiable(list));
 }
 
-/// Creates unmodifiable ObservableAsync<List>
+/// Creates unmodifiable ObservableAsync List
 ObservableAsync<List<T>> obsListUnmodifiableA<T>(List<T> list) {
   return ObservableAsync<List<T>>(List.unmodifiable(list));
 }
 
-/// Creates unmodifiable Observable<List>. Short-named
+/// Creates unmodifiable Observable List. Short-named
 Observable<List<T>> obsListUnMod<T>(List<T> list) {
   return obsListUnmodifiable<T>(list);
 }
 
-/// Creates unmodifiable ObservableAsync<List>. Short-named
+/// Creates unmodifiable ObservableAsync List. Short-named
 ObservableAsync<List<T>> obsListUnModA<T>(List<T> list) {
   return obsListUnmodifiableA<T>(list);
 }

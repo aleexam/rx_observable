@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../observable.dart';
 
+/// Proxy class for mapping Observable to another transformed one, sync version
 class MappedObservableReadOnly<T, M>
     implements ObservableReadOnly<M>, ChangeNotifier {
   final ObservableReadOnly<T> _source;

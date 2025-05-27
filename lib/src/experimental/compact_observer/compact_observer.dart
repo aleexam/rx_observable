@@ -24,7 +24,7 @@ import '../experimental.dart';
 /// WARNING: There are important limitations to be aware of:
 /// 1. Do not modify observable values inside the builder (causes infinite loops)
 /// 2. Nested contexts (like inside Builder widgets) will not be tracked
-/// 3. Asynchronous operations inside the builder won't be tracked properly\
+/// 3. Asynchronous operations inside the builder won't be tracked properly
 /// 4. Performance is also questionable (especially nested [Observe], especially with same values
 @Deprecated("Experimental feature, not recommended for production use")
 class Observe extends StatefulWidget {
@@ -71,17 +71,13 @@ class _ObserveState extends State<Observe> {
     // Prevent multiple rebuilds happening simultaneously
     if (_isRebuilding) return;
     _isRebuilding = true;
-
-    // Clear existing subscriptions
     _clearSubscriptions();
 
     try {
-      // Track observables accessed during build
       // ignore: invalid_use_of_visible_for_testing_member
       _cachedWidget = _ctx.track(() => widget.builder(), (trackedVars) {
         if (_disposed) return;
 
-        // Subscribe to all tracked observables
         for (final observable in trackedVars) {
           final sub = observable.listen((_) {
             if (!_disposed && mounted) {
@@ -109,7 +105,6 @@ class _ObserveState extends State<Observe> {
         ),
       );
 
-      // Fall back to an error widget
       _cachedWidget = ErrorWidget.withDetails(
         message: 'Error in Observe widget: $e',
       );

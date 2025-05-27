@@ -8,7 +8,7 @@ class ExperimentalObservableFeatures {
   /// Controls activation of experimental features.
   ///
   /// When true, enables:
-  /// - The `Observe` widget that automatically tracks and subscribes to observable values
+  /// - The [Observe] widget that automatically tracks and subscribes to observable values
   ///
   /// WARNING: Experimental features have limitations, can be unstable and they not well tested
   static bool useExperimental = false;

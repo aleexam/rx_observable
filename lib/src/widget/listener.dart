@@ -9,7 +9,7 @@ import '../core/observable.dart';
 /// It is meant for side effects only (e.g., showing dialogs, triggering actions).
 ///
 /// Usage:
-/// ObservableListener<int>(
+/// ObservableListener(
 ///   observable: counter,
 ///   listener: (context, value) {
 ///     if (value > 10) {

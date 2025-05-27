@@ -29,7 +29,7 @@ class ObservableGroup extends ChangeNotifier
 
   /// For ObservableGroup better to use [addListener] or [listener] method
   /// For better code readability, since this one use callback
-  /// with void parameter (similar to .then in Future<void>)
+  /// with void parameter (similar to .then in Future void)
   @override
   ObservableSubscription listen(void Function(void) listener) {
     assert(ChangeNotifier.debugAssertNotDisposed(this));

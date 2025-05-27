@@ -9,65 +9,68 @@ import 'package:rx_observable/rx_observable.dart';
 /// ✅
 void main() {
   group('RxSubsMixin', () {
-    test('regSub registers and disposes StreamSubscription correctly',
-        () async {
-      final testClass = TestClass();
-      final controller = StreamController<int>();
-      bool callbackCalled = false;
+    test(
+      'regSub registers and disposes StreamSubscription correctly',
+      () async {
+        final testClass = TestClass();
+        final controller = StreamController<int>();
+        bool callbackCalled = false;
 
-      final subscription = controller.stream.listen((_) {
-        callbackCalled = true;
-      });
+        final subscription = controller.stream.listen((_) {
+          callbackCalled = true;
+        });
 
-      testClass.regSub(subscription);
+        testClass.regSub(subscription);
 
-      controller.add(1);
-      await Future.delayed(Duration.zero);
-      expect(callbackCalled, true);
+        controller.add(1);
+        await Future.delayed(Duration.zero);
+        expect(callbackCalled, true);
 
-      testClass.dispose();
-      expect(testClass.customDisposeCalled, true);
+        testClass.dispose();
+        expect(testClass.customDisposeCalled, true);
 
-      callbackCalled = false;
-      controller.add(2);
-      expect(callbackCalled, false);
+        callbackCalled = false;
+        controller.add(2);
+        expect(callbackCalled, false);
 
-      controller.close();
-    });
+        controller.close();
+      },
+    );
 
     test(
-        'regSubs registers and disposes multiple StreamSubscriptions correctly',
-        () async {
-      final testClass = TestClass();
-      final controller1 = StreamController<int>();
-      final controller2 = StreamController<int>();
-      int callCount = 0;
+      'regSubs registers and disposes multiple StreamSubscriptions correctly',
+      () async {
+        final testClass = TestClass();
+        final controller1 = StreamController<int>();
+        final controller2 = StreamController<int>();
+        int callCount = 0;
 
-      final subscription1 = controller1.stream.listen((_) {
-        callCount++;
-      });
+        final subscription1 = controller1.stream.listen((_) {
+          callCount++;
+        });
 
-      final subscription2 = controller2.stream.listen((_) {
-        callCount++;
-      });
+        final subscription2 = controller2.stream.listen((_) {
+          callCount++;
+        });
 
-      testClass.regSubs([subscription1, subscription2]);
+        testClass.regSubs([subscription1, subscription2]);
 
-      controller1.add(1);
-      controller2.add(1);
-      await Future.delayed(Duration.zero);
-      expect(callCount, 2);
+        controller1.add(1);
+        controller2.add(1);
+        await Future.delayed(Duration.zero);
+        expect(callCount, 2);
 
-      testClass.dispose();
+        testClass.dispose();
 
-      callCount = 0;
-      controller1.add(2);
-      controller2.add(2);
-      expect(callCount, 0);
+        callCount = 0;
+        controller1.add(2);
+        controller2.add(2);
+        expect(callCount, 0);
 
-      controller1.close();
-      controller2.close();
-    });
+        controller1.close();
+        controller2.close();
+      },
+    );
 
     test('regSink registers and closes EventSink correctly', () {
       final testClass = TestClass();
@@ -105,20 +108,21 @@ void main() {
     });
 
     test(
-        'regDisposables registers and disposes multiple IDisposables correctly',
-        () {
-      final testClass = TestClass();
-      final disposable1 = TestDisposable();
-      final disposable2 = TestDisposable();
+      'regDisposables registers and disposes multiple IDisposables correctly',
+      () {
+        final testClass = TestClass();
+        final disposable1 = TestDisposable();
+        final disposable2 = TestDisposable();
 
-      testClass.regDisposables([disposable1, disposable2]);
-      expect(disposable1.disposed, false);
-      expect(disposable2.disposed, false);
+        testClass.regDisposables([disposable1, disposable2]);
+        expect(disposable1.disposed, false);
+        expect(disposable2.disposed, false);
 
-      testClass.dispose();
-      expect(disposable1.disposed, true);
-      expect(disposable2.disposed, true);
-    });
+        testClass.dispose();
+        expect(disposable1.disposed, true);
+        expect(disposable2.disposed, true);
+      },
+    );
 
     test('regCancelable registers and cancels ICancelable correctly', () {
       final testClass = TestClass();
@@ -131,20 +135,22 @@ void main() {
       expect(cancelable.cancelled, true);
     });
 
-    test('regCancelables registers and cancels multiple ICancelables correctly',
-        () {
-      final testClass = TestClass();
-      final cancelable1 = TestCancelable();
-      final cancelable2 = TestCancelable();
+    test(
+      'regCancelables registers and cancels multiple ICancelables correctly',
+      () {
+        final testClass = TestClass();
+        final cancelable1 = TestCancelable();
+        final cancelable2 = TestCancelable();
 
-      testClass.regCancelables([cancelable1, cancelable2]);
-      expect(cancelable1.cancelled, false);
-      expect(cancelable2.cancelled, false);
+        testClass.regCancelables([cancelable1, cancelable2]);
+        expect(cancelable1.cancelled, false);
+        expect(cancelable2.cancelled, false);
 
-      testClass.dispose();
-      expect(cancelable1.cancelled, true);
-      expect(cancelable2.cancelled, true);
-    });
+        testClass.dispose();
+        expect(cancelable1.cancelled, true);
+        expect(cancelable2.cancelled, true);
+      },
+    );
 
     test('reg handles various types correctly', () {
       final testClass = TestClass();
@@ -197,7 +203,7 @@ void main() {
         cancelable,
         observable,
         observableAsync,
-        adapter
+        adapter,
       ]);
 
       testClass.dispose();
@@ -252,33 +258,36 @@ void main() {
       expect(() => observable.value = 100, throwsStateError);
     });
 
-    test('Observable subscriptions are properly cancelled via regCancelable',
-        () {
-      final testClass = TestClass();
-      final observable = Observable<int>(0);
-      int callCount = 0;
+    test(
+      'Observable subscriptions are properly cancelled via regCancelable',
+      () {
+        final testClass = TestClass();
+        final observable = Observable<int>(0);
+        int callCount = 0;
 
-      final subscription = observable.listen((_) {
-        callCount++;
-      });
+        final subscription = observable.listen((_) {
+          callCount++;
+        });
 
-      testClass.regCancelable(subscription);
-      observable.value = 1;
-      expect(callCount, 1);
-      testClass.dispose();
+        testClass.regCancelable(subscription);
+        observable.value = 1;
+        expect(callCount, 1);
+        testClass.dispose();
 
-      observable.value = 2;
-      expect(callCount, 1); // Still 1, not 2
+        observable.value = 2;
+        expect(callCount, 1); // Still 1, not 2
 
-      observable.dispose();
-    });
+        observable.dispose();
+      },
+    );
 
     test('DisposableAdapter works correctly with custom resources', () {
       final testClass = TestClass();
       final customResource = CustomResource();
 
-      testClass
-          .regDisposable(DisposableAdapter(() => customResource.cleanup()));
+      testClass.regDisposable(
+        DisposableAdapter(() => customResource.cleanup()),
+      );
 
       expect(customResource.disposed, false);
 
@@ -288,54 +297,58 @@ void main() {
     });
 
     test(
-        'DisposableAdapter can be used with both IDisposable and ICancelable interfaces',
-        () {
-      final testClass = TestClass();
-      final customResource1 = CustomResource();
-      final customResource2 = CustomResource();
+      'DisposableAdapter can be used with both IDisposable and ICancelable interfaces',
+      () {
+        final testClass = TestClass();
+        final customResource1 = CustomResource();
+        final customResource2 = CustomResource();
 
-      testClass
-          .regDisposable(DisposableAdapter(() => customResource1.cleanup()));
+        testClass.regDisposable(
+          DisposableAdapter(() => customResource1.cleanup()),
+        );
 
-      testClass
-          .regCancelable(DisposableAdapter(() => customResource2.cleanup()));
+        testClass.regCancelable(
+          DisposableAdapter(() => customResource2.cleanup()),
+        );
 
-      testClass.dispose();
+        testClass.dispose();
 
-      expect(customResource1.disposed, true);
-      expect(customResource2.disposed, true);
-    });
+        expect(customResource1.disposed, true);
+        expect(customResource2.disposed, true);
+      },
+    );
   });
 
   group('RxSubsStateMixin', () {
     testWidgets(
-        'RxSubsStateMixin properly disposes resources when widget is disposed',
-        (WidgetTester tester) async {
-      final disposable = TestDisposable();
-      final cancelable = TestCancelable();
-      final controller = StreamController<int>();
+      'RxSubsStateMixin properly disposes resources when widget is disposed',
+      (WidgetTester tester) async {
+        final disposable = TestDisposable();
+        final cancelable = TestCancelable();
+        final controller = StreamController<int>();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: TestWidget(
-            disposable: disposable,
-            cancelable: cancelable,
-            controller: controller,
+        await tester.pumpWidget(
+          MaterialApp(
+            home: TestWidget(
+              disposable: disposable,
+              cancelable: cancelable,
+              controller: controller,
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(disposable.disposed, false);
-      expect(cancelable.cancelled, false);
+        expect(disposable.disposed, false);
+        expect(cancelable.cancelled, false);
 
-      await tester.pumpWidget(Container());
+        await tester.pumpWidget(Container());
 
-      expect(disposable.disposed, true);
-      expect(cancelable.cancelled, true);
-      expect(() => controller.sink.add(1), throwsStateError);
+        expect(disposable.disposed, true);
+        expect(cancelable.cancelled, true);
+        expect(() => controller.sink.add(1), throwsStateError);
 
-      controller.close();
-    });
+        controller.close();
+      },
+    );
   });
 
   group('RxSubsMixin edge cases', () {
@@ -345,12 +358,10 @@ void main() {
 
       testClass.regDisposable(disposable);
 
-      // First dispose
       testClass.dispose();
       expect(disposable.disposed, true);
       expect(testClass.customDisposeCalled, true);
 
-      // Second dispose should not throw
       testClass.dispose();
     });
 
@@ -360,20 +371,12 @@ void main() {
 
       final disposable = TestDisposable();
 
-      // Depending on implementation, might throw or just be a no-op
-      // Registering after disposal should ideally throw, but at minimum
-      // it shouldn't break anything
       try {
         testClass.regDisposable(disposable);
 
-        // If we get here, it should be a no-op
         expect(disposable.disposed, false);
 
-        // Call dispose again to see if it affects the late-registered disposable
         testClass.dispose();
-
-        // The disposable should either be disposed or untouched
-        // (depends on how strict the implementation is)
       } catch (e) {
         // Or it might throw, which is also fine
       }
@@ -443,45 +446,36 @@ void main() {
       final testClass = TestClass();
       final disposable = TestDisposable();
 
-      // Register the same resource multiple times
       testClass.regDisposable(disposable);
       testClass.regDisposable(disposable);
       testClass.reg(disposable);
 
-      // Dispose should handle duplicates gracefully
       testClass.dispose();
 
-      // Should be disposed exactly once
       expect(disposable.disposed, true);
     });
   });
 
   group('RxSubsStateMixin edge cases', () {
     testWidgets(
-        'RxSubsStateMixin works with dynamic registration in lifecycle methods',
-        (WidgetTester tester) async {
-      // Special widget that registers resources at different lifecycle stages
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: LifecycleRegistrationWidget(),
-        ),
-      );
+      'RxSubsStateMixin works with dynamic registration in lifecycle methods',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: LifecycleRegistrationWidget()),
+        );
 
-      // Force rebuild
-      await tester.pump();
+        await tester.pump();
 
-      // Replace the widget to trigger disposal
-      await tester.pumpWidget(Container());
+        await tester.pumpWidget(Container());
+      },
+    );
 
-      // If we get here without exceptions, the test passes
-    });
-
-    testWidgets('RxSubsStateMixin handles State being kept alive',
-        (WidgetTester tester) async {
+    testWidgets('RxSubsStateMixin handles State being kept alive', (
+      WidgetTester tester,
+    ) async {
       final disposable = TestDisposable();
       final controller = StreamController<int>();
 
-      // Create a widget that uses a KeepAlive
       await tester.pumpWidget(
         MaterialApp(
           home: CustomScrollView(
@@ -497,30 +491,23 @@ void main() {
         ),
       );
 
-      // Resource should not be disposed yet
       expect(disposable.disposed, false);
 
-      // Scroll away to potentially deactivate but not dispose due to keep alive
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -1000));
       await tester.pump();
 
-      // Resource should still not be disposed
       expect(disposable.disposed, false);
 
-      // Replace the widget entirely to force disposal
       await tester.pumpWidget(Container());
 
-      // Now resources should be disposed
       expect(disposable.disposed, true);
       expect(() => controller.sink.add(1), throwsStateError);
 
-      // Clean up
       controller.close();
     });
   });
 }
 
-// Helper classes for testing
 class TestDisposable implements IDisposable {
   bool disposed = false;
 
@@ -549,7 +536,6 @@ class TestClass with RxSubsMixin {
   }
 }
 
-// Additional test helper classes
 class ThrowingDisposable implements IDisposable {
   @override
   void dispose() {
@@ -557,7 +543,6 @@ class ThrowingDisposable implements IDisposable {
   }
 }
 
-// Widget that registers resources in different lifecycle methods
 class LifecycleRegistrationWidget extends StatefulWidget {
   const LifecycleRegistrationWidget({super.key});
 
@@ -567,7 +552,8 @@ class LifecycleRegistrationWidget extends StatefulWidget {
 }
 
 class _LifecycleRegistrationWidgetState
-    extends State<LifecycleRegistrationWidget> with RxSubsStateMixin {
+    extends State<LifecycleRegistrationWidget>
+    with RxSubsStateMixin {
   late StreamController _initController;
   late StreamController _buildController;
   late StreamController _didUpdateController;
@@ -594,7 +580,6 @@ class _LifecycleRegistrationWidgetState
   }
 }
 
-// Widget with AutomaticKeepAlive mixin
 class KeepAliveTestWidget extends StatefulWidget {
   final TestDisposable disposable;
   final StreamController controller;
@@ -623,7 +608,7 @@ class _KeepAliveTestWidgetState extends State<KeepAliveTestWidget>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    super.build(context);
     return Container(
       height: 200,
       color: Colors.blue,
@@ -632,7 +617,6 @@ class _KeepAliveTestWidgetState extends State<KeepAliveTestWidget>
   }
 }
 
-// Widget with a disposable that throws
 class ErrorTestWidget extends StatefulWidget {
   final ThrowingDisposable throwingDisposable;
   final TestDisposable normalDisposable;
@@ -662,7 +646,6 @@ class _ErrorTestWidgetState extends State<ErrorTestWidget>
   }
 }
 
-// Test widget for RxSubsStateMixin tests
 class TestWidget extends StatefulWidget {
   final TestDisposable disposable;
   final TestCancelable cancelable;
@@ -684,7 +667,6 @@ class _TestWidgetState extends State<TestWidget> with RxSubsStateMixin {
   void initState() {
     super.initState();
 
-    // Register resources for automatic disposal
     regDisposable(widget.disposable);
     regCancelable(widget.cancelable);
     regSink(widget.controller.sink);
@@ -696,7 +678,6 @@ class _TestWidgetState extends State<TestWidget> with RxSubsStateMixin {
   }
 }
 
-// Custom types for adapter testing
 class CustomResource {
   bool disposed = false;
 

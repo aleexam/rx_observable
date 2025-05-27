@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../observable.dart';
 
+/// Proxy class for mapping Observable to another transformed one, async version
 class MappedObservableAsyncReadOnly<T, M>
     implements ObservableAsyncReadOnly<M> {
   final ObservableAsyncReadOnly<T> _source;
