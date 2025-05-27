@@ -12,8 +12,13 @@ class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
   /// [onListen], [onCancel], flag to handle events [sync] and
   /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
   /// if new value not equals to old value
-  ObservableAsync(super.initialValue,
-      {super.notifyOnlyIfChanged, super.sync, super.onListen, super.onCancel});
+  ObservableAsync(
+    super.initialValue, {
+    super.notifyOnlyIfChanged,
+    super.sync,
+    super.onListen,
+    super.onCancel,
+  });
 
   @override
   set value(T newValue) => _updateValue(newValue);
@@ -87,7 +92,10 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
     bool sync = false,
   }) {
     _controller = StreamController<T>.broadcast(
-        sync: sync, onListen: onListen, onCancel: onCancel);
+      sync: sync,
+      onListen: onListen,
+      onCancel: onCancel,
+    );
     _notifyOnlyIfChanged = notifyOnlyIfChanged;
   }
 
@@ -101,13 +109,18 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   T get v => value;
 
   @override
-  ObservableStreamSubscription<T> listen(FutureOr<void> Function(T) onData,
-      {bool fireImmediately = false}) {
-    var subscription = _controller.stream.listen((event) {
-      onData(event);
-    }, onError: (e, s) {
-      reportObservableFlutterError(e, s, this);
-    });
+  ObservableStreamSubscription<T> listen(
+    FutureOr<void> Function(T) onData, {
+    bool fireImmediately = false,
+  }) {
+    var subscription = _controller.stream.listen(
+      (event) {
+        onData(event);
+      },
+      onError: (e, s) {
+        reportObservableFlutterError(e, s, this);
+      },
+    );
     if (fireImmediately && !isClosed) {
       Future.microtask(() {
         try {
@@ -126,8 +139,12 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
     void Function()? onDone,
     bool? cancelOnError,
   }) {
-    return _controller.stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return _controller.stream.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
   }
 
   void _updateValue(T newValue) {
@@ -147,10 +164,16 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   }
 
   @override
-  ObservableAsyncReadOnly<R> map<R>(R Function(T value) transform,
-      {bool? notifyOnlyIfChanged}) {
-    return MappedObservableAsyncReadOnly<T, R>(this, _controller, transform,
-        notifyOnlyIfChanged: notifyOnlyIfChanged ?? _notifyOnlyIfChanged);
+  ObservableAsyncReadOnly<R> map<R>(
+    R Function(T value) transform, {
+    bool? notifyOnlyIfChanged,
+  }) {
+    return MappedObservableAsyncReadOnly<T, R>(
+      this,
+      _controller,
+      transform,
+      notifyOnlyIfChanged: notifyOnlyIfChanged ?? _notifyOnlyIfChanged,
+    );
   }
 
   void _add(T event) {
@@ -176,8 +199,10 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
       return event;
     });
 
-    return _controller.addStream(transformedStream,
-        cancelOnError: cancelOnError);
+    return _controller.addStream(
+      transformedStream,
+      cancelOnError: cancelOnError,
+    );
   }
 
   @override

@@ -43,8 +43,10 @@ class MappedObservableReadOnly<T, M>
   bool _isClosed = false;
 
   @override
-  ObservableSubscription<M> listen(void Function(M) listener,
-      {bool fireImmediately = false}) {
+  ObservableSubscription<M> listen(
+    void Function(M) listener, {
+    bool fireImmediately = false,
+  }) {
     assert(_debugAssertNotDisposed());
     _lastValue = value;
     void wrapper() {
@@ -59,11 +61,15 @@ class MappedObservableReadOnly<T, M>
   }
 
   @override
-  ObservableReadOnly<M2> map<M2>(M2 Function(M value) transform,
-      {bool? notifyOnlyIfChanged}) {
+  ObservableReadOnly<M2> map<M2>(
+    M2 Function(M value) transform, {
+    bool? notifyOnlyIfChanged,
+  }) {
     assert(_debugAssertNotDisposed());
-    return _source.map((value) => transform(_transform(value)),
-        notifyOnlyIfChanged: notifyOnlyIfChanged ?? this.notifyOnlyIfChanged);
+    return _source.map(
+      (value) => transform(_transform(value)),
+      notifyOnlyIfChanged: notifyOnlyIfChanged ?? this.notifyOnlyIfChanged,
+    );
   }
 
   @override

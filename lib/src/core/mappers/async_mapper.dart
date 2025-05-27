@@ -51,30 +51,50 @@ class MappedObservableAsyncReadOnly<T, M>
   }
 
   @override
-  ObservableStreamSubscription<M> listen(FutureOr<void> Function(M) onData,
-      {bool fireImmediately = false}) {
+  ObservableStreamSubscription<M> listen(
+    FutureOr<void> Function(M) onData, {
+    bool fireImmediately = false,
+  }) {
     var subscription = _source.stream
         .map(_transform)
         .where(_shouldNotify)
-        .listen(onData, onError: (e, s) {
-      // ignore: invalid_use_of_visible_for_testing_member
-      reportObservableFlutterError(e, s, this);
-    });
+        .listen(
+          onData,
+          onError: (e, s) {
+            // ignore: invalid_use_of_visible_for_testing_member
+            reportObservableFlutterError(e, s, this);
+          },
+        );
     return ObservableStreamSubscription<M>(subscription);
   }
 
   @override
-  StreamSubscription<M> listenAsStream(void Function(M)? onData,
-      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return _source.stream.map(_transform).where(_shouldNotify).listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  StreamSubscription<M> listenAsStream(
+    void Function(M)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    return _source.stream
+        .map(_transform)
+        .where(_shouldNotify)
+        .listen(
+          onData,
+          onError: onError,
+          onDone: onDone,
+          cancelOnError: cancelOnError,
+        );
   }
 
   @override
-  ObservableAsyncReadOnly<R> map<R>(R Function(M value) newTransform,
-      {bool? notifyOnlyIfChanged}) {
-    return _source.map((value) => newTransform(_transform(value)),
-        notifyOnlyIfChanged: notifyOnlyIfChanged ?? this.notifyOnlyIfChanged);
+  ObservableAsyncReadOnly<R> map<R>(
+    R Function(M value) newTransform, {
+    bool? notifyOnlyIfChanged,
+  }) {
+    return _source.map(
+      (value) => newTransform(_transform(value)),
+      notifyOnlyIfChanged: notifyOnlyIfChanged ?? this.notifyOnlyIfChanged,
+    );
   }
 
   @override

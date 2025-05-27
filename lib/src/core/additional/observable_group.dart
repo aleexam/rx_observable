@@ -12,9 +12,11 @@ class ObservableGroup extends ChangeNotifier
 
   /// Constructor that sets up listeners for each observable in the group.
   ObservableGroup(this._observables) {
-    _subscriptions.addAll(_observables.map((rx) {
-      return rx.listen((_) => notifyListeners());
-    }));
+    _subscriptions.addAll(
+      _observables.map((rx) {
+        return rx.listen((_) => notifyListeners());
+      }),
+    );
   }
 
   /// This works similar to AddListener, without value,

@@ -203,8 +203,12 @@ class _Observer3State<A, B, C> extends State<Observer3<A, B, C>> {
   }
 
   @override
-  Widget build(BuildContext ctx) => widget.builder(ctx, widget.observable.value,
-      widget.observable2.value, widget.observable3.value);
+  Widget build(BuildContext ctx) => widget.builder(
+    ctx,
+    widget.observable.value,
+    widget.observable2.value,
+    widget.observable3.value,
+  );
 }
 
 class MultiObserver extends StatefulWidget {

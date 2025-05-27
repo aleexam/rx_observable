@@ -154,9 +154,10 @@ class _RxSubsMixinObject {
       regNotifier(sinkOrSub);
     } else {
       throw UnimplementedError(
-          "Object with type ${sinkOrSub.runtimeType} with value ${sinkOrSub.toString()} "
-          "is not supported for automatic register in RxSubsMixin. "
-          "Please use DisposableAdapter() or close/dispose it manually in dispose method.");
+        "Object with type ${sinkOrSub.runtimeType} with value ${sinkOrSub.toString()} "
+        "is not supported for automatic register in RxSubsMixin. "
+        "Please use DisposableAdapter() or close/dispose it manually in dispose method.",
+      );
     }
   }
 

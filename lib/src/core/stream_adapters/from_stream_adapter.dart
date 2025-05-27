@@ -10,8 +10,10 @@ class StreamToObservableAdapter<T> implements IObservableListenable<T> {
   StreamToObservableAdapter(this._stream);
 
   @override
-  ObservableSubscription<T> listen(void Function(T) listener,
-      {bool fireImmediately = false}) {
+  ObservableSubscription<T> listen(
+    void Function(T) listener, {
+    bool fireImmediately = false,
+  }) {
     var subscription = _stream.listen(listener);
     _subscriptions.add(subscription);
     return ObservableSubscription(() {

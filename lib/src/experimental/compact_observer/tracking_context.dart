@@ -17,8 +17,10 @@ class ObsTrackingContext {
   bool _isTracking = false;
 
   ObsTrackingContext()
-      : assert(ExperimentalObservableFeatures.useExperimental,
-            'This experimental feature is only available when ExperimentalObservableFeatures.useExperimental is set to true');
+    : assert(
+        ExperimentalObservableFeatures.useExperimental,
+        'This experimental feature is only available when ExperimentalObservableFeatures.useExperimental is set to true',
+      );
 
   /// Experimental
   void _register(IObservable observable) {
@@ -31,7 +33,8 @@ class ObsTrackingContext {
     if (ExperimentalObservableFeatures.useExperimental &&
         ObsTrackingContext.current != null) {
       throw Exception(
-          'You cannot modify reactive value inside Observe builder');
+        'You cannot modify reactive value inside Observe builder',
+      );
     }
   }
 
@@ -40,8 +43,10 @@ class ObsTrackingContext {
   /// IMPORTANT: This method is for internal use only. Do not call it directly
   /// as it may break the [Observe] widget's tracking logic.
   @visibleForTesting
-  T track<T>(T Function() trackingFunction,
-      void Function(Set<IObservable>) onTrackedVars) {
+  T track<T>(
+    T Function() trackingFunction,
+    void Function(Set<IObservable>) onTrackedVars,
+  ) {
     _isTracking = true;
     _stack.add(this);
     _trackedVars.clear();
@@ -73,8 +78,10 @@ extension CompactObserverExt on IObservable {
   /// });
   @Deprecated("Experimental feature, probably better not to use yet")
   void observe() {
-    assert(ExperimentalObservableFeatures.useExperimental == true,
-        "This experimental feature available only when useExperimental set true");
+    assert(
+      ExperimentalObservableFeatures.useExperimental == true,
+      "This experimental feature available only when useExperimental set true",
+    );
     ObsTrackingContext.current?._register(this);
   }
 }

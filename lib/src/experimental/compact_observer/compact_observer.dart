@@ -32,8 +32,10 @@ class Observe extends StatefulWidget {
   final Widget Function() builder;
 
   Observe(this.builder, {super.key})
-      : assert(ExperimentalObservableFeatures.useExperimental,
-            'This experimental feature is only available when ExperimentalObservableFeatures.useExperimental is set to true');
+    : assert(
+        ExperimentalObservableFeatures.useExperimental,
+        'This experimental feature is only available when ExperimentalObservableFeatures.useExperimental is set to true',
+      );
 
   @override
   State<Observe> createState() => _ObserveState();
@@ -90,19 +92,22 @@ class _ObserveState extends State<Observe> {
         }
       });
     } catch (e, stack) {
-      FlutterError.reportError(FlutterErrorDetails(
-        exception: Exception('Error in Observe widget builder'),
-        stack: stack,
-        library: 'rx_observable',
-        context: ErrorDescription('while building an Observe widget'),
-        informationCollector: () => <DiagnosticsNode>[
-          DiagnosticsProperty<String>(
-            'Exception details',
-            e.toString(),
-            style: DiagnosticsTreeStyle.errorProperty,
-          ),
-        ],
-      ));
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: Exception('Error in Observe widget builder'),
+          stack: stack,
+          library: 'rx_observable',
+          context: ErrorDescription('while building an Observe widget'),
+          informationCollector:
+              () => <DiagnosticsNode>[
+                DiagnosticsProperty<String>(
+                  'Exception details',
+                  e.toString(),
+                  style: DiagnosticsTreeStyle.errorProperty,
+                ),
+              ],
+        ),
+      );
 
       // Fall back to an error widget
       _cachedWidget = ErrorWidget.withDetails(
