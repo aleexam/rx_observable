@@ -1,3 +1,4 @@
+// coverage:ignore-line
 import 'core/observable.dart';
 import '../widgets.dart';
 
