@@ -13,9 +13,11 @@ class ExampleScreen extends StatefulWidget {
 class ExampleScreenState extends State<ExampleScreen> with RxSubsStateMixin {
   var text = "Hello".obs;
   var text2 = "Mister".obs;
+  var text3 = "!!!".obs;
   var counter = 0.obs;
 
   late IObservable computed;
+  final personObservable = Observable(Person('Alice', 30));
 
   @override
   void initState() {
@@ -33,6 +35,10 @@ class ExampleScreenState extends State<ExampleScreen> with RxSubsStateMixin {
 
     Future.delayed(const Duration(seconds: 5)).whenComplete(() {
       text.value = "GoodBye";
+      personObservable.value = Person('Alice', 25);
+      Future.delayed(const Duration(seconds: 5)).whenComplete(() {
+        personObservable.value = Person('Bob', 25);
+      });
     });
 
     /// Use widget version of RxSubsMixin to easily handle observable disposal
@@ -81,11 +87,30 @@ class ExampleScreenState extends State<ExampleScreen> with RxSubsStateMixin {
             ),
 
             // Observing multiple values with Observer2
-            Observer2(
-              observable: text,
-              observable2: text2,
+            Observer.two(
+              o1: text,
+              o2: text2,
               builder: (context, v1, v2) {
                 return Text("Two observables: $v1 $v2");
+              },
+            ),
+
+            // Observing multiple values with Observer3
+            Observer.three(
+              o1: text,
+              o2: text2,
+              o3: text3,
+              builder: (context, v1, v2, v3) {
+                return Text("Three observables: $v1 $v2 $v3");
+              },
+            ),
+
+            /// Observing only if certain property of value changed
+            Observer.select(
+              observable: personObservable,
+              selector: (person) => person.name,
+              builder: (context, name) {
+                return Text('Name: $name');
               },
             ),
 
@@ -141,4 +166,11 @@ class ExampleScreenState extends State<ExampleScreen> with RxSubsStateMixin {
       ),
     );
   }
+}
+
+class Person {
+  final String name;
+  final int age;
+
+  Person(this.name, this.age);
 }

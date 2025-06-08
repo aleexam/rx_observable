@@ -8,19 +8,19 @@ import 'package:rx_observable/widgets.dart';
 void main() {
   group('Observer widget', () {
     testWidgets('Initial value is rendered correctly', (tester) async {
-        final observable = Observable<int>(98);
+      final observable = Observable<int>(98);
 
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Observer<int>(
-              observable,
-              (val) => Text('$val', textDirection: TextDirection.ltr),
-            ),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Observer<int>(
+            observable,
+            (val) => Text('$val', textDirection: TextDirection.ltr),
           ),
-        );
+        ),
+      );
 
-        expect(find.text('98'), findsOneWidget);
-      });
+      expect(find.text('98'), findsOneWidget);
+    });
 
     testWidgets('Widget rebuilds on observable change', (tester) async {
       final observable = Observable<String>('initial');
@@ -40,7 +40,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('updated'), findsOneWidget);
-    });    
+    });
 
     testWidgets('Observer rebuilds only when necessary',
         (WidgetTester tester) async {
@@ -101,6 +101,103 @@ void main() {
       await tester.pump();
 
       expect(find.text('25'), findsOneWidget);
+    });
+
+    testWidgets('Observer.select rebuilds only on selected field change',
+        (tester) async {
+      final person = Observable(Person('Alice', 30));
+
+      int buildCount = 0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Observer.select<Person, String>(
+            observable: person,
+            selector: (p) => p.name,
+            builder: (context, name) {
+              buildCount++;
+              return Column(
+                children: [
+                  Text(name),
+                  Text(person.v.age.toString()),
+                ],
+              );
+            },
+          ),
+        ),
+      );
+
+      expect(find.text('Alice'), findsOneWidget);
+      expect(buildCount, 1);
+
+      person.value = person.value = Person('Alice', 35);
+      await tester.pump();
+      expect(find.text('Alice'), findsOneWidget);
+      expect(find.text('30'), findsOneWidget);
+      expect(buildCount, 1);
+
+      person.value = person.value = Person('Bob', 38);
+      await tester.pump();
+      expect(find.text('Bob'), findsOneWidget);
+      expect(find.text('38'), findsOneWidget);
+      expect(buildCount, 2);
+    });
+
+    testWidgets('Observer.select reacts to new observable or selector',
+        (tester) async {
+      final person1 = Observable(Person('Alice', 30));
+      final person2 = Observable(Person('Bob', 25));
+
+      final widget = StatefulBuilder(
+        builder: (context, setState) {
+          return MaterialApp(
+            home: Builder(
+              builder: (context) {
+                return Column(
+                  children: [
+                    Observer.select<Person, String>(
+                      key: const ValueKey('observer'),
+                      observable: person1,
+                      selector: (p) => p.name,
+                      builder: (_, name) =>
+                          Text('Name: $name', textDirection: TextDirection.ltr),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          // Rebuild with new observable and selector
+                        });
+                      },
+                      child: const Text('Swap'),
+                    )
+                  ],
+                );
+              },
+            ),
+          );
+        },
+      );
+
+      await tester.pumpWidget(widget);
+      expect(find.text('Name: Alice'), findsOneWidget);
+
+      person1.value = person1.value = Person('Changed', 30);
+      await tester.pump();
+      expect(find.text('Name: Changed'), findsOneWidget);
+
+      // Replace widget with different observable + selector
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Observer.select<Person, String>(
+            observable: person2,
+            selector: (p) => '${p.name}-${p.age}',
+            builder: (_, value) =>
+                Text('Changed: $value', textDirection: TextDirection.ltr),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(find.text('Changed: Bob-25'), findsOneWidget);
     });
 
     testWidgets('Observer rebuilds only when necessary async',
@@ -369,4 +466,11 @@ void main() {
       expect(counter2.hasListeners, false);
     });
   });
+}
+
+class Person {
+  final String name;
+  final int age;
+
+  Person(this.name, this.age);
 }
