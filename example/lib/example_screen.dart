@@ -17,7 +17,7 @@ class ExampleScreenState extends State<ExampleScreen> with RxSubsStateMixin {
   var counter = 0.obs;
 
   late IObservable computed;
-  final personObservable = Observable(Person('Alice', 30));
+  final person = Observable(Person('Alice', 30));
 
   @override
   void initState() {
@@ -35,9 +35,9 @@ class ExampleScreenState extends State<ExampleScreen> with RxSubsStateMixin {
 
     Future.delayed(const Duration(seconds: 5)).whenComplete(() {
       text.value = "GoodBye";
-      personObservable.value = Person('Alice', 25);
+      person.value = Person('Alice', 25);
       Future.delayed(const Duration(seconds: 5)).whenComplete(() {
-        personObservable.value = Person('Bob', 25);
+        person.value = Person('Bob', 25);
       });
     });
 
@@ -76,7 +76,7 @@ class ExampleScreenState extends State<ExampleScreen> with RxSubsStateMixin {
             Observer(computed, (v) => Text("Single observable: $v")),
 
             // Extension method to create an observer
-            text.observer((v) => Text("Using extension: $v")),
+            text.observerWidget((v) => Text("Using extension: $v")),
 
             // Builder version for more control
             Observer.builder(
@@ -105,9 +105,20 @@ class ExampleScreenState extends State<ExampleScreen> with RxSubsStateMixin {
               },
             ),
 
+            /// Observing only if certain property of value changed using observable.select
+            /// In this case selection handled on observable side, through select method (which is map under the hood)
+            /// Widget is simple Observer
+            Observer.builder(
+              observable: person.select((person) => person.name),
+              builder: (context, name) {
+                return Text('Name: $name');
+              },
+            ),
+
             /// Observing only if certain property of value changed
+            /// In this case selection handled inside widget, without changes to observable
             Observer.select(
-              observable: personObservable,
+              observable: person,
               selector: (person) => person.name,
               builder: (context, name) {
                 return Text('Name: $name');

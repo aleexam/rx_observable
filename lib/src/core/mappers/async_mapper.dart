@@ -56,11 +56,15 @@ class MappedObservableAsyncReadOnly<T, M>
     FutureOr<void> Function(M) onData, {
     bool fireImmediately = false,
   }) {
+    if (fireImmediately) {
+      onData(value);
+    }
     var subscription = _source.stream
         .map(_transform)
         .where(_shouldNotify)
-        .listen(
-          onData,
+        .listen((v) {
+          onData(v);
+        },
           onError: (e, s) {
             // ignore: invalid_use_of_visible_for_testing_member
             reportObservableFlutterError(e, s, this);

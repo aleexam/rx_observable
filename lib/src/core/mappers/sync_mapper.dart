@@ -50,14 +50,17 @@ class MappedObservableReadOnly<T, M>
   }) {
     assert(_debugAssertNotDisposed());
     _lastValue = value;
+    bool notifyOnlyIfChangedCopy = this.notifyOnlyIfChanged;
+    this.notifyOnlyIfChanged = false;
     void wrapper() {
-      if ((notifyOnlyIfChanged && _lastValue == value) || _isClosed) return;
+      if ((this.notifyOnlyIfChanged && _lastValue == value) || _isClosed) return;
       _lastValue = value;
       listener(value);
     }
 
     _source.addListener(wrapper);
     if (fireImmediately) wrapper();
+    this.notifyOnlyIfChanged = notifyOnlyIfChangedCopy;
     return ObservableSubscription<M>(() => _source.removeListener(wrapper));
   }
 

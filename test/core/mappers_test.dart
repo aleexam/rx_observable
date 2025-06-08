@@ -5,6 +5,96 @@ import 'package:rx_observable/rx_observable.dart';
 /// ✅
 void main() {
   group('SyncMapper Tests', () {
+    test(
+        'select creates mapped observable and updates when selected value changes',
+        () {
+      final person = Observable(Person('Alice', 30));
+      final nameObs = person.select((p) => p.name);
+
+      final observedValues = <String>[];
+
+      final sub = nameObs.listen((name) {
+        observedValues.add(name);
+      }, fireImmediately: true);
+
+      // Initial value should be fired
+      expect(observedValues, ['Alice']);
+
+      // Change unrelated field — no notification
+      person.value = person.value.copyWith(age: 31);
+      expect(observedValues, ['Alice']); // no change
+
+      // Change tracked field — should notify
+      person.value = person.value.copyWith(name: 'Bob');
+      expect(observedValues, ['Alice', 'Bob']);
+
+      sub.cancel();
+    });
+
+    test(
+        '(Async) select creates mapped observable and updates when selected value changes',
+        () async {
+      final person = ObservableAsync(Person('Alice', 30));
+      final nameObs = person.select((p) => p.name);
+
+      final observedValues = <String>[];
+
+      final sub = nameObs.listen((name) {
+        observedValues.add(name);
+      }, fireImmediately: true);
+
+      // Initial value should be fired
+      expect(observedValues, ['Alice']);
+
+      // Change unrelated field — no notification
+      person.value = person.value.copyWith(age: 31);
+      expect(observedValues, ['Alice']); // no change
+
+      // Change tracked field — should notify
+      person.value = person.value.copyWith(name: 'Bob');
+      await Future.delayed(Duration.zero);
+      expect(observedValues, ['Alice', 'Bob']);
+
+      sub.cancel();
+    });
+
+    test(
+        'select notifies even if same value, when notifyOnlyIfChanged is false',
+        () {
+      final person =
+          Observable(Person('Alice', 30), notifyOnlyIfChanged: false);
+      final nameObs = person.select((p) => p.name, notifyOnlyIfChanged: false);
+
+      int notifyCount = 0;
+
+      final sub = nameObs.listen((_) {
+        notifyCount++;
+      });
+
+      person.value = person.value.copyWith(name: 'Alice');
+      expect(notifyCount, 1);
+      sub.cancel();
+    });
+
+    test(
+        '(Async) select notifies even if same value, when notifyOnlyIfChanged is false',
+        () async {
+      final person =
+          ObservableAsync(Person('Alice', 30), notifyOnlyIfChanged: false);
+      final nameObs = person.select((p) => p.name, notifyOnlyIfChanged: false);
+
+      int notifyCount = 0;
+
+      final sub = nameObs.listen((_) {
+        notifyCount++;
+      });
+
+      person.value = person.value.copyWith(name: 'Alice');
+      await Future.delayed(Duration.zero);
+      expect(notifyCount, 1);
+      sub.cancel();
+    });
+
     test('map with exception handling', () async {
       final source = ObservableAsync<int>(10);
       final mapped = source.map<String>((value) {
@@ -18,7 +108,7 @@ void main() {
 
       bool errorCaught = false;
       mapped.stream.listen(
-            (_) {},
+        (_) {},
         onError: (error) {
           errorCaught = true;
           expect(error, isA<Exception>());
@@ -275,4 +365,26 @@ void main() {
       expect(mapped.value, null);
     });
   });
+}
+
+class Person {
+  final String name;
+  final int age;
+
+  Person(this.name, this.age);
+
+  Person copyWith({String? name, int? age}) {
+    return Person(name ?? this.name, age ?? this.age);
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Person &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          age == other.age;
+
+  @override
+  int get hashCode => name.hashCode ^ age.hashCode;
 }

@@ -62,7 +62,8 @@ abstract class IObservable<T> extends IObservableListenable<T> {
   /// Maps an [IObservable] of type [T] to an [IObservable] of type [R].
   /// Returned observable is read-only
   /// [notifyOnlyIfChanged] - if true, will not notify
-  /// if transform returns the same value as the previous transformed value
+  /// if transform returns the same value as the previous transformed value.
+  /// Please note, that source observable has its own notifyOnlyIfChanged property
   IObservable<R> map<R>(
     R Function(T value) transform, {
     bool? notifyOnlyIfChanged,

@@ -272,3 +272,37 @@ extension DisposeChangeNotifiersSet on Set<ChangeNotifier> {
     clear();
   }
 }
+
+extension ObservableSelectExt<T> on ObservableReadOnly<T> {
+  /// Selects a derived observable value using [selector].
+  ///
+  /// Similar to [map], but more semantic for selecting a field.
+  /// Notifies listeners only if the selected value has changed,
+  /// unless [notifyOnlyIfChanged] is explicitly set to false.
+  ObservableReadOnly<R> select<R>(
+    R Function(T value) selector, {
+    bool? notifyOnlyIfChanged,
+  }) {
+    return map(
+      selector,
+      notifyOnlyIfChanged: notifyOnlyIfChanged,
+    );
+  }
+}
+
+extension ObservableAsyncSelectExt<T> on ObservableAsyncReadOnly<T> {
+  /// Selects a derived observable value using [selector].
+  ///
+  /// Similar to [map], but more semantic for selecting a field.
+  /// Notifies listeners only if the selected value has changed,
+  /// unless [notifyOnlyIfChanged] is explicitly set to false.
+  ObservableAsyncReadOnly<R> select<R>(
+    R Function(T value) selector, {
+    bool? notifyOnlyIfChanged,
+  }) {
+    return map(
+      selector,
+      notifyOnlyIfChanged: notifyOnlyIfChanged,
+    );
+  }
+}
