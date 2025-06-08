@@ -7,9 +7,44 @@ import 'package:rx_observable/widgets.dart';
 
 void main() {
   group('Observer widget', () {
+    testWidgets('Initial value is rendered correctly', (tester) async {
+        final observable = Observable<int>(98);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Observer<int>(
+              observable,
+              (val) => Text('$val', textDirection: TextDirection.ltr),
+            ),
+          ),
+        );
+
+        expect(find.text('98'), findsOneWidget);
+      });
+
+    testWidgets('Widget rebuilds on observable change', (tester) async {
+      final observable = Observable<String>('initial');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Observer<String>(
+            observable,
+            (val) => Text(val, textDirection: TextDirection.ltr),
+          ),
+        ),
+      );
+
+      expect(find.text('initial'), findsOneWidget);
+
+      observable.value = 'updated';
+      await tester.pump();
+
+      expect(find.text('updated'), findsOneWidget);
+    });    
+
     testWidgets('Observer rebuilds only when necessary',
         (WidgetTester tester) async {
-      final counter = Observable<int>(0);
+      final counter = Observable<int>(0, notifyOnlyIfChanged: true);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -28,6 +63,44 @@ void main() {
       await tester.pump();
 
       expect(find.text('Count: 1'), findsOneWidget);
+    });
+
+    testWidgets('Handles change of observable instance', (tester) async {
+      final observable1 = Observable<int>(10);
+      final observable2 = Observable<int>(20);
+
+      Widget build(Observable<int> obs) {
+        return MaterialApp(
+          home: StatefulBuilder(
+            builder: (ctx, setState) => Column(
+              children: [
+                Observer<int>(
+                  obs,
+                  (val) => Text('$val', textDirection: TextDirection.ltr),
+                ),
+                ElevatedButton(
+                  onPressed: () => setState(() {}),
+                  child: const Text('Force rebuild'),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      await tester.pumpWidget(build(observable1));
+      expect(find.text('10'), findsOneWidget);
+
+      // Update widget with new observable
+      await tester.pumpWidget(build(observable2));
+      await tester.pump();
+
+      expect(find.text('20'), findsOneWidget);
+
+      observable2.value = 25;
+      await tester.pump();
+
+      expect(find.text('25'), findsOneWidget);
     });
 
     testWidgets('Observer rebuilds only when necessary async',
@@ -99,7 +172,7 @@ void main() {
 
     testWidgets('Observer handles rapid observable changes',
         (WidgetTester tester) async {
-      final counter = Observable<int>(0);
+      final counter = ObservableAsync<int>(0);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -190,19 +263,19 @@ void main() {
 
       expect(find.text('Test: 0 (active)'), findsOneWidget);
 
-      counter.value = 42;
+      counter.value = 4;
       await tester.pump();
-      expect(find.text('Test: 42 (active)'), findsOneWidget);
+      expect(find.text('Test: 4 (active)'), findsOneWidget);
 
       name.value = 'User';
       await tester.pump();
       await tester.pump();
-      expect(find.text('User: 42 (active)'), findsOneWidget);
+      expect(find.text('User: 4 (active)'), findsOneWidget);
 
       isActive.value = false;
       await tester.pump();
       await tester.pump();
-      expect(find.text('User: 42 (inactive)'), findsOneWidget);
+      expect(find.text('User: 4 (inactive)'), findsOneWidget);
     });
 
     testWidgets('Observer3 unsubscribes from all observables when disposed',

@@ -26,3 +26,4 @@ build/
 /example/.flutter-plugins-dependencies
 /example/macos/
 /test/test_temp/
+/coverage/html/

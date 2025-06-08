@@ -33,9 +33,7 @@ class ObservableConsumer<T> extends StatefulWidget {
 class _ObservableConsumerState<T> extends State<ObservableConsumer<T>> {
   late ObservableSubscription _sub;
 
-  @override
-  void initState() {
-    super.initState();
+  void _subscribeAndUpdate() {
     _sub = widget.observable.listen((value) {
       if (mounted) {
         widget.listener?.call(context, value);
@@ -44,6 +42,21 @@ class _ObservableConsumerState<T> extends State<ObservableConsumer<T>> {
         }
       }
     }, fireImmediately: false);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _subscribeAndUpdate();
+  }
+
+  @override
+  void didUpdateWidget(covariant ObservableConsumer<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.observable != widget.observable) {
+      _sub.cancel();
+      _subscribeAndUpdate();
+    }
   }
 
   @override

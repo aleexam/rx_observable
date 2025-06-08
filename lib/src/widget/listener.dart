@@ -5,7 +5,7 @@ import '../core/observable.dart';
 /// A stateless widget that listens to an [observable]
 /// and triggers the provided [listener] callback whenever the value changes.
 ///
-/// Unlike [ObservableConsumer], this widget does **not rebuild** itself.
+/// Unlike [ObservableConsumer], this widget does not rebuild itself.
 /// It is meant for side effects only (e.g., showing dialogs, triggering actions).
 ///
 /// Usage:
@@ -28,7 +28,7 @@ class ObservableListener<T> extends StatelessWidget {
     required this.child,
   });
 
-  /// The child widget to render. It does **not rebuild** on value change.
+  /// The child widget to render. It does not rebuild on value change.
   final Widget? child;
 
   /// The observable to listen to.
@@ -66,14 +66,28 @@ class _ObservableListener<T> extends StatefulWidget {
 class _ObservableListenerState<T> extends State<_ObservableListener<T>> {
   late ObservableSubscription _sub;
 
-  @override
-  void initState() {
-    super.initState();
+
+  void _subscribeAndUpdate() {
     _sub = widget.observable.listen((value) {
       if (mounted) {
         widget.listener(context, value);
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _subscribeAndUpdate();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ObservableListener<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.observable != widget.observable) {
+      _sub.cancel();
+      _subscribeAndUpdate();
+    }
   }
 
   @override

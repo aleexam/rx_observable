@@ -32,6 +32,33 @@ class Observer<T> extends StatefulWidget {
     }, key: key);
   }
 
+  static Observer2<A, B> two<A, B>({
+    Key? key,
+    required IObservable<A> o1,
+    required IObservable<B> o2,
+    required Widget Function(BuildContext, A, B) builder,
+  }) {
+    return Observer2(observable: o1, observable2: o2, builder: builder, key: key);
+  }
+
+  static Observer3<A, B, C> three<A, B, C>({
+    Key? key,
+    required IObservable<A> o1,
+    required IObservable<B> o2,
+    required IObservable<C> o3,
+    required Widget Function(BuildContext, A, B, C) builder,
+  }) {
+    return Observer3(observable: o1, observable2: o2, observable3: o3, builder: builder, key: key);
+  }
+
+  static MultiObserver multi({
+    Key? key,
+    required List<IObservable> observables,
+    required Widget Function(BuildContext) builder,
+  }) {
+    return MultiObserver(observables: observables, builder: builder, key: key);
+  }
+
   /// Builder constructor with access to both [BuildContext] and value.
   factory Observer.builder({
     Key? key,
@@ -53,11 +80,16 @@ class _ObserverState<T> extends State<Observer<T>> {
   @override
   void initState() {
     super.initState();
-    _sub = widget.observable.listen((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    _sub = _subscribeAndUpdate(widget.observable);
+  }
+
+  @override
+  void didUpdateWidget(covariant Observer<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.observable != widget.observable) {
+      _sub.cancel();
+      _sub = _subscribeAndUpdate(widget.observable);
+    }
   }
 
   @override
@@ -71,7 +103,7 @@ class _ObserverState<T> extends State<Observer<T>> {
       widget.builder(ctx, widget.observable.value);
 }
 
-/// A widget that listens to **two** [IObservable]s and rebuilds whenever
+/// A widget that listens to two [IObservable]s and rebuilds whenever
 /// either one of them emits a new value.
 ///
 /// Useful when your UI depends on the combined state of two observables.
@@ -110,17 +142,24 @@ class _Observer2State<A, B> extends State<Observer2<A, B>> {
   late ObservableSubscription _subA;
   late ObservableSubscription _subB;
 
-  void _setStateIfMounted() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    _subA = widget.observable.listen((_) => _setStateIfMounted());
-    _subB = widget.observable2.listen((_) => _setStateIfMounted());
+    _subA = _subscribeAndUpdate(widget.observable);
+    _subB = _subscribeAndUpdate(widget.observable2);
+  }
+
+  @override
+  void didUpdateWidget(covariant Observer2<A, B> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.observable != widget.observable) {
+      _subA.cancel();
+      _subA = _subscribeAndUpdate(widget.observable);
+    }
+    if (oldWidget.observable2 != widget.observable2) {
+      _subB.cancel();
+      _subB = _subscribeAndUpdate(widget.observable2);
+    }
   }
 
   @override
@@ -135,8 +174,8 @@ class _Observer2State<A, B> extends State<Observer2<A, B>> {
       widget.builder(ctx, widget.observable.value, widget.observable2.value);
 }
 
-/// A widget that listens to **three** [IObservable]s and rebuilds
-/// whenever **any one** of them emits a new value.
+/// A widget that listens to three [IObservable]s and rebuilds
+/// whenever any one of them emits a new value.
 ///
 /// Useful when a widget depends on multiple reactive values.
 ///
@@ -180,18 +219,29 @@ class _Observer3State<A, B, C> extends State<Observer3<A, B, C>> {
   late ObservableSubscription _subB;
   late ObservableSubscription _subC;
 
-  void _setStateIfMounted() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    _subA = widget.observable.listen((_) => _setStateIfMounted());
-    _subB = widget.observable2.listen((_) => _setStateIfMounted());
-    _subC = widget.observable3.listen((_) => _setStateIfMounted());
+    _subA = _subscribeAndUpdate(widget.observable);
+    _subB = _subscribeAndUpdate(widget.observable2);
+    _subC = _subscribeAndUpdate(widget.observable3);
+  }
+
+  @override
+  void didUpdateWidget(covariant Observer3<A, B, C> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.observable != widget.observable) {
+      _subA.cancel();
+      _subA = _subscribeAndUpdate(widget.observable);
+    }
+    if (oldWidget.observable2 != widget.observable2) {
+      _subB.cancel();
+      _subB = _subscribeAndUpdate(widget.observable2);
+    }
+    if (oldWidget.observable3 != widget.observable3) {
+      _subC.cancel();
+      _subC = _subscribeAndUpdate(widget.observable3);
+    }
   }
 
   @override
@@ -233,11 +283,7 @@ class _MultiObserverState extends State<MultiObserver> {
   void initState() {
     super.initState();
     _group = ObservableGroup(widget.observables);
-    _subscription = _group.listen((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    _subscription = _subscribeAndUpdate(_group);
   }
 
   @override
@@ -250,5 +296,16 @@ class _MultiObserverState extends State<MultiObserver> {
   @override
   Widget build(BuildContext context) {
     return widget.builder(context);
+  }
+}
+
+extension _SubscribeExt on State {
+  ObservableSubscription<T> _subscribeAndUpdate<T>(IObservableListenable<T> observable) {
+    return observable.listen((_) {
+        if (mounted) {
+          // ignore: invalid_use_of_protected_member
+          setState(() {});
+        }
+    });
   }
 }

@@ -29,22 +29,67 @@ void main() {
       expect(listenerCallCount, 0);
       expect(lastValue, -1);
 
-      counter.value = 42;
+      counter.value = 7;
       await tester.pump();
 
       expect(listenerCallCount, 1);
-      expect(lastValue, 42);
+      expect(lastValue, 7);
 
-      counter.value = 42;
+      counter.value = 7;
       await tester.pump();
 
       expect(listenerCallCount, 1);
 
-      counter.value = 43;
+      counter.value = 65;
       await tester.pump();
 
       expect(listenerCallCount, 2);
-      expect(lastValue, 43);
+      expect(lastValue, 65);
+    });
+
+    testWidgets('ObservableListener switches observable correctly',
+        (WidgetTester tester) async {
+      final observableA = Observable<int>(0);
+      final observableB = ObservableAsync<int>(100);
+      int lastSeen = -1;
+
+      late StateSetter setState;
+      IObservableListenable<int> current = observableA;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: StatefulBuilder(
+            builder: (ctx, setStateFunc) {
+              setState = setStateFunc;
+              return ObservableListener<int>(
+                observable: current,
+                listener: (context, value) {
+                  lastSeen = value;
+                },
+                child: const Placeholder(),
+              );
+            },
+          ),
+        ),
+      );
+
+      observableA.value = 1;
+      await tester.pump();
+      expect(lastSeen, 1);
+
+      setState(() {
+        current = observableB;
+      });
+      await tester.pump();
+
+      observableB.value = 200;
+      await tester.pump();
+      expect(lastSeen, 200);
+
+      // A больше не должен влиять
+      observableA.value = 999;
+      await tester.pump();
+      expect(lastSeen, 200); // Не изменился
     });
 
     testWidgets('ObservableListener unsubscribes when disposed',
@@ -70,7 +115,7 @@ void main() {
 
       expect(counter.hasListeners, false);
 
-      counter.value = 42;
+      counter.value = 7;
       await tester.pump();
 
       expect(listenerCallCount, 0);
@@ -92,7 +137,7 @@ void main() {
 
       expect(find.text('Child Widget'), findsOneWidget);
 
-      counter.value = 42;
+      counter.value = 7;
       await tester.pump();
 
       expect(find.text('Child Widget'), findsOneWidget);
@@ -115,11 +160,11 @@ void main() {
         ),
       );
 
-      counter.value = 42;
+      counter.value = 7;
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 10)); // Wait for async
 
-      expect(lastValue, 42);
+      expect(lastValue, 7);
 
       counter.dispose();
     });
