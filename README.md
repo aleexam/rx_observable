@@ -206,7 +206,7 @@ Create observables that depend on other observables:
     /// Listen to computed value
     userInfo.listen((info) {
       print(info); /// Prints "John, 25"
-    }, fireImmediately: true);
+    }, preFire: true);
 
 
     /// Create a group of observables. Difference from computed, is that no value stored

@@ -23,8 +23,8 @@ void main() {
       expect(obs.value, 56);
     });
 
-    test('notifyOnlyIfChanged=true notifies only on actual changes', () async {
-      final obs = ObservableAsync<int>(99, notifyOnlyIfChanged: true);
+    test('alwaysNotify=false notifies only on actual changes', () async {
+      final obs = ObservableAsync<int>(99, alwaysNotify: false);
       var notificationCount = 0;
 
       obs.listen((value) {
@@ -40,8 +40,8 @@ void main() {
       expect(notificationCount, 1);
     });
 
-    test('notifyOnlyIfChanged=false notifies on every set', () async {
-      final obs = ObservableAsync<int>(99, notifyOnlyIfChanged: false);
+    test('alwaysNotify=true notifies on every set', () async {
+      final obs = ObservableAsync<int>(99, alwaysNotify: true);
       var notificationCount = 0;
 
       obs.listen((value) {
@@ -58,7 +58,7 @@ void main() {
     });
 
     test('notify() forces notification regardless of value change', () async {
-      final obs = ObservableAsync<int>(99, notifyOnlyIfChanged: true);
+      final obs = ObservableAsync<int>(99, alwaysNotify: false);
       var notificationCount = 0;
 
       obs.listen((value) {
@@ -84,7 +84,7 @@ void main() {
       expect(lastValue, 58);
     });
 
-    test('listen with fireImmediately calls listener immediately', () async {
+    test('listen with preFire calls listener immediately', () async {
       final obs = ObservableAsync<int>(99);
       var lastValue = 0;
 
@@ -92,7 +92,7 @@ void main() {
         (value) {
           lastValue = value;
         },
-        fireImmediately: true,
+        preFire: true,
       );
 
       await Future.delayed(Duration.zero);
@@ -111,8 +111,8 @@ void main() {
       expect(mapped.value, '58');
     });
 
-    test('mapped observable respects notifyOnlyIfChanged', () async {
-      final obs = ObservableAsync<int>(99, notifyOnlyIfChanged: true);
+    test('mapped observable respects alwaysNotify', () async {
+      final obs = ObservableAsync<int>(99, alwaysNotify: false);
       final mapped = obs.map((value) => value > 40 ? 'high' : 'low');
       var notificationCount = 0;
 
@@ -140,8 +140,8 @@ void main() {
       expect(mapped.value, '58');
     });
 
-    test('mapped observable respects notifyOnlyIfChanged', () async {
-      final obs = ObservableAsync<int>(99, notifyOnlyIfChanged: true);
+    test('mapped observable respects alwaysNotify', () async {
+      final obs = ObservableAsync<int>(99, alwaysNotify: false);
       final mapped = obs.map((value) => value > 40 ? 'high' : 'low');
       var notificationCount = 0;
 
@@ -249,7 +249,7 @@ void main() {
       const objC = _ComplexObject(1, 'A'); // Equal to objA
 
       final obs =
-          ObservableAsync<_ComplexObject>(objA, notifyOnlyIfChanged: true);
+          ObservableAsync<_ComplexObject>(objA, alwaysNotify: false);
       var notificationCount = 0;
 
       obs.listen((value) {

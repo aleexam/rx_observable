@@ -14,8 +14,8 @@ void main() {
         expect(obs.value, equals(75));
       });
 
-    test('notifyOnlyIfChanged behavior', () {
-      final obs1 = Observable<int>(99, notifyOnlyIfChanged: true);
+    test('alwaysNotify behavior', () {
+      final obs1 = Observable<int>(99, alwaysNotify: false);
       int notificationCount1 = 0;
       obs1.addListener(() => notificationCount1++);
 
@@ -25,7 +25,7 @@ void main() {
       obs1.value = 75;
       expect(notificationCount1, equals(1));
 
-      final obs2 = Observable<int>(99, notifyOnlyIfChanged: false);
+      final obs2 = Observable<int>(99, alwaysNotify: true);
       int notificationCount2 = 0;
       obs2.addListener(() => notificationCount2++);
 
@@ -34,7 +34,7 @@ void main() {
     });
 
     test('notify() forces notification', () {
-      final obs = Observable<int>(99, notifyOnlyIfChanged: true);
+      final obs = Observable<int>(99, alwaysNotify: false);
       int notificationCount = 0;
       obs.addListener(() => notificationCount++);
 
@@ -61,7 +61,7 @@ void main() {
   });
 
   group('Listeners and Subscriptions', () {
-    test('listen callback with and without fireImmediately', () {
+    test('listen callback with and without preFire', () {
       final obs = Observable<int>(99);
       int lastValue1 = 0;
       int lastValue2 = 0;
@@ -69,7 +69,7 @@ void main() {
       obs.listen((value) => lastValue1 = value);
       expect(lastValue1, equals(0));
 
-      obs.listen((value) => lastValue2 = value, fireImmediately: true);
+      obs.listen((value) => lastValue2 = value, preFire: true);
       expect(lastValue2, equals(99));
 
       obs.value = 75;
@@ -192,8 +192,8 @@ void main() {
       expect(mapped3.value, equals('value: 30'));
     });
 
-    test('mapped observable respects notifyOnlyIfChanged', () {
-      final obs = Observable<int>(99, notifyOnlyIfChanged: true);
+    test('mapped observable respects alwaysNotify', () {
+      final obs = Observable<int>(99, alwaysNotify: false);
       final mapped = obs.map((value) => value > 40 ? 'high' : 'low');
       int notificationCount = 0;
 

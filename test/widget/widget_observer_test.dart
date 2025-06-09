@@ -44,7 +44,7 @@ void main() {
 
     testWidgets('Observer rebuilds only when necessary',
         (WidgetTester tester) async {
-      final counter = Observable<int>(0, notifyOnlyIfChanged: true);
+      final counter = Observable<int>(0, alwaysNotify: false);
 
       await tester.pumpWidget(
         MaterialApp(

@@ -41,7 +41,7 @@ class _ObservableConsumerState<T> extends State<ObservableConsumer<T>> {
           setState(() {});
         }
       }
-    }, fireImmediately: false);
+    }, preFire: false);
   }
 
   @override

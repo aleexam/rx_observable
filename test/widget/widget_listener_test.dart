@@ -204,9 +204,9 @@ void main() {
     });
 
     testWidgets(
-        'ObservableListener handles notifyOnlyIfChanged=false correctly',
+        'ObservableListener handles alwaysNotify=true correctly',
         (WidgetTester tester) async {
-      final counter = Observable<int>(0, notifyOnlyIfChanged: false);
+      final counter = Observable<int>(0, alwaysNotify: true);
       int callCount = 0;
 
       await tester.pumpWidget(

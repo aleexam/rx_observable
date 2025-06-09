@@ -83,7 +83,7 @@ void main() {
             [city, country].compute(() => "${city.value}, ${country.value}");
 
         final values = <String>[];
-        location.listen(values.add, fireImmediately: true);
+        location.listen(values.add, preFire: true);
 
         expect(values, ['London, UK']);
 
@@ -99,7 +99,7 @@ void main() {
         final greeting = [name].compute(() => "Hello, ${name.value}!");
 
         final received = <String>[];
-        greeting.listen(received.add, fireImmediately: true);
+        greeting.listen(received.add, preFire: true);
 
         expect(received, ['Hello, Alice!']);
 
@@ -117,7 +117,7 @@ void main() {
             [first, second].compute(() => "${first.value}-${second.value}");
 
         final log = <String>[];
-        combined.listen(log.add, fireImmediately: true);
+        combined.listen(log.add, preFire: true);
 
         expect(log, ['A-1']);
 
@@ -133,13 +133,13 @@ void main() {
     });
 
     group('Notifications', () {
-      test('notifies only if computed value changes (notifyOnlyIfChanged=true)',
+      test('notifies only if computed value changes (alwaysNotify=false)',
           () {
         final a = Observable<int>(1);
         final computed = ObservableComputed(
           [a],
           computer: () => a.value > 0 ? 1 : 0,
-          notifyOnlyIfChanged: true,
+          alwaysNotify: false
         );
 
         int notifyCount = 0;
@@ -152,13 +152,13 @@ void main() {
         expect(notifyCount, 1);
       });
 
-      test('notifies on every dependency change (notifyOnlyIfChanged=false)',
+      test('notifies on every dependency change (alwaysNotify=true)',
           () {
         final a = Observable<int>(1);
         final computed = ObservableComputed(
           [a],
           computer: () => a.value.isEven ? 0 : 1,
-          notifyOnlyIfChanged: false,
+          alwaysNotify: true
         );
 
         int notifyCount = 0;
@@ -171,13 +171,13 @@ void main() {
         expect(notifyCount, 2);
       });
 
-      test('listener receives value immediately if fireImmediately is true',
+      test('listener receives value immediately if preFire is true',
           () {
         final a = Observable<int>(5);
         final computed = ObservableComputed([a], computer: () => a.value * 2);
 
         int? received;
-        computed.listen((v) => received = v, fireImmediately: true);
+        computed.listen((v) => received = v, preFire: true);
         expect(received, 10);
       });
 
@@ -267,7 +267,7 @@ void main() {
         computed.listen((_) => notifyCount++);
 
         computed.notify();
-        expect(notifyCount, 1); // fireImmediately only
+        expect(notifyCount, 1); // preFire only
       });
 
       test('chained computed values update correctly', () {

@@ -46,7 +46,7 @@ abstract class IObservable<T> extends IObservableListenable<T> {
   T get v;
 
   /// Notifies all subscribed listeners of the current value.
-  /// This will force unchanged value to notify listeners, even if notifyOnlyIfChanged set true
+  /// This will force unchanged value to notify listeners, even if alwaysNotify set false
   void notify();
 
   /// Custom stream-like listen with custom subscription
@@ -56,17 +56,17 @@ abstract class IObservable<T> extends IObservableListenable<T> {
   @override
   ObservableSubscription<T> listen(
     FutureOr<void> Function(T) listener, {
-    bool fireImmediately = false,
+    bool preFire = false,
   });
 
   /// Maps an [IObservable] of type [T] to an [IObservable] of type [R].
   /// Returned observable is read-only
-  /// [notifyOnlyIfChanged] - if true, will not notify
+  /// [alwaysNotify] - if false, will not notify
   /// if transform returns the same value as the previous transformed value.
-  /// Please note, that source observable has its own notifyOnlyIfChanged property
+  /// Please note, that source observable has its own alwaysNotify property
   IObservable<R> map<R>(
     R Function(T value) transform, {
-    bool? notifyOnlyIfChanged,
+    bool? alwaysNotify,
   });
 }
 

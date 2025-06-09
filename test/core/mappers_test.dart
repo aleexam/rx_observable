@@ -15,7 +15,7 @@ void main() {
 
       final sub = nameObs.listen((name) {
         observedValues.add(name);
-      }, fireImmediately: true);
+      }, preFire: true);
 
       // Initial value should be fired
       expect(observedValues, ['Alice']);
@@ -41,7 +41,7 @@ void main() {
 
       final sub = nameObs.listen((name) {
         observedValues.add(name);
-      }, fireImmediately: true);
+      }, preFire: true);
 
       // Initial value should be fired
       expect(observedValues, ['Alice']);
@@ -59,11 +59,11 @@ void main() {
     });
 
     test(
-        'select notifies even if same value, when notifyOnlyIfChanged is false',
+        'select notifies even if same value, when alwaysNotify is true',
         () {
       final person =
-          Observable(Person('Alice', 30), notifyOnlyIfChanged: false);
-      final nameObs = person.select((p) => p.name, notifyOnlyIfChanged: false);
+          Observable(Person('Alice', 30), alwaysNotify: true);
+      final nameObs = person.select((p) => p.name, alwaysNotify: true);
 
       int notifyCount = 0;
 
@@ -77,11 +77,11 @@ void main() {
     });
 
     test(
-        '(Async) select notifies even if same value, when notifyOnlyIfChanged is false',
+        '(Async) select notifies even if same value, when alwaysNotify is true',
         () async {
       final person =
-          ObservableAsync(Person('Alice', 30), notifyOnlyIfChanged: false);
-      final nameObs = person.select((p) => p.name, notifyOnlyIfChanged: false);
+          ObservableAsync(Person('Alice', 30), alwaysNotify: true);
+      final nameObs = person.select((p) => p.name, alwaysNotify: true);
 
       int notifyCount = 0;
 
@@ -164,7 +164,7 @@ void main() {
       expect(listenerCalled, false);
     });
 
-    test('map with same value and notifyOnlyIfChanged flag', () async {
+    test('map with same value and alwaysNotify flag', () async {
       final source = ObservableAsync<int>(10);
 
       final mappedDefault = source.map<String>((value) => value.toString());
@@ -175,7 +175,7 @@ void main() {
       });
 
       final mappedAlwaysNotify = source.map<String>((value) => value.toString(),
-          notifyOnlyIfChanged: false);
+          alwaysNotify: true);
 
       bool alwaysNotifyListenerCalled = false;
       mappedAlwaysNotify.listen((_) {
@@ -296,7 +296,7 @@ void main() {
       expect(listenerCalled, false);
     });
 
-    test('map with same value and notifyOnlyIfChanged flag', () async {
+    test('map with same value and alwaysNotify flag', () async {
       final source = Observable<int>(10);
 
       final mappedDefault = source.map<String>((value) => value.toString());
@@ -307,7 +307,7 @@ void main() {
       });
 
       final mappedAlwaysNotify = source.map<String>((value) => value.toString(),
-          notifyOnlyIfChanged: false);
+          alwaysNotify: true);
 
       bool alwaysNotifyListenerCalled = false;
       mappedAlwaysNotify.listen((_) {

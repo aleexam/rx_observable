@@ -10,11 +10,11 @@ class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
     implements IObservableMutable<T>, StreamController<T> {
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
   /// [onListen], [onCancel], flag to handle events [sync] and
-  /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
-  /// if new value not equals to old value
+  /// flag [alwaysNotify] - if false, listeners will be notified
+  /// only if new value not equals to old value
   ObservableAsync(
     super.initialValue, {
-    super.notifyOnlyIfChanged,
+    super.alwaysNotify,
     super.sync,
     super.onListen,
     super.onCancel,
@@ -26,7 +26,7 @@ class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
   @override
   set v(T v) => value = v;
 
-  /// This will force unchanged value to notify listeners, even if notifyOnlyIfChanged set true
+  /// This will force unchanged value to notify listeners, even if alwaysNotify set false
   /// Sends a data [event].
   ///
   /// Listeners receive this event in a later microtask.
@@ -76,17 +76,17 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
 
   /// If true, listeners will be notified if new value not equals to old value
   /// Default true
-  late bool _notifyOnlyIfChanged;
+  late bool _alwaysNotify;
 
-  bool get notifyOnlyIfChanged => _notifyOnlyIfChanged;
+  bool get alwaysNotify => _alwaysNotify;
 
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
   /// [onListen], [onCancel], flag to handle events [sync] and
-  /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
+  /// flag [alwaysNotify] - if false, listeners will be notified
   /// if new value not equals to old value
   ObservableAsyncReadOnly(
     this._value, {
-    bool notifyOnlyIfChanged = true,
+    bool alwaysNotify = false,
     void Function()? onListen,
     void Function()? onCancel,
     bool sync = false,
@@ -96,7 +96,7 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
       onListen: onListen,
       onCancel: onCancel,
     );
-    _notifyOnlyIfChanged = notifyOnlyIfChanged;
+    _alwaysNotify = alwaysNotify;
   }
 
   @override
@@ -111,7 +111,7 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   @override
   ObservableStreamSubscription<T> listen(
     FutureOr<void> Function(T) onData, {
-    bool fireImmediately = false,
+    bool preFire = false,
   }) {
     var subscription = _controller.stream.listen(
       (event) {
@@ -121,7 +121,7 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
         reportObservableFlutterError(e, s, this);
       },
     );
-    if (fireImmediately && !isClosed) {
+    if (preFire && !isClosed) {
       Future.microtask(() {
         try {
           onData(_value);
@@ -151,7 +151,7 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
     if (isClosed) throw StateError("Cannot update value after calling dispose");
     ObsTrackingContext._handleModificationDuringTracking(this);
 
-    if (_value != newValue || !_notifyOnlyIfChanged) {
+    if (_value != newValue || _alwaysNotify) {
       _value = newValue;
       _add(_value);
     }
@@ -166,13 +166,13 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
   @override
   ObservableAsyncReadOnly<R> map<R>(
     R Function(T value) transform, {
-    bool? notifyOnlyIfChanged,
+    bool? alwaysNotify,
   }) {
     return MappedObservableAsyncReadOnly<T, R>(
       this,
       _controller,
       transform,
-      notifyOnlyIfChanged: notifyOnlyIfChanged ?? _notifyOnlyIfChanged,
+      alwaysNotify: alwaysNotify ?? _alwaysNotify,
     );
   }
 

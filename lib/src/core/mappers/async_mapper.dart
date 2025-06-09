@@ -13,13 +13,13 @@ class MappedObservableAsyncReadOnly<T, M>
     this._source,
     this._sourceController,
     this._transform, {
-    this.notifyOnlyIfChanged = true,
+    this.alwaysNotify = false,
   }) {
     _lastValue = _transform(_source.value);
   }
 
   @override
-  bool notifyOnlyIfChanged;
+  bool alwaysNotify;
 
   @override
   M get value {
@@ -44,7 +44,7 @@ class MappedObservableAsyncReadOnly<T, M>
   bool _isClosed = false;
 
   bool _shouldNotify(M value) {
-    if ((notifyOnlyIfChanged && _lastValue == value) || _isClosed) {
+    if ((!alwaysNotify && _lastValue == value) || _isClosed) {
       return false;
     }
     _lastValue = value;
@@ -54,9 +54,9 @@ class MappedObservableAsyncReadOnly<T, M>
   @override
   ObservableStreamSubscription<M> listen(
     FutureOr<void> Function(M) onData, {
-    bool fireImmediately = false,
+    bool preFire = false,
   }) {
-    if (fireImmediately) {
+    if (preFire) {
       onData(value);
     }
     var subscription = _source.stream
@@ -94,11 +94,11 @@ class MappedObservableAsyncReadOnly<T, M>
   @override
   ObservableAsyncReadOnly<R> map<R>(
     R Function(M value) newTransform, {
-    bool? notifyOnlyIfChanged,
+    bool? alwaysNotify,
   }) {
     return _source.map(
       (value) => newTransform(_transform(value)),
-      notifyOnlyIfChanged: notifyOnlyIfChanged ?? this.notifyOnlyIfChanged,
+      alwaysNotify: alwaysNotify ?? this.alwaysNotify,
     );
   }
 

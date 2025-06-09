@@ -7,9 +7,9 @@ part of 'observable.dart';
 class Observable<T> extends ObservableReadOnly<T>
     implements IObservableMutable<T>, ValueNotifier<T> {
   /// Constructs a [Observable], with value setter and getter, pass initial value, handlers for
-  /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
-  /// if new value not equals to old value
-  Observable(super.initialValue, {super.notifyOnlyIfChanged});
+  /// flag [alwaysNotify] - if true, listeners will be notified
+  /// only if new value not equals to old value
+  Observable(super.initialValue, {super.alwaysNotify});
 
   @override
   set value(T newValue) => _updateValue(newValue);
@@ -24,25 +24,25 @@ class Observable<T> extends ObservableReadOnly<T>
 class ObservableReadOnly<T> extends ChangeNotifier
     implements IObservableSync<T> {
   /// Constructs a [ObservableReadOnly], pass initial value,
-  /// flag [notifyOnlyIfChanged] - if true, listeners will be notified
-  /// if new value not equals to old value
-  ObservableReadOnly(T initialValue, {bool notifyOnlyIfChanged = true}) {
+  /// flag [alwaysNotify] - if false, listeners will be notified
+  /// only if new value not equals to old value
+  ObservableReadOnly(T initialValue, {bool alwaysNotify = false}) {
     _value = initialValue;
-    _notifyOnlyIfChanged = notifyOnlyIfChanged;
+    _alwaysNotify = alwaysNotify;
   }
 
   late T _value;
-  late bool _notifyOnlyIfChanged;
+  late bool _alwaysNotify;
 
   /// if true, listeners will be notified, if new value not equals to old value
   /// Otherwise, any updated will trigger listeners
-  bool get notifyOnlyIfChanged => _notifyOnlyIfChanged;
+  bool get alwaysNotify => _alwaysNotify;
 
   /// Set and emit the new value.
   void _updateValue(T newValue) {
     ObsTrackingContext._handleModificationDuringTracking(this);
 
-    if (_value != newValue || !_notifyOnlyIfChanged) {
+    if (_value != newValue || _alwaysNotify) {
       _value = newValue;
       notifyListeners();
     }
@@ -60,12 +60,12 @@ class ObservableReadOnly<T> extends ChangeNotifier
   @override
   ObservableSubscription<T> listen(
     void Function(T) listener, {
-    bool fireImmediately = false,
+    bool preFire = false,
   }) {
     assert(ChangeNotifier.debugAssertNotDisposed(this));
     listenerWrapper() => listener(_value);
     addListener(listenerWrapper);
-    if (fireImmediately) listenerWrapper();
+    if (preFire) listenerWrapper();
     return ObservableSubscription<T>(() => removeListener(listenerWrapper));
   }
 
@@ -77,13 +77,13 @@ class ObservableReadOnly<T> extends ChangeNotifier
   @override
   ObservableReadOnly<R> map<R>(
     R Function(T value) transform, {
-    bool? notifyOnlyIfChanged,
+    bool? alwaysNotify,
   }) {
     assert(ChangeNotifier.debugAssertNotDisposed(this));
     return MappedObservableReadOnly<T, R>(
       this,
       transform,
-      notifyOnlyIfChanged: notifyOnlyIfChanged ?? _notifyOnlyIfChanged,
+      alwaysNotify: alwaysNotify ?? _alwaysNotify,
     );
   }
 

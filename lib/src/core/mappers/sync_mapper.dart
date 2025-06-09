@@ -12,13 +12,13 @@ class MappedObservableReadOnly<T, M>
   MappedObservableReadOnly(
     this._source,
     this._transform, {
-    this.notifyOnlyIfChanged = true,
+    this.alwaysNotify = false,
   }) {
     _lastValue = _transform(_source.value);
   }
 
   @override
-  bool notifyOnlyIfChanged = true;
+  bool alwaysNotify;
 
   @override
   M get value {
@@ -46,33 +46,30 @@ class MappedObservableReadOnly<T, M>
   @override
   ObservableSubscription<M> listen(
     void Function(M) listener, {
-    bool fireImmediately = false,
+    bool preFire = false,
   }) {
     assert(_debugAssertNotDisposed());
     _lastValue = value;
-    bool notifyOnlyIfChangedCopy = this.notifyOnlyIfChanged;
-    this.notifyOnlyIfChanged = false;
     void wrapper() {
-      if ((this.notifyOnlyIfChanged && _lastValue == value) || _isClosed) return;
+      if ((!alwaysNotify && _lastValue == value) || _isClosed) return;
       _lastValue = value;
       listener(value);
     }
 
     _source.addListener(wrapper);
-    if (fireImmediately) wrapper();
-    this.notifyOnlyIfChanged = notifyOnlyIfChangedCopy;
+    if (preFire) listener(value);
     return ObservableSubscription<M>(() => _source.removeListener(wrapper));
   }
 
   @override
   ObservableReadOnly<M2> map<M2>(
     M2 Function(M value) transform, {
-    bool? notifyOnlyIfChanged,
+    bool? alwaysNotify,
   }) {
     assert(_debugAssertNotDisposed());
     return _source.map(
       (value) => transform(_transform(value)),
-      notifyOnlyIfChanged: notifyOnlyIfChanged ?? this.notifyOnlyIfChanged,
+      alwaysNotify: alwaysNotify ?? this.alwaysNotify,
     );
   }
 
@@ -87,7 +84,7 @@ class MappedObservableReadOnly<T, M>
     assert(_debugAssertNotDisposed());
     _lastValue = value;
     void wrapper() {
-      if ((notifyOnlyIfChanged && _lastValue == value) || _isClosed) return;
+      if ((!alwaysNotify && _lastValue == value) || _isClosed) return;
       _lastValue = value;
       listener();
     }

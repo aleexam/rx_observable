@@ -12,7 +12,7 @@ class ObservableComputed<T> extends ObservableReadOnly<T> {
   ObservableComputed(
     List<IObservable> observables, {
     required final T Function() computer,
-    super.notifyOnlyIfChanged,
+    super.alwaysNotify,
   }) : super(computer()) {
     _compute = computer;
     for (final observable in observables) {
@@ -52,7 +52,7 @@ class ObservableComputedAsync<T> extends ObservableAsyncReadOnly<T> {
     required final T Function() computer,
     super.onListen,
     super.onCancel,
-    super.notifyOnlyIfChanged,
+    super.alwaysNotify,
   }) : super(computer()) {
     _compute = computer;
     for (final observable in observables) {

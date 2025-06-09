@@ -278,14 +278,14 @@ extension ObservableSelectExt<T> on ObservableReadOnly<T> {
   ///
   /// Similar to [map], but more semantic for selecting a field.
   /// Notifies listeners only if the selected value has changed,
-  /// unless [notifyOnlyIfChanged] is explicitly set to false.
+  /// unless [alwaysNotify] is explicitly set to false.
   ObservableReadOnly<R> select<R>(
     R Function(T value) selector, {
-    bool? notifyOnlyIfChanged,
+    bool? alwaysNotify,
   }) {
     return map(
       selector,
-      notifyOnlyIfChanged: notifyOnlyIfChanged,
+      alwaysNotify: alwaysNotify,
     );
   }
 }
@@ -295,14 +295,14 @@ extension ObservableAsyncSelectExt<T> on ObservableAsyncReadOnly<T> {
   ///
   /// Similar to [map], but more semantic for selecting a field.
   /// Notifies listeners only if the selected value has changed,
-  /// unless [notifyOnlyIfChanged] is explicitly set to false.
+  /// unless [alwaysNotify] is explicitly set to false.
   ObservableAsyncReadOnly<R> select<R>(
     R Function(T value) selector, {
-    bool? notifyOnlyIfChanged,
+    bool? alwaysNotify,
   }) {
     return map(
       selector,
-      notifyOnlyIfChanged: notifyOnlyIfChanged,
+      alwaysNotify: alwaysNotify,
     );
   }
 }
