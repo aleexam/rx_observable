@@ -16,6 +16,11 @@ class Observable<T> extends ObservableReadOnly<T>
 
   @override
   set v(T v) => value = v;
+
+  @override
+  void notify() {
+    notifyListeners();
+  }
 }
 
 /// This default observable class is sync, based on ChangeNotifier.
@@ -67,11 +72,6 @@ class ObservableReadOnly<T> extends ChangeNotifier
     addListener(listenerWrapper);
     if (preFire) listenerWrapper();
     return ObservableSubscription<T>(() => removeListener(listenerWrapper));
-  }
-
-  @override
-  void notify() {
-    notifyListeners();
   }
 
   @override

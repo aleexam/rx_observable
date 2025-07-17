@@ -1,6 +1,5 @@
 import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rx_observable/src/i_disposable.dart';
 
 import '../observable.dart';
@@ -304,5 +303,18 @@ extension ObservableAsyncSelectExt<T> on ObservableAsyncReadOnly<T> {
       selector,
       alwaysNotify: alwaysNotify,
     );
+  }
+}
+
+extension MapExtension<T, T2> on IObservableMutable<Map<T, T2>> {
+  void putAndNotify(T key, T2 item) {
+    value[key] = item;
+    notify();
+  }
+
+  T2? removeAndNotify(T key) {
+    var result = value.remove(key);
+    notify();
+    return result;
   }
 }

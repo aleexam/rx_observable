@@ -1,8 +1,11 @@
 # rx_observable
 
-A lightweight, boilerplate-free reactive state management solution for Flutter.
+A lightweight, boilerplate-free reactive variables for Flutter.
+Can be used as standalone state management solution, 
+or can be integrated in any other existing state management lib.
 
-Similar to LiveData, MobX, Cubit, RxDart, but without code generation or complex setup. Built on top of Flutter's `ChangeNotifier` and Dart's `StreamController`.
+Similar to LiveData, MobX, Cubit, RxDart, but without code generation or complex setup. 
+Built on top of Flutter's `ChangeNotifier` and Dart's `StreamController`.
 
 ## Features
 
@@ -24,8 +27,8 @@ dependencies:
 ### Creating Observables
 
 ```dart
-    var text = "Hello".obs;           // Extension method
-    var text2 = Observable("Hello");  // Constructor
+    var text = "Hello".obs;    // Extension method
+    var text2 = Obs("Hello");  // Constructor
 ```
 
 ### Listening to Changes
@@ -58,8 +61,8 @@ dependencies:
     // Full builder with BuildContext
     Observer.builder(
       observable: text,
-      builder: (context, value) {
-        return Text(value);
+      builder: (context, textValue) {
+        return Text(textValue);
       }
     )
     
@@ -74,9 +77,9 @@ dependencies:
     
     /// Since all observable types shares the same interface,
     /// you can use them all in same widgets
-    var firstName = Observable("Mister");
-    var lastName = ObservableAsync("Twister")
-    var age = ObservableReadOnly(25)
+    var firstName = Observable("Mister"); // Or Obs("Mister");
+    var lastName = ObservableAsync("Twister") // Or ObsA("Twister");
+    var age = ObservableReadOnly(25) // Or ObsRead(25);
     
     // Three values
     Observer3(
@@ -154,7 +157,8 @@ Use `RxSubsMixin` to easily manage your observables, subscriptions, and other di
         regSub(subscription);
       }
       
-      // This will automatically dispose all registered resources
+      // super.dispose will automatically dispose all registered resources
+      // No need to override it in real code, showed here only for clarification
       @override
       void dispose() {
         super.dispose();
@@ -222,122 +226,6 @@ Create observables that depend on other observables:
     group.dispose(); 
 ```
 
-### Working with States Pattern
-
-Similar to BLoC pattern states, but with less boilerplate. There are two approaches:
-
-#### 1. Immutable States (Recommended)
-
-Use immutable state objects and replace the entire state when something changes:
-
-```dart
-    // Define state types
-    abstract class UiState {}
-    class LoadingState extends UiState {}
-    class LoadedState extends UiState {
-      final List<Contact> contacts;
-      LoadedState({required this.contacts});
-    }
-    class ErrorState extends UiState {
-      final String message;
-      ErrorState({required this.message});
-    }
-    
-    // ViewModel with immutable state management
-    class ContactsViewModel with RxSubsMixin implements IDisposable {
-      // State observable
-      final state = Observable<UiState>(LoadingState());
-      
-      ContactsViewModel() {
-        regs([state]);
-        loadContacts();
-      }
-      
-      Future<void> loadContacts() async {
-        try {
-          state.value = LoadingState();
-          // Load contacts from repository
-          final contacts = await contactsRepository.getContacts();
-          // Create a new immutable state with the loaded data
-          state.value = LoadedState(contacts: contacts);
-        } catch (e) {
-          state.value = ErrorState(message: e.toString());
-        }
-      }
-    }
-```
-
-#### 2. States with Embedded Observables (You can try)
-
-You can also use observables inside state objects, but this requires careful handling, so use it at your own risk:
-
-```dart
-    
-    // State with embedded observable
-    class LoadedState extends UiState {
-      final ObservableReadOnly<List<Contact>> contacts;
-      
-      LoadedState({required this.contacts});
-    }
-    
-    // ViewModel with reactive state components
-    class ContactsViewModel with RxSubsMixin implements IDisposable {
-      // State observable
-      final state = Observable<UiState>(LoadingState());
-      
-      // Private observable list - only modified inside ViewModel
-      final _contacts = Observable<List<Contact>>([]);
-      
-      ContactsViewModel() {
-        // Register all observables for auto-disposal
-        regs([state, _contacts]);
-        loadContacts();
-      }
-      
-      Future<void> loadContacts() async {
-        try {
-          state.value = LoadingState();
-          // Load contacts from repository
-          final contacts = await contactsRepository.getContacts();
-          _contacts.value = contacts;
-          // Pass the observable to the state
-          state.value = LoadedState(contacts: _contacts.map((list) => List.unmodifiable(list)));
-        } catch (e) {
-          state.value = ErrorState(message: e.toString());
-        }
-      }
-    }
-```
-
-**⚠️ Warning**: When using observables inside states, be aware of potential concurrent access issues:
-- Only update observable values from inside the ViewModel
-- Consider using `List.unmodifiable()` for collections to prevent modification (assume that items in list immutable)
-- Never modify state values or items of list from outside the ViewModel
-- Always dispose observables properly (use RxSubsMixin)
-
-Using the state in UI:
-
-```dart
-    Observer(viewModel.state, (state) {
-      switch (state) {
-        case LoadingState():
-          return const CircularProgressIndicator();
-        case LoadedState():
-          return Observer(state.contacts, (contacts) {
-            if (contacts.isEmpty) {
-              return const Text('No contacts found');
-            }
-            return ListView.builder(
-              itemCount: contacts.length,
-              itemBuilder: (context, index) => ContactTile(contacts[index]),
-            );
-          });
-        case ErrorState():
-          return Text('Error: ${state.message}');
-      }
-    });
-```
-
 ## Experimental Features
 
 ### Implicit Observation
@@ -357,13 +245,14 @@ This approach not well tested and have some limitations, described in code, so a
 
 ## Why is this better than mobX, BLoc, getX?
 
-MobX's weakness lies in code generation. It can cause issues during development due to the complexity of store realisation in some cases. 
-Handling final late reactive variables can be challenging for example.
+MobX's weakness lies in code generation. It can cause issues during development due to the complexity of store realisation in some cases.
 
 BLoC has too much boilerplate and involves too much effort to manage the entire state. 
 It requires refreshing the whole state just to change a single value.
 
 GetX (or Get), on the other hand, includes too many features inside, bugs, complicated core.
+
+Anyway, this lib can be used in any other state management lib, adding convenient reactive fields and widgets to use with it.
 
 ## License
 

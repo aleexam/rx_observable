@@ -74,12 +74,6 @@ class MappedObservableReadOnly<T, M>
   }
 
   @override
-  void notify() {
-    assert(_debugAssertNotDisposed());
-    _source.notify();
-  }
-
-  @override
   void addListener(VoidCallback listener) {
     assert(_debugAssertNotDisposed());
     _lastValue = value;

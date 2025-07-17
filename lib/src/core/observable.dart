@@ -22,6 +22,10 @@ abstract class IObservableMutable<T> extends IObservable<T> {
   /// Short version of value setter
   /// Set the new value and notify listeners
   set v(T v);
+
+  /// Notifies all subscribed listeners of the current value.
+  /// This will force unchanged value to notify listeners, even if alwaysNotify set false
+  void notify();
 }
 
 /// Interface for a synchronous observable of type [T].
@@ -44,10 +48,6 @@ abstract class IObservable<T> extends IObservableListenable<T> {
   /// Short version of value getter
   /// Returns the last emitted value or initial value.
   T get v;
-
-  /// Notifies all subscribed listeners of the current value.
-  /// This will force unchanged value to notify listeners, even if alwaysNotify set false
-  void notify();
 
   /// Custom stream-like listen with custom subscription
   /// More convenient than addListener API,

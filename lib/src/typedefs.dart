@@ -2,6 +2,20 @@
 import 'core/observable.dart';
 import '../widgets.dart';
 
+typedef Obs<T> = Observable<T>;
+typedef ObsA<T> = ObservableAsync<T>;
+typedef ObservableRead<T> = ObservableReadOnly<T>;
+typedef ObservableReadA<T> = ObservableAsyncReadOnly<T>;
+typedef ObsRead<T> = ObservableReadOnly<T>;
+typedef ObsReadA<T> = ObservableAsyncReadOnly<T>;
+
+typedef ObsComputed<T> = ObservableComputed<T>;
+typedef ObsGroup = ObservableGroup;
+
+typedef ObW<T> = Observer<T>;
+typedef Obl<T> = ObservableListener<T>;
+typedef Obc<T> = ObservableConsumer<T>;
+
 typedef ObservableString = Observable<String>;
 typedef ObservableNullableString = Observable<String?>;
 typedef ObservableInt = Observable<int>;
@@ -23,20 +37,6 @@ typedef ObservableAsyncNum = ObservableAsync<num>;
 typedef ObservableAsyncNullableNum = ObservableAsync<num?>;
 typedef ObservableAsyncBool = ObservableAsync<bool>;
 typedef ObservableAsyncNullableBool = ObservableAsync<bool?>;
-
-typedef Obs<T> = Observable<T>;
-typedef ObsA<T> = ObservableAsync<T>;
-typedef ObservableRead<T> = ObservableReadOnly<T>;
-typedef ObservableReadA<T> = ObservableAsyncReadOnly<T>;
-typedef ObsRead<T> = ObservableReadOnly<T>;
-typedef ObsReadA<T> = ObservableAsyncReadOnly<T>;
-
-typedef ObsComputed<T> = ObservableComputed<T>;
-typedef ObsGroup = ObservableGroup;
-
-typedef ObW<T> = Observer<T>;
-typedef Obl<T> = ObservableListener<T>;
-typedef Obc<T> = ObservableConsumer<T>;
 
 typedef ObsString = ObservableString;
 typedef ObsNString = ObservableNullableString;

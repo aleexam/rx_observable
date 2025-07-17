@@ -55,6 +55,12 @@ class ObservableAsync<T> extends ObservableAsyncReadOnly<T>
     return _customSink!;
   }
 
+  @override
+  void notify() {
+    if (isClosed) throw StateError("Cannot notify after calling dispose");
+    _add(_value);
+  }
+
   _CustomStreamSink<T>? _customSink;
 
   @override
@@ -155,12 +161,6 @@ class ObservableAsyncReadOnly<T> implements IObservableAsync<T> {
       _value = newValue;
       _add(_value);
     }
-  }
-
-  @override
-  void notify() {
-    if (isClosed) throw StateError("Cannot notify after calling dispose");
-    _add(_value);
   }
 
   @override

@@ -103,11 +103,6 @@ class MappedObservableAsyncReadOnly<T, M>
   }
 
   @override
-  void notify() {
-    _source.notify();
-  }
-
-  @override
   FutureOr<void> Function()? onCancel;
 
   @override
