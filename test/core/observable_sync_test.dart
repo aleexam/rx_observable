@@ -26,6 +26,7 @@ void main() {
       expect(notificationCount1, equals(1));
 
       final obs2 = Observable<int>(99, alwaysNotify: true);
+      expect(obs2.alwaysNotify, true);
       int notificationCount2 = 0;
       obs2.addListener(() => notificationCount2++);
 

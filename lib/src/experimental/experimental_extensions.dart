@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import '../core/observable.dart';
 
 extension ListToUnmodifiable<T> on IObservable<List<T>> {

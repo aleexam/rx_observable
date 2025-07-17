@@ -48,6 +48,7 @@ void main() {
         notificationCount++;
       });
 
+      expect(obs.alwaysNotify, true);
       obs.value = 99; // Same value
       await Future.delayed(Duration.zero);
       expect(notificationCount, 1);

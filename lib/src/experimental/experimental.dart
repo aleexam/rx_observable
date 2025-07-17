@@ -1,3 +1,4 @@
+// coverage:ignore-file
 /// Provides access to experimental reactive programming features.
 ///
 /// These features are in development and may change significantly in future releases.

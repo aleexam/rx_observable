@@ -636,8 +636,8 @@ class _ErrorTestWidgetState extends State<ErrorTestWidget>
   @override
   void initState() {
     super.initState();
-    regDisposable(widget.throwingDisposable);
-    regDisposable(widget.normalDisposable);
+    reg(widget.throwingDisposable);
+    regs([widget.normalDisposable]);
   }
 
   @override
