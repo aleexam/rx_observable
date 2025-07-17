@@ -38,3 +38,11 @@
 ## 0.7.1
 
 * Formatting fixed AGAIN
+
+## 0.7.2
+
+* alwaysNotify and preFire instead of notifyOnlyIfChanged and fireImmediately;
+* select added for observable as well as for Observer widget;
+* widgets lifecycle updated;
+* test coverage increased;
+* notify moved to mutable observable;
