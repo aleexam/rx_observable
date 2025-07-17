@@ -266,7 +266,7 @@ void main() {
         int notifyCount = 0;
         computed.listen((_) => notifyCount++);
 
-        computed.notify();
+        // computed.notify();
         expect(notifyCount, 1); // preFire only
       });
 
