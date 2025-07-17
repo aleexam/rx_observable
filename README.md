@@ -19,7 +19,7 @@ Built on top of Flutter's `ChangeNotifier` and Dart's `StreamController`.
 
 ```yaml
 dependencies:
-  rx_observable: ^0.7.1
+  rx_observable: ^0.7.2
 ```
 
 ## Basic Usage
